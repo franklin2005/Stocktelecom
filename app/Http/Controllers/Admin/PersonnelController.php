@@ -131,7 +131,13 @@ class PersonnelController extends Controller
             'viewedUser' => $user,
             'movements' => $movements,
             'location' => $location,
-            'backTab' => $this->tabForRole($user->role),
+            'backTab' => match ($user->role) {
+                'technician' => 'technicians',
+                'logistics' => 'logistics',
+                'admin' => 'admins',
+                'super_admin' => 'super_admins',
+                default => 'technicians',
+            },
         ]);
     }
 }
