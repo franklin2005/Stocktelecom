@@ -13,7 +13,7 @@ class WarehouseHistoryController extends Controller
     {
         $warehouse = StockLocation::warehouses()->first();
 
-        $movements = StockMovement::query()
+        $movementsQuery = StockMovement::query()
             ->with([
                 'material',
                 'serial',
@@ -29,12 +29,25 @@ class WarehouseHistoryController extends Controller
                 });
             })
             ->orderByDesc('performed_at')
-            ->orderByDesc('id')
-            ->paginate(20);
+            ->orderByDesc('id');
+
+        if (request()->filled('from')) {
+            $from = now()->parse(request('from'))->startOfDay();
+            $movementsQuery->where('performed_at', '>=', $from);
+        }
+
+        if (request()->filled('to')) {
+            $to = now()->parse(request('to'))->endOfDay();
+            $movementsQuery->where('performed_at', '<=', $to);
+        }
+
+        $movements = $movementsQuery->paginate(20)->withQueryString();
 
         return view('admin.warehouse-history', [
             'movements' => $movements,
             'warehouse' => $warehouse,
+            'from' => request('from'),
+            'to' => request('to'),
         ]);
     }
 }

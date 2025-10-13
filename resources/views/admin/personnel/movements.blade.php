@@ -28,6 +28,23 @@
         </a>
     </div>
 
+    <form method="GET" class="card shadow-sm mb-4">
+        <div class="card-body row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Desde</label>
+                <input type="date" name="from" value="{{ request('from') }}" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Hasta</label>
+                <input type="date" name="to" value="{{ request('to') }}" class="form-control">
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="{{ route('admin.personnel.movements', $viewedUser) }}" class="btn btn-outline-secondary">Limpiar</a>
+            </div>
+        </div>
+    </form>
+
     <div class="card shadow-sm">
         <div class="card-body">
             @if ($movements->isEmpty())

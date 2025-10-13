@@ -12,6 +12,7 @@ use App\Models\WorkOrder;
 use App\Models\WorkOrderItem;
 use App\Services\InventoryService;
 use App\Services\StockMovementLogger;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -107,8 +108,11 @@ class WorkOrderController extends Controller
         $workOrders = WorkOrder::query()
             ->withCount('items')
             ->where('technician_id', $technician->id)
+            ->when($request->filled('from'), fn ($query) => $query->where('created_at', '>=', Carbon::parse($request->query('from'))->startOfDay()))
+            ->when($request->filled('to'), fn ($query) => $query->where('created_at', '<=', Carbon::parse($request->query('to'))->endOfDay()))
             ->orderByDesc('created_at')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         return view('technician.work-orders', [
             'location' => $location,
@@ -117,6 +121,8 @@ class WorkOrderController extends Controller
             'serializedInventory' => $serializedInventory,
             'availableSerials' => $availableSerials,
             'workOrders' => $workOrders,
+            'from' => $request->query('from'),
+            'to' => $request->query('to'),
         ]);
     }
 
@@ -290,14 +296,6 @@ class WorkOrderController extends Controller
                     'material_serial_id' => $lockedSerial->id,
                     'quantity' => null,
                 ]);
-
-                $lockedSerial->update([
-                    'status' => 'reserved',
-                    'reserved_by_user_id' => $technician->id,
-                    'reserved_at' => now(),
-                ]);
-
-                $this->inventoryService->decrease($location, $lockedSerial->material, 1);
             }
         });
 

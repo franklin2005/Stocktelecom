@@ -27,7 +27,7 @@ class TransferHistoryController extends Controller
 
         $location = $this->ensureTechnicianLocation($technician);
 
-        $transfers = Transfer::query()
+        $transfersQuery = Transfer::query()
             ->with([
                 'items.material',
                 'items.serial',
@@ -39,7 +39,19 @@ class TransferHistoryController extends Controller
                 $query->where('initiator_user_id', $technician->id)
                     ->orWhere('from_location_id', $location->id)
                     ->orWhere('to_location_id', $location->id);
-            })
+            });
+
+        if ($request->filled('from')) {
+            $from = now()->parse($request->query('from'))->startOfDay();
+            $transfersQuery->where('created_at', '>=', $from);
+        }
+
+        if ($request->filled('to')) {
+            $to = now()->parse($request->query('to'))->endOfDay();
+            $transfersQuery->where('created_at', '<=', $to);
+        }
+
+        $transfers = $transfersQuery
             ->orderByDesc('created_at')
             ->paginate(25)
             ->withQueryString();

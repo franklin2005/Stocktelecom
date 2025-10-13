@@ -13,12 +13,23 @@ class UserHistoryController extends Controller
      */
     public function index(): View
     {
-        $logs = UserActionLog::with(['actor', 'target'])
-            ->orderByDesc('created_at')
-            ->paginate(25);
+        $logsQuery = UserActionLog::with(['actor', 'target'])
+            ->orderByDesc('created_at');
+
+        if (request()->filled('from')) {
+            $logsQuery->where('created_at', '>=', now()->parse(request('from'))->startOfDay());
+        }
+
+        if (request()->filled('to')) {
+            $logsQuery->where('created_at', '<=', now()->parse(request('to'))->endOfDay());
+        }
+
+        $logs = $logsQuery->paginate(25)->withQueryString();
 
         return view('admin.user-history', [
             'logs' => $logs,
+            'from' => request('from'),
+            'to' => request('to'),
         ]);
     }
 }

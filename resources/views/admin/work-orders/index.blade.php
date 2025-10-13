@@ -32,7 +32,15 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-12 col-md-5 d-flex gap-2">
+                <div class="col-12 col-md-2">
+                    <label class="form-label">Desde</label>
+                    <input type="date" name="from" value="{{ $from }}" class="form-control">
+                </div>
+                <div class="col-12 col-md-2">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" name="to" value="{{ $to }}" class="form-control">
+                </div>
+                <div class="col-12 col-md-3 d-flex gap-2">
                     <button type="submit" class="btn btn-primary flex-fill flex-md-grow-0">Filtrar</button>
                     <a href="{{ route('admin.work-orders.index') }}" class="btn btn-outline-secondary flex-fill flex-md-grow-0">
                         Limpiar

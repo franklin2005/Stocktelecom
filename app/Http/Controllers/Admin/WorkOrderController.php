@@ -21,11 +21,15 @@ class WorkOrderController extends Controller
         $status = $request->query('status');
         $technicianId = (int) $request->query('technician_id');
 
-        $workOrders = WorkOrder::query()
+        $workOrdersQuery = WorkOrder::query()
             ->with('technician')
             ->withCount('items')
             ->when($status, fn ($query) => $query->where('status', $status))
             ->when($technicianId > 0, fn ($query) => $query->where('technician_id', $technicianId))
+            ->when($request->filled('from'), fn ($query) => $query->where('created_at', '>=', now()->parse($request->query('from'))->startOfDay()))
+            ->when($request->filled('to'), fn ($query) => $query->where('created_at', '<=', now()->parse($request->query('to'))->endOfDay()));
+
+        $workOrders = $workOrdersQuery
             ->orderByDesc('created_at')
             ->paginate(20)
             ->withQueryString();
@@ -38,6 +42,8 @@ class WorkOrderController extends Controller
             'workOrders' => $workOrders,
             'status' => $status,
             'technicianId' => $technicianId,
+            'from' => $request->query('from'),
+            'to' => $request->query('to'),
             'technicians' => $technicians,
         ]);
     }

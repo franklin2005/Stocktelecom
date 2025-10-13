@@ -106,7 +106,7 @@ class PersonnelController extends Controller
             $location = $user->stockLocation()->first();
         }
 
-        $movements = StockMovement::query()
+        $movementsQuery = StockMovement::query()
             ->with([
                 'material',
                 'serial',
@@ -121,7 +121,19 @@ class PersonnelController extends Controller
                     $query->orWhere('from_location_id', $location->id)
                         ->orWhere('to_location_id', $location->id);
                 }
-            })
+            });
+
+        if ($request->filled('from')) {
+            $from = now()->parse($request->query('from'))->startOfDay();
+            $movementsQuery->where('performed_at', '>=', $from);
+        }
+
+        if ($request->filled('to')) {
+            $to = now()->parse($request->query('to'))->endOfDay();
+            $movementsQuery->where('performed_at', '<=', $to);
+        }
+
+        $movements = $movementsQuery
             ->orderByDesc('performed_at')
             ->orderByDesc('created_at')
             ->paginate(25)

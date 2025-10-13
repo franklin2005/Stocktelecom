@@ -16,7 +16,7 @@
             <p class="text-muted mb-0">
                 {{ $technician->name }} · {{ $technician->email }}
                 @if ($technician->tech_code)
-                    · Codigo: {{ $technician->tech_code }}
+                    · Código: {{ $technician->tech_code }}
                 @endif
                 <br>
                 <small class="text-muted">Ubicación: {{ $location->name }}</small>
@@ -24,6 +24,23 @@
         </div>
         <a href="{{ $backUrl }}" class="btn btn-outline-secondary btn-sm">Volver</a>
     </div>
+
+    <form method="GET" class="card shadow-sm mb-4">
+        <div class="card-body row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Desde</label>
+                <input type="date" name="from" value="{{ request('from') }}" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Hasta</label>
+                <input type="date" name="to" value="{{ request('to') }}" class="form-control">
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="{{ route(Route::currentRouteName(), $technician) }}" class="btn btn-outline-secondary">Limpiar</a>
+            </div>
+        </div>
+    </form>
 
     <div class="card shadow-sm">
         <div class="card-body">
