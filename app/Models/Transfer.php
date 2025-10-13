@@ -75,3 +75,4 @@ class Transfer extends Model
         return $this->belongsTo(User::class, 'initiator_user_id');
     }
 }
+

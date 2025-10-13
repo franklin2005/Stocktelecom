@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Inventory;
+use App\Models\MaterialSerial;
 use App\Models\StockLocation;
 use App\Models\User;
 use App\Models\UserActionLog;
@@ -201,7 +203,7 @@ class StaffController extends Controller
     /**
      * Delete an administrator or logistics user.
      */
-    public function destroy(User $staff): RedirectResponse
+    public function destroy(Request $request, User $staff): RedirectResponse
     {
         if (! in_array($staff->role, ['admin', 'logistics', 'super_admin'], true)) {
             abort(404);
@@ -209,6 +211,31 @@ class StaffController extends Controller
 
         if (in_array($staff->role, ['admin', 'super_admin'], true) && $request->user()->role !== 'super_admin') {
             abort(403);
+        }
+
+        $location = null;
+
+        if ($staff->role === 'logistics') {
+            $location = $staff->stockLocation()->first();
+
+            if ($location) {
+                $hasInventory = Inventory::query()
+                    ->where('location_id', $location->id)
+                    ->where('quantity', '>', 0)
+                    ->exists();
+
+                $hasSerials = MaterialSerial::query()
+                    ->where('current_location_id', $location->id)
+                    ->exists();
+
+                if ($hasInventory || $hasSerials) {
+                    throw ValidationException::withMessages([
+                        'general' => 'No se puede eliminar este usuario de logistica mientras tenga stock asignado.',
+                    ])->errorBag('deleteStaff')->redirectTo(
+                        route('admin.personnel', ['tab' => 'logistics'])
+                    );
+                }
+            }
         }
 
         if (auth()->id() === $staff->id) {
@@ -253,7 +280,7 @@ class StaffController extends Controller
         $roleLabel = $this->roleLabel($staff->role);
         $redirectTab = $this->tabForRole($staff->role);
 
-        DB::transaction(function () use ($staff, $actorId, $staffName, $staffEmail, $roleLabel) {
+        DB::transaction(function () use ($staff, $actorId, $staffName, $staffEmail, $roleLabel, $location) {
             UserActionLog::create([
                 'actor_id' => $actorId,
                 'target_id' => $staff->id,
@@ -261,8 +288,12 @@ class StaffController extends Controller
                 'details' => 'Eliminacion de usuario ' . $roleLabel . ': ' . $staffName . ' (' . $staffEmail . ')',
             ]);
 
-            if ($staff->role === 'logistics') {
-                $staff->stockLocation()->delete();
+            if ($staff->role === 'logistics' && $location) {
+                Inventory::query()
+                    ->where('location_id', $location->id)
+                    ->delete();
+
+                $location->delete();
             }
 
             $staff->delete();
@@ -300,4 +331,6 @@ class StaffController extends Controller
         };
     }
 }
+
+
 

@@ -82,3 +82,4 @@ class StockMovement extends Model
         return $this->belongsTo(Transfer::class, 'reference_id')->where('reference_type', 'transfer');
     }
 }
+

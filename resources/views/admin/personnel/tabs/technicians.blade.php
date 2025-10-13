@@ -27,8 +27,8 @@
                                     <tr>
                                         @php
                                             $stockLocation = $technician->stockLocation;
-                                            $totalQuantity = (int) ($stockLocation->total_inventory_quantity ?? 0);
-                                            $totalSerials = (int) ($stockLocation->total_serials ?? 0);
+                                            $totalQuantity = $stockLocation?->inventories->sum('quantity') ?? 0;
+                                            $totalSerials = $stockLocation?->materialSerials->count() ?? 0;
                                             $hasStock = ($totalQuantity > 0) || ($totalSerials > 0);
                                             $stockSummary = $totalQuantity + $totalSerials;
                                         @endphp

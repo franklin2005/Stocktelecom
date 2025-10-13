@@ -6,11 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Inventory;
 use App\Models\MaterialSerial;
 use App\Models\StockLocation;
-use App\Models\StockMovement;
-use App\Models\Transfer;
 use App\Models\User;
 use App\Models\UserActionLog;
-use App\Models\WorkOrder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -191,28 +188,6 @@ class TechnicianController extends Controller
             }
         }
 
-        $blockingReasons = [];
-
-        if (WorkOrder::query()->where('technician_id', $technician->id)->exists()) {
-            $blockingReasons[] = 'ordenes de trabajo registradas';
-        }
-
-        if (Transfer::query()->where('initiator_user_id', $technician->id)->exists()) {
-            $blockingReasons[] = 'transferencias generadas';
-        }
-
-        if (StockMovement::query()->where('performed_by', $technician->id)->exists()) {
-            $blockingReasons[] = 'movimientos de almacen asociados';
-        }
-
-        if (! empty($blockingReasons)) {
-            return redirect()
-                ->route('admin.personnel', ['tab' => 'technicians'])
-                ->withErrors([
-                    'general' => 'No se puede eliminar al tecnico porque tiene ' . implode(', ', $blockingReasons) . '.',
-                ], 'deleteStaff');
-        }
-
         $actorId = auth()->id();
         $technicianName = $technician->name;
         $technicianEmail = $technician->email;
@@ -252,3 +227,4 @@ class TechnicianController extends Controller
         return $code;
     }
 }
+

@@ -25,7 +25,19 @@
                             <tbody>
                                 @foreach ($logistics as $logistic)
                                     <tr>
-                                        <td>{{ $logistic->name }}</td>
+                                        @php
+                                            $stockLocation = $logistic->stockLocation;
+                                            $logisticsQuantity = $stockLocation?->inventories->sum('quantity') ?? 0;
+                                            $logisticsSerials = $stockLocation?->materialSerials->count() ?? 0;
+                                            $logisticsHasStock = ($logisticsQuantity > 0) || ($logisticsSerials > 0);
+                                            $logisticsStockSummary = $logisticsQuantity + $logisticsSerials;
+                                        @endphp
+                                        <td>
+                                            {{ $logistic->name }}
+                                            @if ($logisticsStockSummary > 0)
+                                                <span class="badge bg-info ms-2">Stock: {{ $logisticsStockSummary }}</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $logistic->email }}</td>
                                         <td class="text-end">
                                             <div class="d-flex justify-content-end gap-2">
@@ -41,10 +53,13 @@
                                                     <form method="POST" class="d-inline" action="{{ route('admin.staff.destroy', ['staff' => $logistic->id, 'tab' => 'logistics']) }}" onsubmit="return confirm('Seguro que deseas eliminar este usuario de logistica?');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" {{ $logisticsHasStock ? 'disabled' : '' }} @if ($logisticsHasStock) title="Vacía el stock antes de eliminar este usuario de logistica." @endif>
                                                             Eliminar
                                                         </button>
                                                     </form>
+                                                    @if ($logisticsHasStock)
+                                                        <small class="text-danger d-block">Vacía el stock antes de eliminar.</small>
+                                                    @endif
                                                 @elseif (! $canViewMovements)
                                                     <span class="text-muted small">Sin permisos</span>
                                                 @endif

@@ -23,18 +23,16 @@ class PersonnelController extends Controller
         }
 
         $technicians = User::technicians()
-            ->with('stockLocation')
+            ->with([
+                'stockLocation' => fn ($query) => $query->with(['inventories', 'materialSerials']),
+            ])
             ->orderBy('name')
             ->get();
 
-        $technicians->load([
-            'stockLocation' => function ($query) {
-                $query->withSum('inventories as total_inventory_quantity', 'quantity')
-                    ->withCount('materialSerials as total_serials');
-            },
-        ]);
-
         $logistics = User::logistics()
+            ->with([
+                'stockLocation' => fn ($query) => $query->with(['inventories', 'materialSerials']),
+            ])
             ->orderBy('name')
             ->get();
 

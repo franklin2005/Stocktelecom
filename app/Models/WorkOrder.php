@@ -75,6 +75,6 @@ class WorkOrder extends Model
      */
     public function technician(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'technician_id');
+        return $this->belongsTo(User::class, 'technician_id')->withTrashed();
     }
 }
