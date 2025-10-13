@@ -87,10 +87,14 @@ class WorkOrderController extends Controller
             }
         }
 
-        DB::transaction(function () use ($workOrder, $validated, $newStatus) {
+        $actor = $request->user();
+
+        DB::transaction(function () use ($workOrder, $validated, $newStatus, $actor) {
             $workOrder->update([
                 'status' => $newStatus,
                 'notes' => $validated['notes'] ?? null,
+                'notes_author_type' => $validated['notes'] ? ($actor->role ?? 'admin') : null,
+                'notes_author_name' => $validated['notes'] ? $actor->name : null,
             ]);
         });
 

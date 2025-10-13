@@ -16,6 +16,8 @@ class WorkOrder extends Model
         'technician_name',
         'status',
         'notes',
+        'notes_author_type',
+        'notes_author_name',
     ];
 
     protected $casts = [

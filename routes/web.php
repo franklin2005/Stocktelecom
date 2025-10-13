@@ -34,8 +34,9 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login']);
+    Route::get('/login', [LoginController::class, 'showRoleSelection'])->name('login');
+    Route::get('/login/{role}', [LoginController::class, 'showRoleLogin'])->name('login.role');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 });
 
 Route::middleware('auth')->group(function () {
@@ -99,6 +100,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/transfers/{transfer}/accept', [TechnicianTransferController::class, 'accept'])->name('transfers.accept');
         Route::post('/transfers/{transfer}/reject', [TechnicianTransferController::class, 'reject'])->name('transfers.reject');
         Route::get('/work-orders', [TechnicianWorkOrderController::class, 'index'])->name('work-orders');
+        Route::get('/work-orders/{workOrder}', [TechnicianWorkOrderController::class, 'show'])->name('work-orders.show');
         Route::post('/work-orders', [TechnicianWorkOrderController::class, 'store'])->name('work-orders.store');
         Route::post('/work-orders/{workOrder}/items/quantity', [TechnicianWorkOrderController::class, 'addQuantityItem'])->name('work-orders.items.quantity');
         Route::post('/work-orders/{workOrder}/items/serial', [TechnicianWorkOrderController::class, 'addSerialItem'])->name('work-orders.items.serial');

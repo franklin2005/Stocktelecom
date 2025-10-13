@@ -60,7 +60,8 @@
 
                 @if ($openOrder->notes)
                     <div class="alert alert-info">
-                        <strong>Notas:</strong> {{ $openOrder->notes }}
+                        <strong>Notas:</strong> {{ $openOrder->notes }}<br>
+                        <small>Registrado por {{ $openOrder->notes_author_name ?? 'Desconocido' }}</small>
                     </div>
                 @endif
 
@@ -314,6 +315,7 @@
                                 <th class="text-center">Materiales</th>
                                 <th>Notas</th>
                                 <th class="text-end">Creada</th>
+                                <th class="text-end">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -333,12 +335,15 @@
                                     <td class="text-center">{{ $order->items_count }}</td>
                                     <td>
                                         @if ($order->notes)
-                                            <small class="text-muted">{{ $order->notes }}</small>
+                                            <small class="text-muted">{{ $order->notes }}<br>Registrado por {{ $order->notes_author_name ?? 'Desconocido' }}</small>
                                         @else
                                             <span class="text-muted">—</span>
                                         @endif
                                     </td>
                                     <td class="text-end">{{ $order->created_at?->format('d/m/Y H:i') }}</td>
+                                    <td class="text-end">
+                                        <a href="{{ route('technician.work-orders.show', $order) }}" class="btn btn-sm btn-outline-primary">Ver detalle</a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

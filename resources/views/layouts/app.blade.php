@@ -17,52 +17,56 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="mainNavbar">
+                @auth
+                    @php
+                        $navRole = auth()->user()->role ?? null;
+                        $menuByRole = [
+                            'super_admin' => [
+                                ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
+                                ['label' => 'Transferencias', 'route' => 'admin.transfers', 'pattern' => 'admin.transfers'],
+                                ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
+                                ['label' => 'Personal', 'route' => 'admin.personnel', 'pattern' => 'admin.personnel*'],
+                                ['label' => 'Histórico usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
+                                ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
+                                ['label' => 'Histórico almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
+                            ],
+                            'admin' => [
+                                ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
+                                ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
+                                ['label' => 'Personal', 'route' => 'admin.personnel', 'pattern' => 'admin.personnel*'],
+                                ['label' => 'Histórico usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
+                                ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
+                                ['label' => 'Histórico almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
+                            ],
+                            'logistics' => [
+                                ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
+                                ['label' => 'Transferencias', 'route' => 'admin.transfers', 'pattern' => 'admin.transfers'],
+                                ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
+                                ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
+                                ['label' => 'Técnicos', 'route' => 'technicians.overview', 'pattern' => ['technicians.overview', 'technicians.stock.overview']],
+                                ['label' => 'Histórico almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
+                            ],
+                            'technician' => [
+                                ['label' => 'Dashboard', 'route' => 'technician.dashboard', 'pattern' => 'technician.dashboard'],
+                                ['label' => 'Mi Stock', 'route' => 'technician.stock', 'pattern' => 'technician.stock'],
+                                ['label' => 'Transferencias', 'route' => 'technician.transfers', 'pattern' => 'technician.transfers'],
+                                ['label' => 'Histórico transferencias', 'route' => 'technicians.transfers.history', 'pattern' => 'technicians.transfers.history', 'params' => [auth()->user()]],
+                                ['label' => 'Órdenes de trabajo', 'route' => 'technician.work-orders', 'pattern' => 'technician.work-orders'],
+                            ],
+                        ];
+                        $menuItems = $menuByRole[$navRole] ?? [];
+                    @endphp
+                @endauth
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     @auth
-                        @php $navRole = auth()->user()->role ?? null; @endphp
-                        @if(in_array($navRole, ['admin', 'super_admin'], true))
+                        @foreach ($menuItems as $item)
+                            @php $pattern = $item['pattern'] ?? $item['route']; @endphp
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                                <a class="nav-link {{ request()->routeIs($pattern) ? 'active' : '' }}" href="{{ route($item['route'], $item['params'] ?? []) }}">
+                                    {{ $item['label'] }}
+                                </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.transfers') }}">Transferencias</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.materials') }}">Materiales</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.personnel') }}">Personal</a>
-                            </li>
-                        @elseif(auth()->user()->role === 'logistics')
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.transfers') }}">Transferencias</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.materials') }}">Materiales</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('technicians.overview') }}">Tecnicos</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.warehouse-movements') }}">Historico almacen</a>
-                            </li>
-                        @else
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('technician.dashboard') }}">Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('technician.stock') }}">Mi Stock</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('technician.transfers') }}">Transferencias</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('technicians.transfers.history', auth()->user()) }}">Historico de transferencias</a>
-                            </li>
-                        @endif
+                        @endforeach
                     @endauth
                 </ul>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -90,7 +94,11 @@
         <div class="row">
             @auth
                 <aside class="col-md-3 col-lg-2 d-none d-md-block bg-white border-end min-vh-100">
-                    @include('partials.sidebar')
+                    @php
+                        $navRole = $navRole ?? (auth()->user()->role ?? null);
+                        $menuItems = $menuItems ?? [];
+                    @endphp
+                    @include('partials.sidebar', ['menuItems' => $menuItems, 'role' => $navRole])
                 </aside>
                 <main class="col-12 col-md-9 col-lg-10 ms-sm-auto px-4 py-4">
                     @yield('content')

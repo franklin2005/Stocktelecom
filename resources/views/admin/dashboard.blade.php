@@ -21,15 +21,17 @@
                 </div>
             </div>
         @endif
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Transferencias</h5>
-                    <p class="card-text text-muted">Gestiona movimientos de materiales entre almacenes y tecnicos.</p>
-                    <a href="{{ route('admin.transfers') }}" class="btn btn-outline-primary">Ver transferencias</a>
+        @if($dashboardRole === 'super_admin')
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Transferencias</h5>
+                        <p class="card-text text-muted">Gestiona movimientos de materiales entre almacenes y tecnicos.</p>
+                        <a href="{{ route('admin.transfers') }}" class="btn btn-outline-primary">Ver transferencias</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
         <div class="col-12 col-md-6 col-lg-4">
             <div class="card h-100 shadow-sm">
                 <div class="card-body">

@@ -65,7 +65,8 @@
                         <dt class="col-5 col-sm-4 text-muted">Notas</dt>
                         <dd class="col-7 col-sm-8">
                             @if ($workOrder->notes)
-                                {{ $workOrder->notes }}
+                                {{ $workOrder->notes }}<br>
+                                <small class="text-muted">Registrado por {{ $workOrder->notes_author_name ?? 'Desconocido' }}</small>
                             @else
                                 <span class="text-muted">—</span>
                             @endif
