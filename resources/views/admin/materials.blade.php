@@ -2,8 +2,8 @@
 
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="mb-0">Gestion de materiales</h2>
-        <a href="{{ route('admin.warehouse-movements') }}" class="btn btn-outline-secondary">Ver historico del almacen</a>
+        <h2 class="mb-0">Gestión de materiales</h2>
+        <a href="{{ route('admin.warehouse-movements') }}" class="btn btn-outline-secondary">Ver histórico del almacén</a>
     </div>
 
     @if (session('status'))
@@ -28,16 +28,16 @@
         <div class="col-12 col-lg-8">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Inventario en almacen</h5>
+                    <h5 class="card-title mb-3">Inventario en almacén</h5>
                     <div class="table-responsive">
                         <table class="table table-striped align-middle">
                             <thead>
                                 <tr>
-                                    <th>Categoria</th>
+                                    <th>Categoría</th>
                                     <th>Tipo</th>
                                     <th>Modelo</th>
                                     <th>Serializado</th>
-                                    <th class="text-end">Stock almacen</th>
+                                    <th class="text-end">Stock almacén</th>
                                     <th class="text-end">Series disponibles</th>
                                 </tr>
                             </thead>
@@ -54,7 +54,7 @@
                                         <td>{{ $material->model ?? '-' }}</td>
                                         <td>
                                             <span class="badge bg-{{ $material->is_serialized ? 'info' : 'secondary' }}">
-                                                {{ $material->is_serialized ? 'Si' : 'No' }}
+                                                {{ $material->is_serialized ? 'Sí' : 'No' }}
                                             </span>
                                         </td>
                                         <td class="text-end">{{ $warehouseQuantity }}</td>
@@ -118,8 +118,8 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="serial_numbers" class="form-label">Numeros de serie</label>
-                            <textarea class="form-control" id="serial_numbers" name="serial_numbers" rows="4" placeholder="Uno por linea">{{ old('serial_numbers') }}</textarea>
+                            <label for="serial_numbers" class="form-label">Números de serie</label>
+                            <textarea class="form-control" id="serial_numbers" name="serial_numbers" rows="4" placeholder="Uno por línea">{{ old('serial_numbers') }}</textarea>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Registrar series</button>
                     </form>
@@ -151,7 +151,7 @@
                             <label for="remove_quantity" class="form-label">Cantidad a retirar</label>
                             <input type="number" min="1" class="form-control" id="remove_quantity" name="quantity">
                         </div>
-                        <button type="submit" class="btn btn-outline-danger w-100">Eliminar del almacen</button>
+                        <button type="submit" class="btn btn-outline-danger w-100">Eliminar del almacén</button>
                     </form>
                 </div>
             </div>
@@ -189,7 +189,7 @@
                                     @endif
                                 @endforeach
                             </select>
-                            <small class="text-muted">Selecciona cada numero de serie que deseas dar de baja.</small>
+                            <small class="text-muted">Selecciona cada número de serie que deseas dar de baja.</small>
                         </div>
                         <button type="submit" class="btn btn-outline-danger w-100">Eliminar series</button>
                     </form>
@@ -198,13 +198,13 @@
 
             <div class="card shadow-sm my-4">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Asignar a tecnico (no serializado)</h5>
+                    <h5 class="card-title mb-3">Asignar a técnico (no serializado)</h5>
                     <form method="POST" action="{{ route('admin.materials.assign') }}">
                         @csrf
                         <div class="mb-3">
-                            <label for="assign_technician_id" class="form-label">Tecnico</label>
+                            <label for="assign_technician_id" class="form-label">Técnico</label>
                             <select id="assign_technician_id" name="technician_id" class="form-select" required>
-                                <option value="">Selecciona un tecnico</option>
+                                <option value="">Selecciona un técnico</option>
                                 @foreach ($technicians as $technician)
                                     <option value="{{ $technician->id }}" {{ old('technician_id') == $technician->id ? 'selected' : '' }}>
                                         {{ $technician->name }} ({{ $technician->tech_code }})
@@ -234,13 +234,13 @@
 
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Asignar a tecnico (serializado)</h5>
+                    <h5 class="card-title mb-3">Asignar a técnico (serializado)</h5>
                     <form method="POST" action="{{ route('admin.materials.assign') }}">
                         @csrf
                         <div class="mb-3">
-                            <label for="assign_serial_technician_id" class="form-label">Tecnico</label>
+                            <label for="assign_serial_technician_id" class="form-label">Técnico</label>
                             <select id="assign_serial_technician_id" name="technician_id" class="form-select" required>
-                                <option value="">Selecciona un tecnico</option>
+                                <option value="">Selecciona un técnico</option>
                                 @foreach ($technicians as $technician)
                                     <option value="{{ $technician->id }}" {{ old('technician_id') == $technician->id ? 'selected' : '' }}>
                                         {{ $technician->name }} ({{ $technician->tech_code }})
@@ -285,8 +285,8 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">Acciones restringidas</h5>
                     <p class="text-muted mb-0">
-                        Solo el personal de logistica y el super administrador pueden registrar ingresos, salidas o asignaciones de materiales.
-                        Puedes consultar el stock y revisar el historico, pero sin capacidad de mover inventario desde este modulo.
+                        Solo el personal de logística y el superadministrador pueden registrar ingresos, salidas o asignaciones de materiales.
+                        Puedes consultar el stock y revisar el histórico, pero sin capacidad de mover inventario desde este módulo.
                     </p>
                 </div>
             </div>

@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
             <h2 class="mb-1">Mi stock</h2>
-            <p class="text-muted mb-0">Ubicacion asignada: {{ $location->name }}</p>
+            <p class="text-muted mb-0">Ubicación asignada: {{ $location->name }}</p>
         </div>
     </div>
 
@@ -49,7 +49,7 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">Materiales serializados</h5>
                     @if ($serializedGroups->isEmpty())
-                        <p class="text-muted mb-0">No tienes numeros de serie asignados actualmente.</p>
+                        <p class="text-muted mb-0">No tienes números de serie asignados actualmente.</p>
                     @else
                         <div class="accordion" id="technicianSerials">
                             @foreach ($serializedGroups as $materialId => $serialGroup)

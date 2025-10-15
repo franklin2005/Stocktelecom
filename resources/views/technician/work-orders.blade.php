@@ -3,8 +3,8 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h2 class="mb-1">Ordenes de trabajo</h2>
-            <p class="text-muted mb-0">Gestiona tus ordenes abiertas y consulta el historial de intervenciones.</p>
+            <h2 class="mb-1">Órdenes de trabajo</h2>
+            <p class="text-muted mb-0">Gestiona tus órdenes abiertas y consulta el historial de intervenciones.</p>
         </div>
     </div>
 
@@ -17,7 +17,7 @@
 
     @if ($errors->any())
         <div class="alert alert-danger">
-            <strong>Ocurrio un problema:</strong>
+            <strong>Ocurrió un problema:</strong>
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -37,14 +37,14 @@
                         </h5>
                         <p class="text-muted mb-0">
                             Creada el {{ $openOrder->created_at?->format('d/m/Y H:i') }} |
-                            Tecnico: {{ $openOrder->technician_name }}
+                            Técnico: {{ $openOrder->technician_name }}
                         </p>
                     </div>
                     <div class="mt-3 mt-md-0 d-flex gap-2">
                         <form method="POST" action="{{ route('technician.work-orders.confirm', $openOrder) }}">
                             @csrf
                             <button type="submit" class="btn btn-success"
-                                onclick="return confirm('¿Confirmar esta orden? No se podra modificar despues.');">
+                                onclick="return confirm('¿Confirmar esta orden? No se podrá modificar después.');">
                                 Confirmar orden
                             </button>
                         </form>
@@ -316,12 +316,12 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="card-title mb-0">Histórico de ordenes</h5>
-                <span class="text-muted small">Incluye ordenes abiertas, confirmadas y canceladas.</span>
+                <h5 class="card-title mb-0">Histórico de órdenes</h5>
+                <span class="text-muted small">Incluye órdenes abiertas, confirmadas y canceladas.</span>
             </div>
 
             @if ($workOrders->isEmpty())
-                <p class="text-muted mb-0">Todavía no tienes ordenes de trabajo registradas.</p>
+                <p class="text-muted mb-0">Todavía no tienes órdenes de trabajo registradas.</p>
             @else
                 <div class="table-responsive">
                     <table class="table table-striped align-middle">

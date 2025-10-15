@@ -15,7 +15,7 @@
 
     @if ($errors->any())
         <div class="alert alert-danger">
-            <strong>Ocurrio un problema:</strong>
+            <strong>Ocurrió un problema:</strong>
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -46,7 +46,7 @@
                                         <th class="text-end">En stock</th>
                                         <th class="text-end">Reservado</th>
                                         <th class="text-end">Disponible</th>
-                                        <th class="text-end">Accion</th>
+                                        <th class="text-end">Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -73,7 +73,7 @@
                                                     <input type="hidden" name="material_id" value="{{ $item->material_id }}">
                                                     <input type="number" name="quantity" class="form-control form-control-sm" min="1" max="{{ $available }}" value="1" style="width: 90px;" {{ $available === 0 ? 'disabled' : '' }}>
                                                     <button type="submit" class="btn btn-sm btn-outline-primary" {{ $available === 0 ? 'disabled' : '' }}>
-                                                        Anadir
+                                                        Añadir
                                                     </button>
                                                 </form>
                                             </td>
@@ -89,10 +89,10 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Materiales serializados</h5>
-                    <p class="text-muted small mb-3">Marca los numeros de serie que deseas transferir.</p>
+                    <p class="text-muted small mb-3">Marca los números de serie que deseas transferir.</p>
 
                     @if ($availableSerials->isEmpty())
-                        <p class="text-muted mb-0">No cuentas con numeros de serie disponibles en tu stock.</p>
+                        <p class="text-muted mb-0">No cuentas con números de serie disponibles en tu stock.</p>
                     @else
                         @php
                             $serialsByMaterial = $availableSerials->groupBy('material_id');
@@ -145,9 +145,9 @@
                                 @endforeach
                             </div>
 
-                                <div class="d-flex justify-content-end mt-3">
+                            <div class="d-flex justify-content-end mt-3">
                                 <button type="submit" class="btn btn-sm btn-outline-primary">
-                                    Anadir seleccionados
+                                    Añadir seleccionados
                                 </button>
                             </div>
                         </form>
@@ -168,7 +168,7 @@
                     </div>
 
                     @if (empty($cartItems))
-                        <p class="text-muted mb-0">No has anadido materiales a la transferencia.</p>
+                        <p class="text-muted mb-0">No has añadido materiales a la transferencia.</p>
                     @else
                         <div class="table-responsive">
                             <table class="table table-striped align-middle">
@@ -176,7 +176,7 @@
                                     <tr>
                                         <th>Detalle</th>
                                         <th class="text-end">Unidades</th>
-                                        <th class="text-end">Accion</th>
+                                        <th class="text-end">Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -223,7 +223,7 @@
                     <h5 class="card-title mb-3">Buscar destinatario</h5>
                     <form method="GET" action="{{ route('technician.transfers') }}" class="mb-3">
                         <div class="input-group input-group-sm">
-                            <input type="text" name="recipient_search" class="form-control" value="{{ $recipientSearch }}" placeholder="Nombre del tecnico">
+                            <input type="text" name="recipient_search" class="form-control" value="{{ $recipientSearch }}" placeholder="Nombre del técnico">
                             <button class="btn btn-outline-secondary" type="submit">Buscar</button>
                         </div>
                     </form>
@@ -231,9 +231,9 @@
                     <form method="POST" action="{{ route('technician.transfers.send') }}" id="transfer-send-form" data-total-units="{{ $cartSummary['total_units'] }}">
                         @csrf
                         <div class="mb-3">
-                            <h6 class="text-muted text-uppercase small mb-2">Selecciona un tecnico</h6>
+                            <h6 class="text-muted text-uppercase small mb-2">Selecciona un técnico</h6>
                             @if ($recipientTechnicians->isEmpty())
-                                <p class="text-muted small mb-0">No se encontraron tecnicos con ese criterio.</p>
+                                <p class="text-muted small mb-0">No se encontraron técnicos con ese criterio.</p>
                             @else
                                 <div class="list-group">
                                     @foreach ($recipientTechnicians as $recipient)
@@ -269,10 +269,10 @@
 
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Resumen rapido</h5>
+                    <h5 class="card-title mb-3">Resumen rápido</h5>
                     <ul class="list-unstyled mb-0">
                         <li class="mb-2">
-                            <strong>Ubicacion:</strong> {{ $location->name }}
+                            <strong>Ubicación:</strong> {{ $location->name }}
                         </li>
                         <li class="mb-2">
                             <strong>Materiales no serializados:</strong> {{ $nonSerializedInventory->sum('quantity') }} uds
@@ -359,7 +359,7 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">Historial reciente</h5>
                     @if ($recentTransfers->isEmpty())
-                        <p class="text-muted mb-0">Aun no tienes registros de transferencias procesadas.</p>
+                        <p class="text-muted mb-0">Aún no tienes registros de transferencias procesadas.</p>
                     @else
                         <div class="list-group">
                             @foreach ($recentTransfers as $transfer)
@@ -413,11 +413,11 @@
                 }
 
                 const totalUnits = Number(form.dataset.totalUnits || 0);
-                const name = selected.dataset.recipientName || 'tecnico';
+                const name = selected.dataset.recipientName || 'técnico';
                 const code = selected.dataset.recipientCode ? ` (${selected.dataset.recipientCode})` : '';
                 const email = selected.dataset.recipientEmail ? ` - ${selected.dataset.recipientEmail}` : '';
 
-                const message = `Estas a punto de transferir ${totalUnits} ${totalUnits === 1 ? 'elemento' : 'elementos'} a ${name}${code}${email}.\n\nDeseas continuar?`;
+                const message = `Estás a punto de transferir ${totalUnits} ${totalUnits === 1 ? 'elemento' : 'elementos'} a ${name}${code}${email}.\n\n¿Deseas continuar?`;
 
                 if (!window.confirm(message)) {
                     event.preventDefault();
@@ -426,14 +426,3 @@
         });
     </script>
 @endpush
-
-
-
-
-
-
-
-
-
-
-

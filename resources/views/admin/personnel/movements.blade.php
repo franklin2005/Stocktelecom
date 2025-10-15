@@ -2,8 +2,8 @@
 
 @php
     $roleLabels = [
-        'technician' => 'Tecnico',
-        'logistics' => 'Logistica',
+        'technician' => 'Técnico',
+        'logistics' => 'Logística',
         'admin' => 'Administrador',
         'super_admin' => 'Super Administrador',
     ];
@@ -17,9 +17,9 @@
         <div>
             <h2 class="mb-1">Historial de movimientos</h2>
             <p class="text-muted mb-0">
-                {{ $viewedUser->name }}  {{ $userRoleLabel }}  {{ $viewedUser->email }}
+                {{ $viewedUser->name }} — {{ $userRoleLabel }} — {{ $viewedUser->email }}
                 @if ($locationName)
-                    <br><small class="text-muted">Ubicacion: {{ $locationName }}</small>
+                    <br><small class="text-muted">Ubicación: {{ $locationName }}</small>
                 @endif
             </p>
         </div>
@@ -48,9 +48,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
             @if ($movements->isEmpty())
-                <p class="text-muted mb-0">
-                    No se encontraron movimientos asociados a este usuario.
-                </p>
+                <p class="text-muted mb-0">No se encontraron movimientos asociados a este usuario.</p>
             @else
                 <div class="table-responsive">
                     <table class="table table-striped align-middle">
@@ -88,7 +86,7 @@
                                     <td>{{ $movement->quantity }}</td>
                                     <td>
                                         @if ($movement->reference_type && $movement->reference_id)
-                                            {{ $movement->reference_type }} #{{ $movement->reference_id }}
+                                            {{ ucfirst($movement->reference_type) }} #{{ $movement->reference_id }}
                                         @else
                                             -
                                         @endif
@@ -109,4 +107,3 @@
         </div>
     </div>
 @endsection
-

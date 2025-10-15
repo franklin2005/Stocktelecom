@@ -3,14 +3,14 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h2 class="mb-1">Stock de tecnico</h2>
+            <h2 class="mb-1">Stock de técnico</h2>
             <p class="text-muted mb-0">
                 {{ $technician->name }} · {{ $technician->email }}
                 @if ($technician->tech_code)
-                    · Codigo: {{ $technician->tech_code }}
+                    · Código: {{ $technician->tech_code }}
                 @endif
                 <br>
-                <small class="text-muted">Ubicacion: {{ $location->name }}</small>
+                <small class="text-muted">Ubicación: {{ $location->name }}</small>
             </p>
         </div>
         <a href="{{ route('technicians.overview') }}" class="btn btn-outline-secondary btn-sm">Volver</a>
@@ -57,14 +57,14 @@
                 <div class="card-body">
                     <h5 class="card-title mb-3">Materiales serializados</h5>
                     @if ($serializedGroups->isEmpty())
-                        <p class="text-muted mb-0">No hay numeros de serie asignados.</p>
+                        <p class="text-muted mb-0">No hay números de serie asignados.</p>
                     @else
                         <div class="accordion" id="technicianSerialsOverview">
                             @foreach ($serializedGroups as $materialId => $serialGroup)
                                 @php
                                     $material = $serialGroup->first()->material;
                                     $quantity = $serializedInventory[$materialId]->quantity ?? $serialGroup->count();
-                                    $accordionId = 'material-'.$materialId;
+                                    $accordionId = 'material-' . $materialId;
                                 @endphp
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="heading-{{ $accordionId }}">

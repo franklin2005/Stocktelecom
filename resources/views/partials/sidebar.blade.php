@@ -4,7 +4,7 @@
 @endphp
 
 <div class="d-flex flex-column flex-grow-1 py-3">
-    <h6 class="px-3 text-uppercase text-muted">Menu</h6>
+    <h6 class="px-3 text-uppercase text-muted">Menú</h6>
     <div class="list-group list-group-flush">
         @forelse ($menuItems as $item)
             @php $pattern = $item['pattern'] ?? $item['route']; @endphp

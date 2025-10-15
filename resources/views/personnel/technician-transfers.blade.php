@@ -45,7 +45,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
             @if ($transfers->isEmpty())
-                <p class="text-muted mb-0">Aún no se registran transferencias para este técnico.</p>
+                <p class="text-muted mb-0">Aún no se han registrado transferencias para este técnico.</p>
             @else
                 <div class="table-responsive">
                     <table class="table table-striped align-middle">

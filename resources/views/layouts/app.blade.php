@@ -26,17 +26,17 @@
                                 ['label' => 'Transferencias', 'route' => 'admin.transfers', 'pattern' => 'admin.transfers'],
                                 ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
                                 ['label' => 'Personal', 'route' => 'admin.personnel', 'pattern' => 'admin.personnel*'],
-                                ['label' => 'Histórico usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
+                                ['label' => 'Histórico de usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
-                                ['label' => 'Histórico almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
+                                ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
                             ],
                             'admin' => [
                                 ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
                                 ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
                                 ['label' => 'Personal', 'route' => 'admin.personnel', 'pattern' => 'admin.personnel*'],
-                                ['label' => 'Histórico usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
+                                ['label' => 'Histórico de usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
-                                ['label' => 'Histórico almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
+                                ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
                             ],
                             'logistics' => [
                                 ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
@@ -44,13 +44,13 @@
                                 ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
                                 ['label' => 'Técnicos', 'route' => 'technicians.overview', 'pattern' => ['technicians.overview', 'technicians.stock.overview']],
-                                ['label' => 'Histórico almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
+                                ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
                             ],
                             'technician' => [
                                 ['label' => 'Dashboard', 'route' => 'technician.dashboard', 'pattern' => 'technician.dashboard'],
-                                ['label' => 'Mi Stock', 'route' => 'technician.stock', 'pattern' => 'technician.stock'],
+                                ['label' => 'Mi stock', 'route' => 'technician.stock', 'pattern' => 'technician.stock'],
                                 ['label' => 'Transferencias', 'route' => 'technician.transfers', 'pattern' => 'technician.transfers'],
-                                ['label' => 'Histórico transferencias', 'route' => 'technicians.transfers.history', 'pattern' => 'technicians.transfers.history', 'params' => [auth()->user()]],
+                                ['label' => 'Histórico de transferencias', 'route' => 'technicians.transfers.history', 'pattern' => 'technicians.transfers.history', 'params' => [auth()->user()]],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'technician.work-orders', 'pattern' => 'technician.work-orders'],
                             ],
                         ];
@@ -77,12 +77,12 @@
                         <li class="nav-item">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesion</button>
+                                <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
                             </form>
                         </li>
                     @else
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">Iniciar sesion</a>
+                            <a class="nav-link" href="{{ route('login') }}">Iniciar sesión</a>
                         </li>
                     @endauth
                 </ul>

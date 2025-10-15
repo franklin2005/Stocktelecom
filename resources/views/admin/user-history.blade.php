@@ -3,8 +3,8 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h2 class="mb-1">Historico de acciones de usuarios</h2>
-            <p class="text-muted mb-0">Registros de creacion, edicion y eliminacion realizados por el personal autorizado.</p>
+            <h2 class="mb-1">Histórico de acciones de usuarios</h2>
+            <p class="text-muted mb-0">Registros de creación, edición y eliminación realizados por el personal autorizado.</p>
         </div>
     </div>
 
@@ -28,7 +28,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
             @if ($logs->isEmpty())
-                <p class="text-muted mb-0">Todavia no se han registrado acciones sobre usuarios.</p>
+                <p class="text-muted mb-0">Todavía no se han registrado acciones sobre usuarios.</p>
             @else
                 <div class="table-responsive">
                     <table class="table table-striped align-middle">
@@ -45,9 +45,9 @@
                             @foreach ($logs as $log)
                                 @php
                                     $actionLabels = [
-                                        'created' => 'Creacion',
-                                        'updated' => 'Actualizacion',
-                                        'deleted' => 'Eliminacion',
+                                        'created' => 'Creación',
+                                        'updated' => 'Actualización',
+                                        'deleted' => 'Eliminación',
                                     ];
 
                                     $actionLabel = $actionLabels[$log->action] ?? ucfirst($log->action);

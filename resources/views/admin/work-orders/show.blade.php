@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 
 @section('content')
@@ -29,7 +28,7 @@
 
     @if ($errors->any())
         <div class="alert alert-danger">
-            <strong>Ocurrio un problema:</strong>
+            <strong>Ocurrió un problema:</strong>
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -75,6 +74,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-12 col-lg-6">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
@@ -90,8 +90,7 @@
                                         <option value="{{ $value }}" @selected($workOrder->status === $value)>{{ $label }}</option>
                                     @endforeach
                                 </select>
-                                <small class="text-muted d-block mt-1">Cambiar el estado no ajusta inventario
-                                    automáticamente.</small>
+                                <small class="text-muted d-block mt-1">Cambiar el estado no ajusta el inventario automáticamente.</small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Notas</label>
@@ -146,7 +145,7 @@
         <div class="card-body">
             <h5 class="card-title mb-3">Materiales serializados</h5>
             @if ($serialItems->isEmpty())
-                <p class="text-muted mb-0">No se registraron seriales en esta orden.</p>
+                <p class="text-muted mb-0">No se registraron números de serie en esta orden.</p>
             @else
                 <div class="table-responsive">
                     <table class="table table-striped align-middle">

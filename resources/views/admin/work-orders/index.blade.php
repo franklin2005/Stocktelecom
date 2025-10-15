@@ -1,11 +1,10 @@
-
 @extends('layouts.app')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1">Ordenes de trabajo</h2>
-            <p class="text-muted mb-0">Consulta y filtra las ordenes creadas por el personal técnico.</p>
+            <h2 class="mb-1">Órdenes de trabajo</h2>
+            <p class="text-muted mb-0">Consulta y filtra las órdenes creadas por el personal técnico.</p>
         </div>
     </div>
 
@@ -53,7 +52,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
             @if ($workOrders->isEmpty())
-                <p class="text-muted mb-0">No se encontraron ordenes con los criterios seleccionados.</p>
+                <p class="text-muted mb-0">No se encontraron órdenes con los criterios seleccionados.</p>
             @else
                 <div class="table-responsive">
                     <table class="table table-striped align-middle">

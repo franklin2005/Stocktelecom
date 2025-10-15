@@ -3,9 +3,9 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h2 class="mb-1">Historico de movimientos del almacen</h2>
+            <h2 class="mb-1">Histórico de movimientos del almacén</h2>
             <p class="text-muted mb-0">
-                Registros de ajustes, transferencias y bajas aplicadas al almacen{{ $warehouse ? ' '.$warehouse->name : '' }}.
+                Registros de ajustes, transferencias y bajas aplicadas al almacén{{ $warehouse ? ' '.$warehouse->name : '' }}.
             </p>
         </div>
         <a href="{{ route('admin.materials') }}" class="btn btn-outline-primary">Volver a materiales</a>
@@ -89,8 +89,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center text-muted py-4">
-                                    Aun no hay movimientos registrados para el almacen.
+                                <td colspan="10" class="text-center text-muted py-4">
+                                    Aún no hay movimientos registrados para el almacén.
                                 </td>
                             </tr>
                         @endforelse

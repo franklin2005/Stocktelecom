@@ -11,7 +11,7 @@
                 <h5 class="card-title mb-3">Administradores</h5>
 
                 @if ($admins->isEmpty())
-                    <p class="text-muted mb-0">No hay administradores adicionales registrados.</p>
+                    <p class="text-muted mb-0">No hay administradores registrados.</p>
                 @else
                     <div class="table-responsive">
                         <table class="table table-striped align-middle">
@@ -38,7 +38,7 @@
                                                     <a href="{{ route('admin.personnel', ['tab' => 'admins', 'edit_admin' => $admin->id]) }}" class="btn btn-sm btn-outline-primary">
                                                         Editar
                                                     </a>
-                                                    <form method="POST" class="d-inline" action="{{ route('admin.staff.destroy', ['staff' => $admin->id, 'tab' => 'admins']) }}" onsubmit="return confirm('Seguro que deseas eliminar este administrador?');">
+                                                    <form method="POST" class="d-inline" action="{{ route('admin.staff.destroy', ['staff' => $admin->id, 'tab' => 'admins']) }}" onsubmit="return confirm('¿Seguro que deseas eliminar este administrador?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -76,21 +76,21 @@
                             @enderror
                         </div>
                         <div class="mb-3">
-                            <label for="admin_email" class="form-label">Correo electronico</label>
+                            <label for="admin_email" class="form-label">Correo electrónico</label>
                             <input type="email" id="admin_email" name="email" class="form-control @error('email', 'createStaff') is-invalid @enderror" value="{{ old('email') }}" required>
                             @error('email', 'createStaff')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="mb-3">
-                            <label for="admin_password" class="form-label">Contrasena</label>
+                            <label for="admin_password" class="form-label">Contraseña</label>
                             <input type="password" id="admin_password" name="password" class="form-control @error('password', 'createStaff') is-invalid @enderror" required>
                             @error('password', 'createStaff')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="mb-3">
-                            <label for="admin_password_confirmation" class="form-label">Confirmar contrasena</label>
+                            <label for="admin_password_confirmation" class="form-label">Confirmar contraseña</label>
                             <input type="password" id="admin_password_confirmation" name="password_confirmation" class="form-control" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Crear administrador</button>
@@ -116,28 +116,28 @@
                                 @enderror
                             </div>
                             <div class="mb-3">
-                                <label for="edit_admin_email" class="form-label">Correo electronico</label>
+                                <label for="edit_admin_email" class="form-label">Correo electrónico</label>
                                 <input type="email" id="edit_admin_email" name="email" class="form-control @error('email', 'updateStaff') is-invalid @enderror" value="{{ old('email', $editingAdmin->email) }}" required>
                                 @error('email', 'updateStaff')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="mb-3">
-                                <label for="edit_admin_password" class="form-label">Contrasena (opcional)</label>
-                                <input type="password" id="edit_admin_password" name="password" class="form-control @error('password', 'updateStaff') is-invalid @enderror" placeholder="Deja vacio para mantener la actual">
+                                <label for="edit_admin_password" class="form-label">Contraseña (opcional)</label>
+                                <input type="password" id="edit_admin_password" name="password" class="form-control @error('password', 'updateStaff') is-invalid @enderror" placeholder="Deja vacío para mantener la actual">
                                 @error('password', 'updateStaff')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="mb-3">
-                                <label for="edit_admin_password_confirmation" class="form-label">Confirmar contrasena</label>
-                                <input type="password" id="edit_admin_password_confirmation" name="password_confirmation" class="form-control" placeholder="Requerido solo si cambias la contrasena">
+                                <label for="edit_admin_password_confirmation" class="form-label">Confirmar contraseña</label>
+                                <input type="password" id="edit_admin_password_confirmation" name="password_confirmation" class="form-control" placeholder="Requerido solo si cambias la contraseña">
                             </div>
                             <div class="mb-3">
                                 <label for="edit_admin_role" class="form-label">Rol</label>
                                 <select id="edit_admin_role" name="role" class="form-select @error('role', 'updateStaff') is-invalid @enderror">
                                     <option value="admin" @selected(old('role', $editingAdmin->role) === 'admin')>Administrador</option>
-                                    <option value="logistics" @selected(old('role', $editingAdmin->role) === 'logistics')>Logistica</option>
+                                    <option value="logistics" @selected(old('role', $editingAdmin->role) === 'logistics')>Logística</option>
                                     <option value="super_admin" @selected(old('role', $editingAdmin->role) === 'super_admin')>Super Administrador</option>
                                 </select>
                                 @error('role', 'updateStaff')
@@ -156,4 +156,3 @@
         @endif
     </div>
 </div>
-

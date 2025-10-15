@@ -3,8 +3,8 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h2 class="mb-1">Transferencias desde almacen</h2>
-            <p class="text-muted mb-0">Selecciona materiales del almacen principal y genera solicitudes para los tecnicos.</p>
+            <h2 class="mb-1">Transferencias desde almacén</h2>
+            <p class="text-muted mb-0">Selecciona materiales del almacén principal y genera solicitudes para los técnicos.</p>
         </div>
     </div>
 
@@ -24,7 +24,7 @@
 
     @if ($errors->any())
         <div class="alert alert-danger">
-            <strong>Ocurrio un problema:</strong>
+            <strong>Ocurrió un problema:</strong>
             <ul class="mb-0 mt-2">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -38,10 +38,10 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Materiales no serializados</h5>
-                    <p class="text-muted small mb-3">Selecciona la cantidad que deseas enviar a un tecnico.</p>
+                    <p class="text-muted small mb-3">Selecciona la cantidad que deseas enviar a un técnico.</p>
 
                     @if ($nonSerializedInventory->isEmpty())
-                        <p class="text-muted mb-0">No hay materiales no serializados disponibles en el almacen.</p>
+                        <p class="text-muted mb-0">No hay materiales no serializados disponibles en el almacén.</p>
                     @else
                         <div class="table-responsive">
                             <table class="table table-striped align-middle">
@@ -51,7 +51,7 @@
                                         <th class="text-end">Stock</th>
                                         <th class="text-end">Reservado</th>
                                         <th class="text-end">Disponible</th>
-                                        <th class="text-end">Accion</th>
+                                        <th class="text-end">Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -78,7 +78,7 @@
                                                     <input type="hidden" name="material_id" value="{{ $item->material_id }}">
                                                     <input type="number" name="quantity" class="form-control form-control-sm" min="1" max="{{ $available }}" value="1" style="width: 90px;" {{ $available === 0 ? 'disabled' : '' }}>
                                                     <button type="submit" class="btn btn-sm btn-outline-primary" {{ $available === 0 ? 'disabled' : '' }}>
-                                                        Anadir
+                                                        Añadir
                                                     </button>
                                                 </form>
                                             </td>
@@ -94,10 +94,10 @@
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Materiales serializados</h5>
-                    <p class="text-muted small mb-3">Marca los numeros de serie que deseas enviar.</p>
+                    <p class="text-muted small mb-3">Marca los números de serie que deseas enviar.</p>
 
                     @if ($availableSerials->isEmpty())
-                        <p class="text-muted mb-0">No hay numeros de serie disponibles en el almacen.</p>
+                        <p class="text-muted mb-0">No hay números de serie disponibles en el almacén.</p>
                     @else
                         @php
                             $serialsByMaterial = $availableSerials->groupBy('material_id');
@@ -155,7 +155,7 @@
 
                             <div class="d-flex justify-content-end mt-3">
                                 <button type="submit" class="btn btn-sm btn-outline-primary">
-                                    Anadir seleccionados
+                                    Añadir seleccionados
                                 </button>
                             </div>
                         </form>
@@ -184,7 +184,7 @@
                                     <tr>
                                         <th>Detalle</th>
                                         <th class="text-end">Unidades</th>
-                                        <th class="text-end">Accion</th>
+                                        <th class="text-end">Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -228,10 +228,10 @@
         <div class="col-12 col-xxl-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Seleccionar tecnico</h5>
+                    <h5 class="card-title mb-3">Seleccionar técnico</h5>
                     <form method="GET" action="{{ route('admin.transfers') }}" class="mb-3">
                         <div class="input-group input-group-sm">
-                            <input type="text" name="recipient_search" class="form-control" value="{{ $recipientSearch }}" placeholder="Nombre del tecnico">
+                            <input type="text" name="recipient_search" class="form-control" value="{{ $recipientSearch }}" placeholder="Nombre del técnico">
                             <button class="btn btn-outline-secondary" type="submit">Buscar</button>
                         </div>
                     </form>
@@ -240,7 +240,7 @@
                         @csrf
                         <div class="mb-3">
                             @if ($technicians->isEmpty())
-                                <p class="text-muted small mb-0">No se encontraron tecnicos con ese criterio.</p>
+                                <p class="text-muted small mb-0">No se encontraron técnicos con ese criterio.</p>
                             @else
                                 <div class="list-group">
                                     @foreach ($technicians as $technician)
@@ -276,9 +276,9 @@
 
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Resumen rapido</h5>
+                    <h5 class="card-title mb-3">Resumen rápido</h5>
                     <ul class="list-unstyled mb-0">
-                        <li class="mb-2"><strong>Almacen:</strong> {{ $warehouse->name }}</li>
+                        <li class="mb-2"><strong>Almacén:</strong> {{ $warehouse->name }}</li>
                         <li class="mb-2"><strong>Materiales no serializados:</strong> {{ $nonSerializedInventory->sum('quantity') }} uds</li>
                         <li class="mb-2"><strong>Series disponibles:</strong> {{ $availableSerials->count() }}</li>
                         <li><strong>En lista:</strong> {{ $cartSummary['total_units'] }} unidades</li>
@@ -293,24 +293,18 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('admin-transfer-form');
-            if (!form) {
-                return;
-            }
+            if (!form) return;
 
             form.addEventListener('submit', function (event) {
                 const selected = form.querySelector('input[name="technician_id"]:checked');
-                if (!selected) {
-                    return;
-                }
+                if (!selected) return;
 
                 const totalUnits = Number(form.dataset.totalUnits || 0);
-                const name = selected.dataset.recipientName || 'tecnico';
+                const name = selected.dataset.recipientName || 'técnico';
                 const code = selected.dataset.recipientCode ? ` (${selected.dataset.recipientCode})` : '';
                 const email = selected.dataset.recipientEmail ? ` - ${selected.dataset.recipientEmail}` : '';
 
-                const message = `Estas a punto de transferir ${totalUnits} ${totalUnits === 1 ? 'elemento' : 'elementos'} a ${name}${code}${email}.
-
-Deseas continuar?`;
+                const message = `Estás a punto de transferir ${totalUnits} ${totalUnits === 1 ? 'elemento' : 'elementos'} a ${name}${code}${email}.\n\n¿Deseas continuar?`;
 
                 if (!window.confirm(message)) {
                     event.preventDefault();

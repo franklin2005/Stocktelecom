@@ -19,9 +19,9 @@
         <div class="col-12 col-lg-6">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title mb-3">Información general</h5>
+                    <h5 class="card-title mb-3">InformaciÃ³n general</h5>
                     <dl class="row mb-0">
-                        <dt class="col-sm-5 text-muted">Número de orden</dt>
+                        <dt class="col-sm-5 text-muted">NÃºmero de orden</dt>
                         <dd class="col-sm-7">{{ $workOrder->order_number }}</dd>
 
                         <dt class="col-sm-5 text-muted">Estado</dt>
@@ -29,10 +29,10 @@
                             <span class="badge {{ $statusLabel['class'] ?? 'bg-secondary' }}">{{ $statusLabel['label'] ?? ucfirst($workOrder->status) }}</span>
                         </dd>
 
-                        <dt class="col-sm-5 text-muted">Técnico</dt>
+                        <dt class="col-sm-5 text-muted">TÃ©cnico</dt>
                         <dd class="col-sm-7">{{ $workOrder->technician_name }}</dd>
 
-                        <dt class="col-sm-5 text-muted">Código técnico</dt>
+                        <dt class="col-sm-5 text-muted">CÃ³digo tÃ©cnico</dt>
                         <dd class="col-sm-7">{{ $workOrder->technician_code }}</dd>
 
                         <dt class="col-sm-5 text-muted">Creada</dt>

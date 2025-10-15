@@ -11,7 +11,7 @@
                 <input type="hidden" name="role_key" value="{{ $roleKey }}">
 
                 <div class="mb-3">
-                    <label for="email" class="form-label">Correo electrónico</label>
+                    <label for="email" class="form-label">Correo electrÃ³nico</label>
                     <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required autofocus>
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="password" class="form-label">Contraseña</label>
+                    <label for="password" class="form-label">ContraseÃ±a</label>
                     <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
@@ -35,7 +35,7 @@
             </form>
 
             <div class="mt-3 text-center">
-                <a href="{{ route('login') }}" class="small">&larr; Volver a la selección de perfil</a>
+                <a href="{{ route('login') }}" class="small">&larr; Volver a la selecciÃ³n de perfil</a>
             </div>
         </div>
     </div>

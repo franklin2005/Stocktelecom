@@ -2,16 +2,16 @@
 
 @php
     $tabs = [
-        'technicians' => 'Tecnicos',
-        'logistics' => 'Logistica',
+        'technicians' => 'Técnicos',
+        'logistics' => 'Logística',
         'admins' => 'Administradores',
-        'super_admins' => 'Super Administradores',
+        'super_admins' => 'Superadministradores',
     ];
 @endphp
 
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="mb-0">Gestion de personal</h2>
+        <h2 class="mb-0">Gestión de personal</h2>
     </div>
 
     @if ($errors->getBag('deleteStaff')->has('general'))
