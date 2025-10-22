@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Technician;
 
+use App\Http\Controllers\Controller;
 use App\Models\StockLocation;
 use App\Models\Transfer;
 use App\Models\User;

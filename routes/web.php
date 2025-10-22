@@ -9,16 +9,27 @@ use App\Http\Controllers\Admin\TechnicianController;
 use App\Http\Controllers\Admin\UserHistoryController;
 use App\Http\Controllers\Admin\WarehouseHistoryController;
 use App\Http\Controllers\Admin\WorkOrderController as AdminWorkOrderController;
+use App\Http\Controllers\Admin\TechnicianOverviewController; // ✅ Movido aquí
+
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+
 use App\Http\Controllers\Technician\DashboardController as TechnicianDashboardController;
 use App\Http\Controllers\Technician\MenuController as TechnicianMenuController;
 use App\Http\Controllers\Technician\TransferController as TechnicianTransferController;
 use App\Http\Controllers\Technician\WorkOrderController as TechnicianWorkOrderController;
-use App\Http\Controllers\TechnicianOverviewController;
-use App\Http\Controllers\TransferHistoryController;
+use App\Http\Controllers\Technician\TransferHistoryController; // ✅ Movido aquí
+
 use Illuminate\Support\Facades\Route;
 
+/**
+ * =========================================================================
+ * RUTA RAÍZ
+ * -------------------------------------------------------------------------
+ * Si hay sesión iniciada redirige al dashboard según rol.
+ * Si no hay sesión, muestra la vista de bienvenida.
+ * =========================================================================
+ */
 Route::get('/', function () {
     if (auth()->check()) {
         $role = auth()->user()->role;
@@ -33,38 +44,96 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+
+/**
+ * =========================================================================
+ * AUTENTICACIÓN - INVITADOS (guest)
+ * -------------------------------------------------------------------------
+ * Acceso sólo para usuarios no autenticados:
+ *  - Selector de rol
+ *  - Formulario por rol
+ *  - Envío de credenciales
+ * =========================================================================
+ */
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showRoleSelection'])->name('login');
     Route::get('/login/{role}', [LoginController::class, 'showRoleLogin'])->name('login.role');
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
 });
 
+
+/**
+ * =========================================================================
+ * ZONA AUTENTICADA (auth)
+ * -------------------------------------------------------------------------
+ * Todo lo que hay dentro requiere sesión iniciada.
+ * =========================================================================
+ */
 Route::middleware('auth')->group(function () {
+
+    // Cierre de sesión
     Route::post('/logout', [LogoutController::class, 'destroy'])->name('logout');
 
+    /**
+     * ---------------------------------------------------------------------
+     * MÓDULO ADMIN / LOGÍSTICA
+     * ---------------------------------------------------------------------
+     * Panel de gestión, transferencias desde almacén, materiales y
+     * consultas de órdenes de trabajo.
+     */
     Route::prefix('admin')->name('admin.')->group(function () {
+
+        /**
+         * ---------------------------------------------------------------
+         * Acceso: admin, super_admin, logistics
+         * ---------------------------------------------------------------
+         * Dashboard, transferencias desde almacén, materiales,
+         * historial de almacén y órdenes de trabajo.
+         */
         Route::middleware('role:admin,super_admin,logistics')->group(function () {
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+            // Transferencias desde almacén
             Route::get('/transfers', [AdminTransferController::class, 'index'])->name('transfers');
             Route::post('/transfers/cart/add', [AdminTransferController::class, 'addToCart'])->name('transfers.cart.add');
             Route::post('/transfers/cart/{itemKey}/remove', [AdminTransferController::class, 'removeFromCart'])->name('transfers.cart.remove');
             Route::post('/transfers/cart/clear', [AdminTransferController::class, 'clearCart'])->name('transfers.cart.clear');
             Route::post('/transfers/send', [AdminTransferController::class, 'send'])->name('transfers.send');
+
+            // Materiales (visualización)
             Route::get('/materials', [MaterialController::class, 'index'])->name('materials');
+
+            // Historial de movimientos de almacén
             Route::get('/warehouse-movements', [WarehouseHistoryController::class, 'index'])->name('warehouse-movements');
+
+            // Órdenes de trabajo (consulta)
             Route::get('/work-orders', [AdminWorkOrderController::class, 'index'])->name('work-orders.index');
             Route::get('/work-orders/{workOrder}', [AdminWorkOrderController::class, 'show'])->name('work-orders.show');
         });
 
+        /**
+         * ---------------------------------------------------------------
+         * Acceso: super_admin, logistics
+         * ---------------------------------------------------------------
+         * Modificación directa de stock y asignaciones.
+         */
         Route::middleware('role:super_admin,logistics')->group(function () {
             Route::post('/materials/add-stock', [MaterialController::class, 'addStock'])->name('materials.add-stock');
             Route::post('/materials/remove-stock', [MaterialController::class, 'removeStock'])->name('materials.remove-stock');
             Route::post('/materials/assign', [MaterialController::class, 'assignToTechnician'])->name('materials.assign');
         });
 
+        /**
+         * ---------------------------------------------------------------
+         * Acceso: admin, super_admin
+         * ---------------------------------------------------------------
+         * Gestión de personal (técnicos, staff) y auditorías.
+         */
         Route::middleware('role:admin,super_admin')->group(function () {
             Route::get('/personnel', [PersonnelController::class, 'index'])->name('personnel');
             Route::get('/personnel/{user}/movements', [PersonnelController::class, 'movements'])->name('personnel.movements');
+
+            // CRUD de técnicos
             Route::controller(TechnicianController::class)->prefix('technicians')->name('technicians.')->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::post('/', 'store')->name('store');
@@ -72,6 +141,7 @@ Route::middleware('auth')->group(function () {
                 Route::delete('/{technician}', 'destroy')->name('destroy');
             });
 
+            // CRUD de personal logístico / staff
             Route::controller(StaffController::class)->prefix('staff')->name('staff.')->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::post('/', 'store')->name('store');
@@ -79,19 +149,40 @@ Route::middleware('auth')->group(function () {
                 Route::delete('/{staff}', 'destroy')->name('destroy');
             });
 
+            // Historial de usuarios (auditoría)
             Route::get('/user-history', [UserHistoryController::class, 'index'])->name('user-history');
+
+            // Actualización de órdenes de trabajo
             Route::put('/work-orders/{workOrder}', [AdminWorkOrderController::class, 'update'])->name('work-orders.update');
+        });
+
+        /**
+         * ---------------------------------------------------------------
+         * VISTA GENERAL DE TÉCNICOS (Overview)
+         * ---------------------------------------------------------------
+         * Acceso: admin, super_admin, logistics
+         */
+        Route::middleware('role:admin,super_admin,logistics')->group(function () {
+            Route::get('/technicians/overview', [TechnicianOverviewController::class, 'index'])->name('technicians.overview');
+            Route::get('/technicians/{technician}/stock-overview', [TechnicianOverviewController::class, 'stock'])->name('technicians.stock.overview');
         });
     });
 
-    Route::middleware('role:admin,super_admin,logistics')->group(function () {
-        Route::get('/technicians/overview', [TechnicianOverviewController::class, 'index'])->name('technicians.overview');
-        Route::get('/technicians/{technician}/stock-overview', [TechnicianOverviewController::class, 'stock'])->name('technicians.stock.overview');
-    });
-
+    /**
+     * ---------------------------------------------------------------------
+     * MÓDULO TÉCNICO
+     * ---------------------------------------------------------------------
+     * Dashboard, stock propio, transferencias entre técnicos
+     * y gestión de órdenes de trabajo.
+     */
     Route::middleware('role:technician')->prefix('technician')->name('technician.')->group(function () {
+        // Dashboard técnico
         Route::get('/dashboard', [TechnicianDashboardController::class, 'index'])->name('dashboard');
+
+        // Stock personal
         Route::get('/stock', [TechnicianMenuController::class, 'stock'])->name('stock');
+
+        // Transferencias entre técnicos
         Route::get('/transfers', [TechnicianTransferController::class, 'index'])->name('transfers');
         Route::post('/transfers/cart/add', [TechnicianTransferController::class, 'addToCart'])->name('transfers.cart.add');
         Route::post('/transfers/cart/{itemKey}/remove', [TechnicianTransferController::class, 'removeFromCart'])->name('transfers.cart.remove');
@@ -99,6 +190,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/transfers/send', [TechnicianTransferController::class, 'send'])->name('transfers.send');
         Route::post('/transfers/{transfer}/accept', [TechnicianTransferController::class, 'accept'])->name('transfers.accept');
         Route::post('/transfers/{transfer}/reject', [TechnicianTransferController::class, 'reject'])->name('transfers.reject');
+
+        // Órdenes de trabajo
         Route::get('/work-orders', [TechnicianWorkOrderController::class, 'index'])->name('work-orders');
         Route::get('/work-orders/{workOrder}', [TechnicianWorkOrderController::class, 'show'])->name('work-orders.show');
         Route::post('/work-orders', [TechnicianWorkOrderController::class, 'store'])->name('work-orders.store');
@@ -107,8 +200,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/work-orders/{workOrder}/items/{item}', [TechnicianWorkOrderController::class, 'removeItem'])->name('work-orders.items.destroy');
         Route::post('/work-orders/{workOrder}/confirm', [TechnicianWorkOrderController::class, 'confirm'])->name('work-orders.confirm');
         Route::post('/work-orders/{workOrder}/cancel', [TechnicianWorkOrderController::class, 'cancel'])->name('work-orders.cancel');
-    });
 
-    Route::get('/transfers/technicians/{technician}', [TransferHistoryController::class, 'show'])
-        ->name('technicians.transfers.history');
+        // Historial de transferencias (propio o visible a roles permitidos)
+        Route::get('/transfers/technicians/{technician}', [TransferHistoryController::class, 'show'])
+            ->name('technicians.transfers.history');
+    });
 });
