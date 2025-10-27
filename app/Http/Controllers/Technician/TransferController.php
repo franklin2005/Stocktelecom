@@ -283,9 +283,20 @@ class TransferController extends Controller
         }
 
         $recipientLocation = $this->ensureTechnicianLocation($recipient);
+        $notesInput = $request->input('notes');
+        $notes = null;
+
+        if (is_string($notesInput)) {
+            $notesInput = trim($notesInput);
+
+            if ($notesInput !== '') {
+                $notes = mb_substr($notesInput, 0, 500);
+            }
+        }
+
         $userId = $request->user()->id;
 
-        $materialIds = collect($cartItems)->pluck('material_id')->filter()->unique()->values();
+        $materialIds = collect($cartItems)->pluck('material_id')->unique()->values();
         $materials = Material::query()
             ->whereIn('id', $materialIds)
             ->get()
@@ -294,12 +305,11 @@ class TransferController extends Controller
         $serialIds = collect($cartItems)
             ->where('type', 'serial')
             ->pluck('serial_id')
-            ->filter()
             ->unique()
             ->values();
 
         try {
-            DB::transaction(function () use ($location, $recipientLocation, $userId, $materials, $serialIds, $cartItems) {
+            DB::transaction(function () use ($location, $recipientLocation, $userId, $materials, $serialIds, $cartItems, $notes) {
                 $transfer = Transfer::create([
                     'order_number' => $this->generateTransferNumber(),
                     'from_location_id' => $location->id,
@@ -307,7 +317,7 @@ class TransferController extends Controller
                     'initiator_user_id' => $userId,
                     'requires_receiver_accept' => true,
                     'status' => 'pending',
-                    'notes' => null,
+                    'notes' => $notes,
                 ]);
 
                 $serialModels = $serialIds->isEmpty() ? collect() : MaterialSerial::query()
@@ -317,8 +327,7 @@ class TransferController extends Controller
                     ->keyBy('id');
 
                 foreach ($cartItems as $item) {
-                    $materialId = $item['material_id'] ?? null;
-                    $material = $materialId ? ($materials[$materialId] ?? null) : null;
+                    $material = $materials[$item['material_id']] ?? null;
 
                     if (! $material) {
                         throw new RuntimeException('No se pudo recuperar la informacion del material seleccionado.');
@@ -683,7 +692,6 @@ class TransferController extends Controller
                 $items[] = [
                     'key' => $key,
                     'type' => 'quantity',
-                    'material_id' => $materialId,
                     'material' => $material,
                     'quantity' => $quantity,
                 ];
@@ -708,8 +716,6 @@ class TransferController extends Controller
                 $items[] = [
                     'key' => $key,
                     'type' => 'serial',
-                    'material_id' => $materialId,
-                    'serial_id' => $serialId,
                     'material' => $material,
                     'serial' => $serial,
                 ];
