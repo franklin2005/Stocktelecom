@@ -13,7 +13,7 @@
                 <small class="text-muted">Ubicación: {{ $location->name }}</small>
             </p>
         </div>
-        <a href="{{ route('technicians.overview') }}" class="btn btn-outline-secondary btn-sm">Volver</a>
+        <a href="{{ route('admin.technicians.overview') }}" class="btn btn-outline-secondary btn-sm">Volver</a>
     </div>
 
     <div class="row g-4">

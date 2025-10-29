@@ -46,10 +46,10 @@
                                         </td>
                                         <td class="text-end">
                                             <div class="d-flex justify-content-end gap-2">
-                                                <a href="{{ route('technicians.stock.overview', $technician) }}" class="btn btn-sm btn-outline-primary">
+                                                <a href="{{ route('admin.technicians.stock.overview', $technician) }}" class="btn btn-sm btn-outline-primary">
                                                     Stock
                                                 </a>
-                                                <a href="{{ route('technicians.transfers.history', $technician) }}" class="btn btn-sm btn-outline-secondary">
+                                                <a href="{{ route('admin.technicians.transfers.history', $technician) }}" class="btn btn-sm btn-outline-secondary">
                                                     Transferencias
                                                 </a>
                                                 @if ($canManageTechnicians)

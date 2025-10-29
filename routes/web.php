@@ -18,7 +18,7 @@ use App\Http\Controllers\Technician\DashboardController as TechnicianDashboardCo
 use App\Http\Controllers\Technician\MenuController as TechnicianMenuController;
 use App\Http\Controllers\Technician\TransferController as TechnicianTransferController;
 use App\Http\Controllers\Technician\WorkOrderController as TechnicianWorkOrderController;
-use App\Http\Controllers\Technician\TransferHistoryController;
+use App\Http\Controllers\TransferHistoryController;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -166,6 +166,7 @@ Route::middleware('auth')->group(function () {
         Route::middleware('role:admin,super_admin,logistics')->group(function () {
             Route::get('/technicians/overview', [TechnicianOverviewController::class, 'index'])->name('technicians.overview');
             Route::get('/technicians/{technician}/stock-overview', [TechnicianOverviewController::class, 'stock'])->name('technicians.stock.overview');
+            Route::get('/technicians/{technician}/transfers', [TransferHistoryController::class, 'show'])->name('technicians.transfers.history');
         });
     });
 
@@ -204,9 +205,6 @@ Route::middleware('auth')->group(function () {
 
         // Historial de transferencias (propio o visible a roles permitidos)
         Route::get('/transfers/technicians/{technician}', [TransferHistoryController::class, 'show'])
-            ->name('technicians.transfers.history');
+            ->name('transfers.history');
     });
 });
-
-
-

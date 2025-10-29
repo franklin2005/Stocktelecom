@@ -29,6 +29,7 @@
                                 ['label' => 'Histórico de usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
                                 ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
+                                ['label' => 'Técnicos', 'route' => 'admin.technicians.overview', 'pattern' => ['admin.technicians.overview', 'admin.technicians.stock.overview', 'admin.technicians.transfers.history']],
                             ],
                             'admin' => [
                                 ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
@@ -37,20 +38,21 @@
                                 ['label' => 'Histórico de usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
                                 ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
+                                ['label' => 'Técnicos', 'route' => 'admin.technicians.overview', 'pattern' => ['admin.technicians.overview', 'admin.technicians.stock.overview', 'admin.technicians.transfers.history']],
                             ],
                             'logistics' => [
                                 ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
                                 ['label' => 'Transferencias', 'route' => 'admin.transfers', 'pattern' => 'admin.transfers'],
                                 ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
-                                ['label' => 'Técnicos', 'route' => 'technicians.overview', 'pattern' => ['technicians.overview', 'technicians.stock.overview']],
+                                ['label' => 'Técnicos', 'route' => 'admin.technicians.overview', 'pattern' => ['admin.technicians.overview', 'admin.technicians.stock.overview', 'admin.technicians.transfers.history']],
                                 ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
                             ],
                             'technician' => [
                                 ['label' => 'Dashboard', 'route' => 'technician.dashboard', 'pattern' => 'technician.dashboard'],
                                 ['label' => 'Mi stock', 'route' => 'technician.stock', 'pattern' => 'technician.stock'],
                                 ['label' => 'Transferencias', 'route' => 'technician.transfers', 'pattern' => 'technician.transfers'],
-                                ['label' => 'Histórico de transferencias', 'route' => 'technicians.transfers.history', 'pattern' => 'technicians.transfers.history', 'params' => [auth()->user()]],
+                                ['label' => 'Histórico de transferencias', 'route' => 'technician.transfers.history', 'pattern' => 'technician.transfers.history', 'params' => [auth()->user()]],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'technician.work-orders', 'pattern' => 'technician.work-orders'],
                             ],
                         ];
