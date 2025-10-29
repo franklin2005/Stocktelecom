@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\TechnicianController;
 use App\Http\Controllers\Admin\UserHistoryController;
 use App\Http\Controllers\Admin\WarehouseHistoryController;
 use App\Http\Controllers\Admin\WorkOrderController as AdminWorkOrderController;
-use App\Http\Controllers\Admin\TechnicianOverviewController; // ✅ Movido aquí
+use App\Http\Controllers\Admin\TechnicianOverviewController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -18,9 +18,10 @@ use App\Http\Controllers\Technician\DashboardController as TechnicianDashboardCo
 use App\Http\Controllers\Technician\MenuController as TechnicianMenuController;
 use App\Http\Controllers\Technician\TransferController as TechnicianTransferController;
 use App\Http\Controllers\Technician\WorkOrderController as TechnicianWorkOrderController;
-use App\Http\Controllers\Technician\TransferHistoryController; // ✅ Movido aquí
+use App\Http\Controllers\Technician\TransferHistoryController;
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * =========================================================================
@@ -31,8 +32,8 @@ use Illuminate\Support\Facades\Route;
  * =========================================================================
  */
 Route::get('/', function () {
-    if (auth()->check()) {
-        $role = auth()->user()->role;
+    if (Auth::check()) {
+        $role = Auth::user()->role;
 
         return redirect()->route(
             in_array($role, ['admin', 'super_admin', 'logistics'], true)
@@ -206,3 +207,6 @@ Route::middleware('auth')->group(function () {
             ->name('technicians.transfers.history');
     });
 });
+
+
+
