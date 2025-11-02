@@ -2,16 +2,19 @@
 
 @php
     $tabs = [
-        'technicians' => 'Técnicos',
-        'logistics' => 'Logística',
-        'admins' => 'Administradores',
-        'super_admins' => 'Superadministradores',
+        'technicians'    => 'Técnicos',
+        'logistics'      => 'Logística',
+        'admins'         => 'Administradores',
+        'super_admins'   => 'Superadministradores',
     ];
 @endphp
 
 @section('content')
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="mb-0">Gestión de personal</h2>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h1 class="h3 mb-1">Gestión de personal</h1>
+            <p class="st-muted mb-0">Administra técnicos, logística, administradores y superadministradores según tus permisos.</p>
+        </div>
     </div>
 
     @if ($errors->getBag('deleteStaff')->has('general'))
@@ -28,15 +31,24 @@
         </div>
     @endif
 
-    <ul class="nav nav-pills mb-4">
-        @foreach ($tabs as $tabKey => $tabLabel)
-            <li class="nav-item me-2">
-                <a href="{{ route('admin.personnel', ['tab' => $tabKey]) }}" class="nav-link {{ $activeTab === $tabKey ? 'active' : '' }}">
-                    {{ $tabLabel }}
-                </a>
-            </li>
-        @endforeach
-    </ul>
+    <div class="st-card p-2 mb-3">
+        <ul class="nav nav-pills flex-wrap">
+            @foreach ($tabs as $tabKey => $tabLabel)
+                @php
+                    $active = $activeTab === $tabKey;
+                @endphp
+                <li class="nav-item me-2 mb-2">
+                    <a
+                        href="{{ route('admin.personnel', ['tab' => $tabKey]) }}"
+                        class="nav-link {{ $active ? 'active' : '' }}"
+                        @if($active) aria-current="page" @endif
+                    >
+                        {{ $tabLabel }}
+                    </a>
+                </li>
+            @endforeach
+        </ul>
+    </div>
 
     @if ($activeTab === 'technicians')
         @include('admin.personnel.tabs.technicians')

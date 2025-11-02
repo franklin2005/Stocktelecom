@@ -1,65 +1,205 @@
-:root{
-  --st-primary:#1E88E5;
-  --st-primary-dark:#1565C0;
-  --st-accent:#00BFA5;
-  --st-text:#0F172A;
-  --st-text-2:#64748B;
-  --st-bg:#FFFFFF;
-  --st-bg-soft:#F1F5F9;
-  --st-radius:.5rem;
+/* ======================================================
+   STOCKTELECOM MAIN STYLE
+   Paleta corporativa + componentes personalizados
+   ====================================================== */
+
+:root {
+  /* Colores principales */
+  --st-primary: #1E88E5;
+  --st-primary-dark: #1565C0;
+  --st-accent: #00BFA5;
+
+  /* Tonos auxiliares */
+  --st-success: #2E7D32;
+  --st-success-soft: #E8F5E9;
+  --st-warning: #F9A825;
+  --st-warning-soft: #FFF8E1;
+  --st-danger: #D32F2F;
+  --st-danger-soft: #FFEBEE;
+
+  /* Textos y fondos */
+  --st-text: #0F172A;
+  --st-text-2: #64748B;
+  --st-bg: #FFFFFF;
+  --st-bg-soft: #F1F5F9;
+  --st-border: #E2E8F0;
+
+  /* Navbar */
+  --st-navbar-bg: #2B303A;
+  --st-navbar-text: #FFFFFF;
+
+  /* Otros */
+  --st-radius: 0.5rem;
 }
 
-/* COMPONENTES Y ELEMENTOS BASE */
+/* ------------------------------------------------------
+   BASE
+------------------------------------------------------ */
 body {
   background: var(--st-bg-soft);
   color: var(--st-text);
   font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+  line-height: 1.6;
 }
 
-.st-card{ border-radius:var(--st-radius); background:#fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-.st-section{ background:var(--st-bg-soft); border-radius:var(--st-radius); padding: 1rem; }
-.st-muted{ color:var(--st-text-2); }
-.st-brand{ color:var(--st-primary); }
-.st-accent{ color:var(--st-accent); }
+a {
+  color: var(--st-primary);
+  text-decoration: none;
+  text-underline-offset: 3px;
+}
+a:hover {
+  text-decoration: underline;
+}
 
-.btn-st{ 
-  background:var(--st-primary); 
-  border-color:var(--st-primary); 
-  color:#fff; 
+.st-muted { color: var(--st-text-2); }
+.st-brand { color: var(--st-primary); }
+.st-accent { color: var(--st-accent); }
+
+/* ------------------------------------------------------
+   NAVBAR
+------------------------------------------------------ */
+.st-navbar {
+  background-color: var(--st-navbar-bg);
+  color: var(--st-navbar-text);
+}
+.st-navbar .navbar-brand,
+.st-navbar .nav-link,
+.st-navbar .btn-outline-light {
+  color: var(--st-navbar-text) !important;
+}
+.st-navbar .nav-link.active,
+.st-navbar .nav-link:hover {
+  opacity: 0.8;
+  color: var(--st-accent) !important;
+}
+.st-navbar .btn-outline-light:hover {
+  background-color: var(--st-accent);
+  border-color: var(--st-accent);
+  color: #fff;
+}
+
+/* ------------------------------------------------------
+   COMPONENTES DE LAYOUT
+------------------------------------------------------ */
+.st-card {
   border-radius: var(--st-radius);
-  transition: all .2s ease;
-}
-.btn-st:hover{ 
-  background:var(--st-primary-dark); 
-  border-color:var(--st-primary-dark);
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
-.badge-soft{ 
-  background:rgba(30,136,229,.12); 
-  color:var(--st-primary); 
-  border-radius: .25rem;
+.st-section {
+  background: var(--st-bg-soft);
+  border-radius: var(--st-radius);
+  padding: 1rem;
+}
+
+/* ------------------------------------------------------
+   BOTONES PERSONALIZADOS
+------------------------------------------------------ */
+.btn-st {
+  background: var(--st-primary);
+  border-color: var(--st-primary);
+  color: #fff;
+  border-radius: var(--st-radius);
+  transition: all 0.2s ease;
+}
+.btn-st:hover {
+  background: var(--st-primary-dark);
+  border-color: var(--st-primary-dark);
+}
+
+/* Verdes y amarillos personalizados */
+.btn-success-st {
+  background-color: var(--st-success);
+  border-color: var(--st-success);
+  color: #fff;
+}
+.btn-success-st:hover {
+  background-color: #1B5E20;
+  border-color: #1B5E20;
+}
+
+.btn-warning-st {
+  background-color: var(--st-warning);
+  border-color: var(--st-warning);
+  color: #fff;
+}
+.btn-warning-st:hover {
+  background-color: #F57F17;
+  border-color: #F57F17;
+}
+
+/* ------------------------------------------------------
+   BADGES / ETIQUETAS
+------------------------------------------------------ */
+.badge-soft {
+  background: rgba(30, 136, 229, 0.12);
+  color: var(--st-primary);
+  border-radius: 0.25rem;
   font-weight: 500;
 }
-
-.badge-accent{ 
-  background:rgba(0,191,165,.12); 
-  color:var(--st-accent);
-  border-radius: .25rem;
+.badge-accent {
+  background: rgba(0, 191, 165, 0.12);
+  color: var(--st-accent);
+  border-radius: 0.25rem;
 }
 
-.form-control, .form-select{ 
-  border-radius:var(--st-radius); 
-  border-color: #E2E8F0;
+.badge-success-soft {
+  background-color: var(--st-success-soft);
+  color: var(--st-success);
 }
-.card, .modal-content{ border-radius:var(--st-radius); }
+.badge-warning-soft {
+  background-color: var(--st-warning-soft);
+  color: var(--st-warning);
+}
+.badge-danger-soft {
+  background-color: var(--st-danger-soft);
+  color: var(--st-danger);
+}
 
-a{ text-underline-offset: 3px; color: var(--st-primary); text-decoration: none; }
-a:hover{ text-decoration: underline; }
+/* ------------------------------------------------------
+   FORMULARIOS
+------------------------------------------------------ */
+.form-control,
+.form-select {
+  border-radius: var(--st-radius);
+  border-color: var(--st-border);
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--st-primary);
+  box-shadow: 0 0 0 0.15rem rgba(30, 136, 229, 0.25);
+}
 
+/* ------------------------------------------------------
+   TABLAS
+------------------------------------------------------ */
 .table thead th {
   background-color: var(--st-primary);
   color: #fff;
+  vertical-align: middle;
 }
 .table-hover tbody tr:hover {
-  background-color: rgba(30,136,229,0.05);
+  background-color: rgba(30, 136, 229, 0.05);
+}
+
+/* ------------------------------------------------------
+   MODALES / CARDS
+------------------------------------------------------ */
+.card,
+.modal-content {
+  border-radius: var(--st-radius);
+}
+
+/* ------------------------------------------------------
+   UTILIDADES
+------------------------------------------------------ */
+.st-section-title {
+  font-weight: 600;
+  color: var(--st-primary-dark);
+  margin-bottom: 0.5rem;
+}
+
+.alert {
+  border-radius: var(--st-radius);
 }

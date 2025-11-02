@@ -1,61 +1,61 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h2 class="mb-1">Órdenes de trabajo</h2>
-            <p class="text-muted mb-0">Consulta y filtra las órdenes creadas por el personal técnico.</p>
+            <h1 class="h3 mb-1">Órdenes de trabajo</h1>
+            <p class="st-muted mb-0">Consulta y filtra las órdenes creadas por el personal técnico.</p>
         </div>
     </div>
 
-    <form method="GET" action="{{ route('admin.work-orders.index') }}" class="card shadow-sm mb-4">
+    <form method="GET" action="{{ route('admin.work-orders.index') }}" class="card st-card shadow-sm mb-4">
         <div class="card-body">
             <div class="row g-3 align-items-end">
                 <div class="col-12 col-md-3">
-                    <label class="form-label">Estado</label>
-                    <select name="status" class="form-select">
+                    <label for="status" class="form-label">Estado</label>
+                    <select id="status" name="status" class="form-select">
                         <option value="">Todos</option>
                         <option value="open" @selected($status === 'open')>Abierta</option>
                         <option value="confirmed" @selected($status === 'confirmed')>Confirmada</option>
                         <option value="cancelled" @selected($status === 'cancelled')>Cancelada</option>
                     </select>
                 </div>
+
                 <div class="col-12 col-md-4">
-                    <label class="form-label">Técnico</label>
-                    <select name="technician_id" class="form-select">
+                    <label for="technician_id" class="form-label">Técnico</label>
+                    <select id="technician_id" name="technician_id" class="form-select">
                         <option value="0">Todos</option>
                         @foreach ($technicians as $technician)
-                            <option value="{{ $technician->id }}" @selected($technicianId === $technician->id)>
-                                {{ $technician->name }}
-                            </option>
+                            <option value="{{ $technician->id }}" @selected($technicianId === $technician->id)>{{ $technician->name }}</option>
                         @endforeach
                     </select>
                 </div>
+
                 <div class="col-12 col-md-2">
-                    <label class="form-label">Desde</label>
-                    <input type="date" name="from" value="{{ $from }}" class="form-control">
+                    <label for="from" class="form-label">Desde</label>
+                    <input id="from" type="date" name="from" value="{{ $from }}" class="form-control">
                 </div>
+
                 <div class="col-12 col-md-2">
-                    <label class="form-label">Hasta</label>
-                    <input type="date" name="to" value="{{ $to }}" class="form-control">
+                    <label for="to" class="form-label">Hasta</label>
+                    <input id="to" type="date" name="to" value="{{ $to }}" class="form-control">
                 </div>
+
                 <div class="col-12 col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary flex-fill flex-md-grow-0">Filtrar</button>
-                    <a href="{{ route('admin.work-orders.index') }}" class="btn btn-outline-secondary flex-fill flex-md-grow-0">
-                        Limpiar
-                    </a>
+                    <button type="submit" class="btn btn-st flex-fill flex-md-grow-0">Filtrar</button>
+                    <a href="{{ route('admin.work-orders.index') }}" class="btn btn-outline-secondary flex-fill flex-md-grow-0">Limpiar</a>
                 </div>
             </div>
         </div>
     </form>
 
-    <div class="card shadow-sm">
+    <div class="card st-card shadow-sm">
         <div class="card-body">
             @if ($workOrders->isEmpty())
-                <p class="text-muted mb-0">No se encontraron órdenes con los criterios seleccionados.</p>
+                <p class="st-muted mb-0">No se encontraron órdenes con los criterios seleccionados.</p>
             @else
                 <div class="table-responsive">
-                    <table class="table table-striped align-middle">
+                    <table class="table table-hover align-middle">
                         <thead>
                             <tr>
                                 <th>Número</th>
@@ -70,11 +70,13 @@
                         <tbody>
                             @foreach ($workOrders as $order)
                                 @php
-                                    $statusLabel = [
-                                        'open' => ['label' => 'Abierta', 'class' => 'bg-warning text-dark'],
-                                        'confirmed' => ['label' => 'Confirmada', 'class' => 'bg-success'],
-                                        'cancelled' => ['label' => 'Cancelada', 'class' => 'bg-danger'],
-                                    ][$order->status] ?? ['label' => ucfirst($order->status), 'class' => 'bg-secondary'];
+                                    // Map a tus badges suaves
+                                    $statusMap = [
+                                        'open'      => ['label' => 'Abierta',   'class' => 'badge-warning-soft'],
+                                        'confirmed' => ['label' => 'Confirmada','class' => 'badge-success-soft'],
+                                        'cancelled' => ['label' => 'Cancelada', 'class' => 'badge-danger-soft'],
+                                    ];
+                                    $statusLabel = $statusMap[$order->status] ?? ['label' => ucfirst($order->status), 'class' => 'badge-soft'];
                                 @endphp
                                 <tr>
                                     <td>{{ $order->order_number }}</td>
@@ -96,7 +98,9 @@
                     </table>
                 </div>
 
-                {{ $workOrders->links() }}
+                <div class="mt-3">
+                    {{ $workOrders->links() }}
+                </div>
             @endif
         </div>
     </div>

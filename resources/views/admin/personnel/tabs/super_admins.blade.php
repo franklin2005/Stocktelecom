@@ -5,19 +5,19 @@
 
 <div class="row g-4">
     <div class="col-12 col-xl-7">
-        <div class="card shadow-sm h-100">
+        <div class="card st-card shadow-sm h-100">
             <div class="card-body">
                 <h5 class="card-title mb-3">Superadministradores</h5>
 
                 @if ($superAdmins->isEmpty())
-                    <p class="text-muted mb-0">No hay superadministradores registrados.</p>
+                    <p class="st-muted mb-0">No hay superadministradores registrados.</p>
                 @else
                     <div class="table-responsive">
-                        <table class="table table-striped align-middle">
+                        <table class="table table-hover align-middle">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
-                                    <th>Correo</th>
+                                    <th>Correo electrónico</th>
                                     <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
@@ -45,7 +45,7 @@
                                                         </button>
                                                     </form>
                                                 @elseif (! $canViewMovements)
-                                                    <span class="text-muted small">Sin permisos</span>
+                                                    <span class="st-muted small">Sin permisos</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -61,7 +61,7 @@
 
     <div class="col-12 col-xl-5">
         @if ($canManageSuperAdmins)
-            <div class="card shadow-sm mb-4">
+            <div class="card st-card shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Crear superadministrador</h5>
                     <form method="POST" action="{{ route('admin.staff.store', ['tab' => 'super_admins']) }}">
@@ -92,13 +92,13 @@
                             <label for="super_admin_password_confirmation" class="form-label">Confirmar contraseña</label>
                             <input type="password" id="super_admin_password_confirmation" name="password_confirmation" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Crear superadministrador</button>
+                        <button type="submit" class="btn btn-st w-100">Crear superadministrador</button>
                     </form>
                 </div>
             </div>
 
             @if ($editingSuperAdmin)
-                <div class="card shadow-sm">
+                <div class="card st-card shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Editar superadministrador</h5>
@@ -123,7 +123,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="edit_super_admin_password" class="form-label">Contraseña (opcional)</label>
-                                <input type="password" id="edit_super_admin_password" name="password" class="form-control @error('password', 'updateStaff') is-invalid @enderror" placeholder="Deja vacío para mantener la actual">
+                                <input type="password" id="edit_super_admin_password" name="password" class="form-control @error('password', 'updateStaff') is-invalid @enderror" placeholder="Déjalo vacío para mantener la actual">
                                 @error('password', 'updateStaff')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -142,7 +142,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <button type="submit" class="btn btn-success w-100">Actualizar superadministrador</button>
+                            <button type="submit" class="btn btn-success-st w-100">Actualizar superadministrador</button>
                         </form>
                     </div>
                 </div>

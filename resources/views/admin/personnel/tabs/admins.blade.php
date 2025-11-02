@@ -6,19 +6,19 @@
 
 <div class="row g-4">
     <div class="col-12 col-xl-7">
-        <div class="card shadow-sm h-100">
+        <div class="card st-card shadow-sm h-100">
             <div class="card-body">
                 <h5 class="card-title mb-3">Administradores</h5>
 
                 @if ($admins->isEmpty())
-                    <p class="text-muted mb-0">No hay administradores registrados.</p>
+                    <p class="st-muted mb-0">No hay administradores registrados.</p>
                 @else
                     <div class="table-responsive">
-                        <table class="table table-striped align-middle">
+                        <table class="table table-hover align-middle">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
-                                    <th>Correo</th>
+                                    <th>Correo electrónico</th>
                                     <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
@@ -38,7 +38,7 @@
                                                     <a href="{{ route('admin.personnel', ['tab' => 'admins', 'edit_admin' => $admin->id]) }}" class="btn btn-sm btn-outline-primary">
                                                         Editar
                                                     </a>
-                                                    <form method="POST" class="d-inline" action="{{ route('admin.staff.destroy', ['staff' => $admin->id, 'tab' => 'admins']) }}" onsubmit="return confirm('¿Seguro que deseas eliminar este administrador?');">
+                                                    <form method="POST" class="d-inline" action="{{ route('admin.staff.destroy', ['staff' => $admin->id, 'tab' => 'admins']) }}" onsubmit="return confirm('¿Seguro que deseas eliminar a este administrador?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -46,7 +46,7 @@
                                                         </button>
                                                     </form>
                                                 @elseif (! $canViewMovements || ! $isSuperAdmin)
-                                                    <span class="text-muted small">Sin permisos</span>
+                                                    <span class="st-muted small">Sin permisos</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -62,7 +62,7 @@
 
     <div class="col-12 col-xl-5">
         @if ($canManageAdmins)
-            <div class="card shadow-sm mb-4">
+            <div class="card st-card shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Crear administrador</h5>
                     <form method="POST" action="{{ route('admin.staff.store', ['tab' => 'admins']) }}">
@@ -93,13 +93,13 @@
                             <label for="admin_password_confirmation" class="form-label">Confirmar contraseña</label>
                             <input type="password" id="admin_password_confirmation" name="password_confirmation" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Crear administrador</button>
+                        <button type="submit" class="btn btn-st w-100">Crear administrador</button>
                     </form>
                 </div>
             </div>
 
             @if ($editingAdmin)
-                <div class="card shadow-sm">
+                <div class="card st-card shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Editar administrador</h5>
@@ -124,7 +124,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="edit_admin_password" class="form-label">Contraseña (opcional)</label>
-                                <input type="password" id="edit_admin_password" name="password" class="form-control @error('password', 'updateStaff') is-invalid @enderror" placeholder="Deja vacío para mantener la actual">
+                                <input type="password" id="edit_admin_password" name="password" class="form-control @error('password', 'updateStaff') is-invalid @enderror" placeholder="Déjalo vacío para mantener la actual">
                                 @error('password', 'updateStaff')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -138,20 +138,20 @@
                                 <select id="edit_admin_role" name="role" class="form-select @error('role', 'updateStaff') is-invalid @enderror">
                                     <option value="admin" @selected(old('role', $editingAdmin->role) === 'admin')>Administrador</option>
                                     <option value="logistics" @selected(old('role', $editingAdmin->role) === 'logistics')>Logística</option>
-                                    <option value="super_admin" @selected(old('role', $editingAdmin->role) === 'super_admin')>Super Administrador</option>
+                                    <option value="super_admin" @selected(old('role', $editingAdmin->role) === 'super_admin')>Superadministrador</option>
                                 </select>
                                 @error('role', 'updateStaff')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <button type="submit" class="btn btn-success w-100">Actualizar administrador</button>
+                            <button type="submit" class="btn btn-success-st w-100">Actualizar administrador</button>
                         </form>
                     </div>
                 </div>
             @endif
         @else
             <div class="alert alert-warning">
-                Solo un super administrador puede gestionar administradores.
+                Solo un superadministrador puede gestionar administradores.
             </div>
         @endif
     </div>

@@ -42,8 +42,12 @@ class TransferController extends Controller
             ->orderBy('material_id')
             ->get();
 
-        $nonSerializedInventory = $inventory->filter(fn ($item) => $item->material && ! $item->material->is_serialized)->values();
-        $serializedInventory = $inventory->filter(fn ($item) => $item->material && $item->material->is_serialized)->values();
+        $nonSerializedInventory = $inventory
+            ->filter(fn ($item) => $item->material && ! $item->material->is_serialized && (int) $item->quantity > 0)
+            ->values();
+        $serializedInventory = $inventory
+            ->filter(fn ($item) => $item->material && $item->material->is_serialized && (int) $item->quantity > 0)
+            ->values();
 
         $availableSerials = MaterialSerial::query()
             ->with('material')
@@ -77,18 +81,48 @@ class TransferController extends Controller
                 'items.serial',
                 'fromLocation',
             ])
+            ->where('type', 'transfer')
             ->where('to_location_id', $location->id)
             ->where('status', 'pending')
             ->orderBy('created_at')
             ->get();
 
-        $recentTransfers = Transfer::query()
+        $pendingReturns = Transfer::query()
             ->with([
                 'items.material',
                 'items.serial',
                 'fromLocation',
+                'toLocation',
             ])
+            ->where('type', 'return')
+            ->where('from_location_id', $location->id)
+            ->where('status', 'pending')
+            ->orderBy('created_at')
+            ->get();
+
+        $recentTransferHistory = Transfer::query()
+            ->with([
+                'items.material',
+                'items.serial',
+                'fromLocation',
+                'toLocation',
+            ])
+            ->where('type', 'transfer')
             ->where('to_location_id', $location->id)
+            ->whereIn('status', ['accepted', 'rejected'])
+            ->orderByDesc('updated_at')
+            ->limit(10)
+            ->get();
+
+        $recentReturnHistory = Transfer::query()
+            ->with([
+                'items.material',
+                'items.serial',
+                'fromLocation',
+                'toLocation',
+            ])
+            ->where('type', 'return')
+            ->where('from_location_id', $location->id)
             ->whereIn('status', ['accepted', 'rejected'])
             ->orderByDesc('updated_at')
             ->limit(10)
@@ -96,7 +130,9 @@ class TransferController extends Controller
 
         return view('technician.transfers', [
             'pendingTransfers' => $pendingTransfers,
-            'recentTransfers' => $recentTransfers,
+            'pendingReturns' => $pendingReturns,
+            'recentTransferHistory' => $recentTransferHistory,
+            'recentReturnHistory' => $recentReturnHistory,
             'location' => $location,
             'nonSerializedInventory' => $nonSerializedInventory,
             'serializedInventory' => $serializedInventory,
@@ -317,6 +353,7 @@ class TransferController extends Controller
             DB::transaction(function () use ($location, $recipientLocation, $userId, $materials, $serialIds, $cartItems, $notes) {
                 $transfer = Transfer::create([
                     'order_number' => $this->generateTransferNumber(),
+                    'type' => 'transfer',
                     'from_location_id' => $location->id,
                     'to_location_id' => $recipientLocation->id,
                     'initiator_user_id' => $userId,

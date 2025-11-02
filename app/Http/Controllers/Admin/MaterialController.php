@@ -431,6 +431,7 @@ class MaterialController extends Controller
 
                     $transfer = Transfer::create([
                         'order_number' => $this->generateTransferNumber(),
+                        'type' => 'transfer',
                         'from_location_id' => $warehouseLocation->id,
                         'to_location_id' => $technicianLocation->id,
                         'initiator_user_id' => auth()->id(),
@@ -481,6 +482,7 @@ class MaterialController extends Controller
 
                     $transfer = Transfer::create([
                         'order_number' => $this->generateTransferNumber(),
+                        'type' => 'transfer',
                         'from_location_id' => $warehouseLocation->id,
                         'to_location_id' => $technicianLocation->id,
                         'initiator_user_id' => auth()->id(),

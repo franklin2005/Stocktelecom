@@ -1,51 +1,53 @@
 ﻿@extends('layouts.app')
 
 @section('content')
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <h2 class="mb-0">Técnicos</h2>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h1 class="h3 mb-0">Técnicos</h1>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            @if ($technicians->isEmpty())
-                <p class="text-muted mb-0">Aún no hay técnicos registrados.</p>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-striped align-middle">
-                        <thead>
+    <div class="st-card p-3">
+        @if ($technicians->isEmpty())
+            <p class="st-muted mb-0">Aún no hay técnicos registrados.</p>
+        @else
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Código técnico</th>
+                            <th>Ubicación</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($technicians as $technician)
                             <tr>
-                                <th>Nombre</th>
-                                <th>Correo</th>
-                                <th>Código técnico</th>
-                                <th>Ubicación</th>
-                                <th class="text-end">Acciones</th>
+                                <td>{{ $technician->name }}</td>
+                                <td>{{ $technician->email }}</td>
+                                <td>
+                                    @if ($technician->tech_code)
+                                        <span class="badge badge-soft">{{ $technician->tech_code }}</span>
+                                    @else
+                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                    @endif
+                                </td>
+                                <td>{{ $technician->stockLocation->name ?? 'Sin ubicación' }}</td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ route('admin.technicians.stock.overview', $technician) }}" class="btn btn-sm btn-st">
+                                            Ver stock
+                                        </a>
+                                        <a href="{{ route('admin.technicians.transfers.history', $technician) }}" class="btn btn-sm btn-outline-secondary">
+                                            Transferencias
+                                        </a>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($technicians as $technician)
-                                <tr>
-                                    <td>{{ $technician->name }}</td>
-                                    <td>{{ $technician->email }}</td>
-                                    <td>
-                                        <span class="badge bg-secondary">{{ $technician->tech_code ?? 'Pendiente' }}</span>
-                                    </td>
-                                    <td>{{ $technician->stockLocation->name ?? 'Sin ubicación' }}</td>
-                                    <td class="text-end">
-                                        <div class="d-flex justify-content-end gap-2">
-                                            <a href="{{ route('admin.technicians.stock.overview', $technician) }}" class="btn btn-sm btn-outline-primary">
-                                                Ver stock
-                                            </a>
-                                            <a href="{{ route('admin.technicians.transfers.history', $technician) }}" class="btn btn-sm btn-outline-secondary">
-                                                Transferencias
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
     </div>
 @endsection

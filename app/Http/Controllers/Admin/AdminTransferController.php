@@ -312,6 +312,7 @@ class AdminTransferController extends Controller
             DB::transaction(function () use ($warehouse, $technicianLocation, $userId, $materials, $serialIds, $cartItems) {
                 $transfer = Transfer::create([
                     'order_number' => $this->generateTransferNumber(),
+                    'type' => 'transfer',
                     'from_location_id' => $warehouse->id,
                     'to_location_id' => $technicianLocation->id,
                     'initiator_user_id' => $userId,

@@ -6,19 +6,19 @@
 
 <div class="row g-4">
     <div class="col-12 col-xl-7">
-        <div class="card shadow-sm h-100">
+        <div class="card st-card shadow-sm h-100">
             <div class="card-body">
                 <h5 class="card-title mb-3">Personal de logística</h5>
 
                 @if ($logistics->isEmpty())
-                    <p class="text-muted mb-0">No hay usuarios de logística registrados.</p>
+                    <p class="st-muted mb-0">No hay usuarios de logística registrados.</p>
                 @else
                     <div class="table-responsive">
-                        <table class="table table-striped align-middle">
+                        <table class="table table-hover align-middle">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
-                                    <th>Correo</th>
+                                    <th>Correo electrónico</th>
                                     <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
@@ -35,7 +35,7 @@
                                         <td>
                                             {{ $logistic->name }}
                                             @if ($logisticsStockSummary > 0)
-                                                <span class="badge bg-info ms-2">Stock: {{ $logisticsStockSummary }}</span>
+                                                <span class="badge badge-accent ms-2">Stock total: {{ $logisticsStockSummary }}</span>
                                             @endif
                                         </td>
                                         <td>{{ $logistic->email }}</td>
@@ -50,10 +50,15 @@
                                                     <a href="{{ route('admin.personnel', ['tab' => 'logistics', 'edit_logistics' => $logistic->id]) }}" class="btn btn-sm btn-outline-primary">
                                                         Editar
                                                     </a>
-                                                    <form method="POST" class="d-inline" action="{{ route('admin.staff.destroy', ['staff' => $logistic->id, 'tab' => 'logistics']) }}" onsubmit="return confirm('¿Seguro que deseas eliminar este usuario de logística?');">
+                                                    <form method="POST" class="d-inline" action="{{ route('admin.staff.destroy', ['staff' => $logistic->id, 'tab' => 'logistics']) }}" onsubmit="return confirm('¿Seguro que deseas eliminar a este usuario de logística?');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger" {{ $logisticsHasStock ? 'disabled' : '' }} @if ($logisticsHasStock) title="Vacía el stock antes de eliminar este usuario de logística." @endif>
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-sm btn-outline-danger"
+                                                            {{ $logisticsHasStock ? 'disabled' : '' }}
+                                                            @if ($logisticsHasStock) title="Vacía el stock antes de eliminar a este usuario de logística." @endif
+                                                        >
                                                             Eliminar
                                                         </button>
                                                     </form>
@@ -61,7 +66,7 @@
                                                         <small class="text-danger d-block">Vacía el stock antes de eliminar.</small>
                                                     @endif
                                                 @elseif (! $canViewMovements)
-                                                    <span class="text-muted small">Sin permisos</span>
+                                                    <span class="st-muted small">Sin permisos</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -77,7 +82,7 @@
 
     <div class="col-12 col-xl-5">
         @if ($canManageLogistics)
-            <div class="card shadow-sm mb-4">
+            <div class="card st-card shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Crear usuario de logística</h5>
                     <form method="POST" action="{{ route('admin.staff.store', ['tab' => 'logistics']) }}">
@@ -108,13 +113,13 @@
                             <label for="logistics_password_confirmation" class="form-label">Confirmar contraseña</label>
                             <input type="password" id="logistics_password_confirmation" name="password_confirmation" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Crear usuario</button>
+                        <button type="submit" class="btn btn-st w-100">Crear usuario de logística</button>
                     </form>
                 </div>
             </div>
 
             @if ($editingLogistics)
-                <div class="card shadow-sm">
+                <div class="card st-card shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Editar usuario de logística</h5>
@@ -139,7 +144,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="edit_logistics_password" class="form-label">Contraseña (opcional)</label>
-                                <input type="password" id="edit_logistics_password" name="password" class="form-control @error('password', 'updateStaff') is-invalid @enderror" placeholder="Deja vacío para mantener la actual">
+                                <input type="password" id="edit_logistics_password" name="password" class="form-control @error('password', 'updateStaff') is-invalid @enderror" placeholder="Déjalo vacío para mantener la actual">
                                 @error('password', 'updateStaff')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -162,7 +167,7 @@
                             @else
                                 <input type="hidden" name="role" value="logistics">
                             @endif
-                            <button type="submit" class="btn btn-success w-100">Actualizar usuario</button>
+                            <button type="submit" class="btn btn-success-st w-100">Actualizar usuario</button>
                         </form>
                     </div>
                 </div>

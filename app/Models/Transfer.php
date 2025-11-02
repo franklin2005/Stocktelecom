@@ -11,6 +11,7 @@ class Transfer extends Model
 {
     protected $fillable = [
         'order_number',
+        'type',
         'from_location_id',
         'to_location_id',
         'initiator_user_id',
@@ -26,6 +27,14 @@ class Transfer extends Model
         'accepted_at' => 'datetime',
         'rejected_at' => 'datetime',
     ];
+
+    /**
+     * Scope transfers by type.
+     */
+    public function scopeType(Builder $query, string $type): Builder
+    {
+        return $query->where('type', $type);
+    }
 
     /**
      * Scope pending transfers.
@@ -75,4 +84,3 @@ class Transfer extends Model
         return $this->belongsTo(User::class, 'initiator_user_id');
     }
 }
-

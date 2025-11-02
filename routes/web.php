@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\UserHistoryController;
 use App\Http\Controllers\Admin\WarehouseHistoryController;
 use App\Http\Controllers\Admin\WorkOrderController as AdminWorkOrderController;
 use App\Http\Controllers\Admin\TechnicianOverviewController;
+use App\Http\Controllers\Admin\ReturnsController;
+use App\Http\Controllers\Admin\ReturnHistoryController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -17,6 +19,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Technician\DashboardController as TechnicianDashboardController;
 use App\Http\Controllers\Technician\MenuController as TechnicianMenuController;
 use App\Http\Controllers\Technician\TransferController as TechnicianTransferController;
+use App\Http\Controllers\Technician\ReturnsController as TechnicianReturnsController;
 use App\Http\Controllers\Technician\WorkOrderController as TechnicianWorkOrderController;
 use App\Http\Controllers\Technician\TransferHistoryController as TechnicianTransferHistoryController;
 
@@ -162,6 +165,13 @@ Route::middleware('auth')->group(function () {
             Route::post('/materials', [MaterialController::class, 'store'])->name('materials.store');
             Route::patch('/materials/{material}', [MaterialController::class, 'update'])->name('materials.update');
             Route::delete('/materials/{material}', [MaterialController::class, 'destroy'])->name('materials.destroy');
+
+            Route::get('/returns', [ReturnsController::class, 'index'])->name('returns');
+            Route::post('/returns/cart/add', [ReturnsController::class, 'addToCart'])->name('returns.cart.add');
+            Route::post('/returns/cart/{key}/remove', [ReturnsController::class, 'removeFromCart'])->name('returns.cart.remove');
+            Route::post('/returns/cart/clear', [ReturnsController::class, 'clearCart'])->name('returns.cart.clear');
+            Route::post('/returns/send', [ReturnsController::class, 'send'])->name('returns.send');
+            Route::get('/returns/history', [ReturnHistoryController::class, 'index'])->name('returns.history');
         });
 
         /**
@@ -174,6 +184,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/technicians/overview', [TechnicianOverviewController::class, 'index'])->name('technicians.overview');
             Route::get('/technicians/{technician}/stock-overview', [TechnicianOverviewController::class, 'stock'])->name('technicians.stock.overview');
             Route::get('/technicians/{technician}/transfers', [TechnicianTransferHistoryController::class, 'show'])->name('technicians.transfers.history');
+            Route::get('/technicians/{technician}/returns', [TechnicianTransferHistoryController::class, 'showReturns'])->name('technicians.returns.history');
         });
     });
 
@@ -199,6 +210,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/transfers/send', [TechnicianTransferController::class, 'send'])->name('transfers.send');
         Route::post('/transfers/{transfer}/accept', [TechnicianTransferController::class, 'accept'])->name('transfers.accept');
         Route::post('/transfers/{transfer}/reject', [TechnicianTransferController::class, 'reject'])->name('transfers.reject');
+
+        Route::post('/returns/{transfer}/accept', [TechnicianReturnsController::class, 'accept'])->name('returns.accept');
+        Route::post('/returns/{transfer}/reject', [TechnicianReturnsController::class, 'reject'])->name('returns.reject');
+        Route::get('/returns/history', function (Illuminate\Http\Request $request, TechnicianTransferHistoryController $controller) {
+            return $controller->showReturns($request, $request->user());
+        })->name('returns.history');
 
         // Órdenes de trabajo
         Route::get('/work-orders', [TechnicianWorkOrderController::class, 'index'])->name('work-orders');
