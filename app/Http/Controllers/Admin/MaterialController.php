@@ -15,11 +15,19 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use RuntimeException;
 
 class MaterialController extends Controller
 {
+    private const CATEGORY_MAP = [
+        'equipo' => 'equipment',
+        'acometida' => 'acometida',
+        'roseta' => 'roseta',
+        'otro' => 'other',
+    ];
+
     public function __construct(
         private readonly InventoryService $inventoryService,
         private readonly StockMovementLogger $movementLogger,
@@ -62,6 +70,213 @@ class MaterialController extends Controller
     }
 
     /**
+     * Formulario de creación de materiales.
+     */
+    public function create(): View
+    {
+        $categoryOptions = array_keys(self::CATEGORY_MAP);
+
+        $typeSuggestions = [
+            'equipo' => ['router', 'ont', 'decodificador', 'mando'],
+            'acometida' => ['ZTE', 'Huawei', 'Corning', '3M', 'Mixta', 'Interior'],
+            'roseta' => ['Final', 'Transición'],
+        ];
+
+        $defaultSerialized = [
+            'equipo' => true,
+            'acometida' => false,
+            'roseta' => false,
+            'otro' => false,
+        ];
+
+        $materials = Material::query()
+            ->orderBy('category')
+            ->orderBy('type')
+            ->orderBy('model')
+            ->get();
+
+        $reverseCategoryMap = array_flip(self::CATEGORY_MAP);
+
+        return view('admin.materials.create', [
+            'categoryOptions' => $categoryOptions,
+            'typeSuggestions' => $typeSuggestions,
+            'defaultSerialized' => $defaultSerialized,
+            'materials' => $materials,
+            'categoryMap' => self::CATEGORY_MAP,
+            'reverseCategoryMap' => $reverseCategoryMap,
+        ]);
+    }
+
+    /**
+     * Persiste el nuevo material base.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'category' => ['required', 'string', 'in:equipo,acometida,roseta,otro'],
+            'type' => ['required', 'string', 'max:100'],
+            'model' => ['nullable', 'string', 'max:150'],
+            'is_serialized' => ['required', 'boolean'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        $category = strtolower(trim($validated['category']));
+        $type = trim($validated['type']);
+        $model = array_key_exists('model', $validated) && $validated['model'] !== null
+            ? trim($validated['model'])
+            : null;
+        if ($model === '') {
+            $model = null;
+        }
+
+        $databaseCategory = self::CATEGORY_MAP[$category] ?? $category;
+
+        $normalizedCategory = mb_strtolower($databaseCategory, 'UTF-8');
+        $normalizedType = mb_strtolower($type, 'UTF-8');
+        $normalizedModel = $model !== null ? mb_strtolower($model, 'UTF-8') : null;
+
+        $duplicateQuery = Material::query()
+            ->where('is_active', true)
+            ->whereRaw('LOWER(category) = ?', [$normalizedCategory])
+            ->whereRaw('LOWER(type) = ?', [$normalizedType]);
+
+        if ($normalizedModel === null) {
+            $duplicateQuery->whereNull('model');
+        } else {
+            $duplicateQuery->whereRaw('LOWER(model) = ?', [$normalizedModel]);
+        }
+
+        if ($duplicateQuery->exists()) {
+            return back()->withErrors([
+                'type' => 'Ya existe un material activo con la misma categoría, tipo y modelo.',
+            ])->withInput();
+        }
+
+        $isSerialized = $request->boolean('is_serialized');
+
+        $isActive = $request->boolean('is_active');
+
+        $material = Material::create([
+            'category' => $databaseCategory,
+            'type' => $type,
+            'model' => $model,
+            'is_serialized' => $isSerialized,
+            'is_active' => $isActive,
+        ]);
+
+        session()->flash('status', 'Material creado correctamente.');
+
+        return redirect()
+            ->route('admin.materials.create')
+            ->with('highlight_material_id', $material->id);
+    }
+
+    /**
+     * Actualiza un material existente.
+     */
+    public function update(Request $request, Material $material): RedirectResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'category' => ['required', 'string', 'in:equipo,acometida,roseta,otro'],
+            'type' => ['required', 'string', 'max:100'],
+            'model' => ['nullable', 'string', 'max:150'],
+            'is_serialized' => ['required', 'boolean'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->route('admin.materials.create')
+                ->withErrors($validator, 'updateMaterial')
+                ->withInput()
+                ->with('editing_material_id', $material->id);
+        }
+
+        $validated = $validator->validated();
+
+        $categoryKey = strtolower(trim($validated['category']));
+        $type = trim($validated['type']);
+        $model = array_key_exists('model', $validated) && $validated['model'] !== null
+            ? trim($validated['model'])
+            : null;
+        if ($model === '') {
+            $model = null;
+        }
+
+        $databaseCategory = self::CATEGORY_MAP[$categoryKey] ?? $categoryKey;
+
+        $isSerialized = $request->boolean('is_serialized');
+        $isActive = $request->boolean('is_active');
+
+        if ($isActive) {
+            $normalizedCategory = mb_strtolower($databaseCategory, 'UTF-8');
+            $normalizedType = mb_strtolower($type, 'UTF-8');
+            $normalizedModel = $model !== null ? mb_strtolower($model, 'UTF-8') : null;
+
+            $duplicateQuery = Material::query()
+                ->where('id', '!=', $material->id)
+                ->where('is_active', true)
+                ->whereRaw('LOWER(category) = ?', [$normalizedCategory])
+                ->whereRaw('LOWER(type) = ?', [$normalizedType]);
+
+            if ($normalizedModel === null) {
+                $duplicateQuery->whereNull('model');
+            } else {
+                $duplicateQuery->whereRaw('LOWER(model) = ?', [$normalizedModel]);
+            }
+
+            if ($duplicateQuery->exists()) {
+                return redirect()
+                    ->route('admin.materials.create')
+                    ->withErrors([
+                        'type' => 'Ya existe un material activo con la misma categoría, tipo y modelo.',
+                    ], 'updateMaterial')
+                    ->withInput()
+                    ->with('editing_material_id', $material->id);
+            }
+        }
+
+        $material->update([
+            'category' => $databaseCategory,
+            'type' => $type,
+            'model' => $model,
+            'is_serialized' => $isSerialized,
+            'is_active' => $isActive,
+        ]);
+
+        session()->flash('status', 'Material actualizado correctamente.');
+
+        return redirect()
+            ->route('admin.materials.create')
+            ->with('highlight_material_id', $material->id);
+    }
+
+    /**
+     * Elimina un material si no tiene dependencias.
+     */
+    public function destroy(Material $material): RedirectResponse
+    {
+        $hasDependencies = $material->serials()->exists()
+            || $material->inventories()->exists()
+            || $material->transferItems()->exists()
+            || $material->workOrderItems()->exists()
+            || DB::table('stock_movements')->where('material_id', $material->id)->exists();
+
+        if ($hasDependencies) {
+            return redirect()
+                ->route('admin.materials.create')
+                ->with('material_error', 'No es posible eliminar el material porque tiene movimientos, inventario o series asociadas.')
+                ->with('highlight_material_id', $material->id);
+        }
+
+        $material->delete();
+
+        session()->flash('status', 'Material eliminado correctamente.');
+
+        return redirect()->route('admin.materials.create');
+    }
+
+    /**
      * Registra nuevas existencias en el almacen principal.
      */
     public function addStock(Request $request): RedirectResponse
@@ -69,6 +284,13 @@ class MaterialController extends Controller
         $this->ensureCanManageWarehouse();
 
         $material = Material::findOrFail($request->input('material_id'));
+
+        if (! $material->is_active) {
+            return back()->withErrors([
+                'material_id' => 'El material está inactivo. Actívalo antes de registrar stock.',
+            ])->withInput();
+        }
+
         $warehouseLocation = $this->warehouseLocation();
 
         $userId = auth()->id();
@@ -159,6 +381,13 @@ class MaterialController extends Controller
         $this->ensureCanManageWarehouse();
 
         $material = Material::findOrFail($request->input('material_id'));
+
+        if (! $material->is_active) {
+            return back()->withErrors([
+                'material_id' => 'El material está inactivo. Actívalo antes de generar nuevas asignaciones.',
+            ])->withInput();
+        }
+
         $technician = User::technicians()->whereKey($request->input('technician_id'))->first();
 
         if (! $technician) {
@@ -298,6 +527,13 @@ class MaterialController extends Controller
         $this->ensureCanManageWarehouse();
 
         $material = Material::findOrFail($request->input('material_id'));
+
+        if (! $material->is_active) {
+            return back()->withErrors([
+                'material_id' => 'El material está inactivo. Actívalo antes de retirar stock.',
+            ])->withInput();
+        }
+
         $warehouseLocation = $this->warehouseLocation();
         $userId = auth()->id();
 
@@ -464,4 +700,3 @@ class MaterialController extends Controller
         }
     }
 }
-

@@ -18,7 +18,7 @@ use App\Http\Controllers\Technician\DashboardController as TechnicianDashboardCo
 use App\Http\Controllers\Technician\MenuController as TechnicianMenuController;
 use App\Http\Controllers\Technician\TransferController as TechnicianTransferController;
 use App\Http\Controllers\Technician\WorkOrderController as TechnicianWorkOrderController;
-use App\Http\Controllers\TransferHistoryController;
+use App\Http\Controllers\Technician\TransferHistoryController as TechnicianTransferHistoryController;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -157,6 +157,13 @@ Route::middleware('auth')->group(function () {
             Route::put('/work-orders/{workOrder}', [AdminWorkOrderController::class, 'update'])->name('work-orders.update');
         });
 
+        Route::middleware('role:super_admin,logistics')->group(function () {
+            Route::get('/materials/create', [MaterialController::class, 'create'])->name('materials.create');
+            Route::post('/materials', [MaterialController::class, 'store'])->name('materials.store');
+            Route::patch('/materials/{material}', [MaterialController::class, 'update'])->name('materials.update');
+            Route::delete('/materials/{material}', [MaterialController::class, 'destroy'])->name('materials.destroy');
+        });
+
         /**
          * ---------------------------------------------------------------
          * VISTA GENERAL DE TÉCNICOS (Overview)
@@ -166,7 +173,7 @@ Route::middleware('auth')->group(function () {
         Route::middleware('role:admin,super_admin,logistics')->group(function () {
             Route::get('/technicians/overview', [TechnicianOverviewController::class, 'index'])->name('technicians.overview');
             Route::get('/technicians/{technician}/stock-overview', [TechnicianOverviewController::class, 'stock'])->name('technicians.stock.overview');
-            Route::get('/technicians/{technician}/transfers', [TransferHistoryController::class, 'show'])->name('technicians.transfers.history');
+            Route::get('/technicians/{technician}/transfers', [TechnicianTransferHistoryController::class, 'show'])->name('technicians.transfers.history');
         });
     });
 
@@ -204,7 +211,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/work-orders/{workOrder}/cancel', [TechnicianWorkOrderController::class, 'cancel'])->name('work-orders.cancel');
 
         // Historial de transferencias (propio o visible a roles permitidos)
-        Route::get('/transfers/technicians/{technician}', [TransferHistoryController::class, 'show'])
+        Route::get('/transfers/technicians/{technician}', [TechnicianTransferHistoryController::class, 'show'])
             ->name('transfers.history');
     });
 });

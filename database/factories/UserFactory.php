@@ -23,14 +23,16 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $role = 'technician';
+
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'role' => 'technician',
-            'tech_code' => strtoupper(fake()->unique()->bothify('TECH-###??')),
+            'role' => $role,
+            'tech_code' => $this->generateTechCodeForRole($role),
         ];
     }
 
@@ -53,5 +55,48 @@ class UserFactory extends Factory
             'role' => 'admin',
             'tech_code' => null,
         ]);
+    }
+
+    /**
+     * Indicate that the user is a super administrator.
+     */
+    public function superAdmin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'super_admin',
+            'tech_code' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user belongs to logistics.
+     */
+    public function logistics(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'logistics',
+            'tech_code' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a field technician.
+     */
+    public function technician(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'technician',
+            'tech_code' => $this->generateTechCodeForRole('technician'),
+        ]);
+    }
+
+    /**
+     * Generate a stock tech code when required by the role.
+     */
+    protected function generateTechCodeForRole(string $role): ?string
+    {
+        return $role === 'technician'
+            ? strtoupper($this->faker->unique()->bothify('TECH-###??'))
+            : null;
     }
 }

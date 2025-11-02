@@ -296,7 +296,11 @@ class TransferController extends Controller
 
         $userId = $request->user()->id;
 
-        $materialIds = collect($cartItems)->pluck('material_id')->unique()->values();
+        $materialIds = collect($cartItems)
+            ->map(fn ($item) => $item['material']->id ?? null)
+            ->filter()
+            ->unique()
+            ->values();
         $materials = Material::query()
             ->whereIn('id', $materialIds)
             ->get()
@@ -304,7 +308,8 @@ class TransferController extends Controller
 
         $serialIds = collect($cartItems)
             ->where('type', 'serial')
-            ->pluck('serial_id')
+            ->map(fn ($item) => $item['serial']->id ?? null)
+            ->filter()
             ->unique()
             ->values();
 
@@ -327,7 +332,8 @@ class TransferController extends Controller
                     ->keyBy('id');
 
                 foreach ($cartItems as $item) {
-                    $material = $materials[$item['material_id']] ?? null;
+                    $materialId = $item['material']->id ?? null;
+                    $material = $materialId !== null ? $materials->get($materialId) : null;
 
                     if (! $material) {
                         throw new RuntimeException('No se pudo recuperar la informacion del material seleccionado.');
@@ -357,7 +363,8 @@ class TransferController extends Controller
                         continue;
                     }
 
-                    $serial = $serialModels[$item['serial_id']] ?? null;
+                    $serialId = $item['serial']->id ?? null;
+                    $serial = $serialId !== null ? $serialModels->get($serialId) : null;
 
                     if (! $serial || $serial->current_location_id !== $location->id || $serial->status !== 'assigned') {
                         throw new RuntimeException('Alguno de los numeros de serie seleccionados ya no esta disponible.');
@@ -692,6 +699,7 @@ class TransferController extends Controller
                 $items[] = [
                     'key' => $key,
                     'type' => 'quantity',
+                    'material_id' => $material->id,
                     'material' => $material,
                     'quantity' => $quantity,
                 ];
@@ -716,7 +724,9 @@ class TransferController extends Controller
                 $items[] = [
                     'key' => $key,
                     'type' => 'serial',
+                    'material_id' => $material->id,
                     'material' => $material,
+                    'serial_id' => $serial->id,
                     'serial' => $serial,
                 ];
 

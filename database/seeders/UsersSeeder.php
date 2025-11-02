@@ -44,7 +44,7 @@ class UsersSeeder extends Seeder
                 'tech_code' => 'TECH-JP-001',
             ],
             [
-                'name' => 'Tecnico Maria Gomez',
+                'name' => 'Tecnica Maria Gomez',
                 'email' => 'maria@inventario.local',
                 'password' => Hash::make('password'),
                 'role' => 'technician',
@@ -52,23 +52,47 @@ class UsersSeeder extends Seeder
             ],
         ];
 
-        foreach ($users as $userData) {
+        $persisted = collect($users)->map(function (array $userData) {
             $user = User::updateOrCreate(
                 ['email' => $userData['email']],
                 $userData
             );
 
-            if (in_array($user->role, ['technician', 'logistics'], true)) {
-                StockLocation::updateOrCreate(
-                    [
-                        'location_type' => 'user',
-                        'ref_id' => $user->id,
-                    ],
-                    [
-                        'name' => 'Stock de ' . $user->name,
-                    ]
-                );
-            }
+            $this->ensureStockLocation($user);
+
+            return $user;
+        });
+
+        $additionalLogistics = User::factory()
+            ->logistics()
+            ->count(2)
+            ->create();
+
+        $additionalTechnicians = User::factory()
+            ->technician()
+            ->count(5)
+            ->create();
+
+        $persisted
+            ->concat($additionalLogistics)
+            ->concat($additionalTechnicians)
+            ->each(fn (User $user) => $this->ensureStockLocation($user));
+    }
+
+    protected function ensureStockLocation(User $user): void
+    {
+        if (! in_array($user->role, ['technician', 'logistics'], true)) {
+            return;
         }
+
+        StockLocation::updateOrCreate(
+            [
+                'location_type' => 'user',
+                'ref_id' => $user->id,
+            ],
+            [
+                'name' => 'Stock de ' . $user->name,
+            ]
+        );
     }
 }

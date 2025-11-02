@@ -3,15 +3,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Laravel Inventario FTTH') }}</title>
+    <title>{{ config('app.name', 'STOCKTELECOM') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('css/mainStyle.css') }}">
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ route('home') }}">
-                Inventario FTTH
+                STOCKTELECOM
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -25,6 +26,7 @@
                                 ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
                                 ['label' => 'Transferencias', 'route' => 'admin.transfers', 'pattern' => 'admin.transfers'],
                                 ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
+                                ['label' => 'Crear material', 'route' => 'admin.materials.create', 'pattern' => 'admin.materials.create'],
                                 ['label' => 'Personal', 'route' => 'admin.personnel', 'pattern' => 'admin.personnel*'],
                                 ['label' => 'Histórico de usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
@@ -44,6 +46,7 @@
                                 ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
                                 ['label' => 'Transferencias', 'route' => 'admin.transfers', 'pattern' => 'admin.transfers'],
                                 ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
+                                ['label' => 'Crear material', 'route' => 'admin.materials.create', 'pattern' => 'admin.materials.create'],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
                                 ['label' => 'Técnicos', 'route' => 'admin.technicians.overview', 'pattern' => ['admin.technicians.overview', 'admin.technicians.stock.overview', 'admin.technicians.transfers.history']],
                                 ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
@@ -51,7 +54,7 @@
                             'technician' => [
                                 ['label' => 'Dashboard', 'route' => 'technician.dashboard', 'pattern' => 'technician.dashboard'],
                                 ['label' => 'Mi stock', 'route' => 'technician.stock', 'pattern' => 'technician.stock'],
-                                ['label' => 'Transferencias', 'route' => 'technician.transfers', 'pattern' => 'technician.transfers'],
+                                ['label' => 'Transferencias', 'route' => 'technician.transfers', 'prattern' => 'technician.transfers'],
                                 ['label' => 'Histórico de transferencias', 'route' => 'technician.transfers.history', 'pattern' => 'technician.transfers.history', 'params' => [auth()->user()]],
                                 ['label' => 'Órdenes de trabajo', 'route' => 'technician.work-orders', 'pattern' => 'technician.work-orders'],
                             ],
@@ -62,9 +65,16 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     @auth
                         @foreach ($menuItems as $item)
-                            @php $pattern = $item['pattern'] ?? $item['route']; @endphp
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs($pattern) ? 'active' : '' }}" href="{{ route($item['route'], $item['params'] ?? []) }}">
+                            @php
+                                $pattern = $item['pattern'] ?? $item['route'];
+                                $isActive = request()->routeIs($pattern);
+                                $isCta = !empty($item['cta']);
+                                $linkClasses = $isCta
+                                    ? 'btn btn-success btn-sm' . ($isActive ? ' active' : '')
+                                    : 'nav-link' . ($isActive ? ' active' : '');
+                            @endphp
+                            <li class="nav-item {{ $isCta ? 'ms-lg-2 mt-2 mt-lg-0' : '' }}">
+                                <a class="{{ $linkClasses }}" href="{{ route($item['route'], $item['params'] ?? []) }}" @if($isActive) aria-current="page" @endif>
                                     {{ $item['label'] }}
                                 </a>
                             </li>

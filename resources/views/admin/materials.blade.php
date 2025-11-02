@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+    @php
+        $categoryLabels = [
+            'equipment' => 'Equipo',
+            'acometida' => 'Acometida',
+            'roseta' => 'Roseta',
+            'other' => 'Otro',
+        ];
+    @endphp
+
     <div class="d-flex align-items-center justify-content-between mb-4">
         <h2 class="mb-0">Gestión de materiales</h2>
         <a href="{{ route('admin.warehouse-movements') }}" class="btn btn-outline-secondary">Ver histórico del almacén</a>
@@ -49,7 +58,7 @@
                                         $availableSerials = $material->serials ?? collect();
                                     @endphp
                                     <tr>
-                                        <td>{{ ucfirst($material->category) }}</td>
+                                        <td>{{ $categoryLabels[$material->category] ?? ucfirst($material->category) }}</td>
                                         <td>{{ ucfirst($material->type) }}</td>
                                         <td>{{ $material->model ?? '-' }}</td>
                                         <td>
@@ -85,7 +94,7 @@
                             <label for="material_id_quantity" class="form-label">Material</label>
                             <select id="material_id_quantity" name="material_id" class="form-select" required>
                                 <option value="">Selecciona un material</option>
-                                @foreach ($materials->where('is_serialized', false) as $material)
+                                @foreach ($materials->where('is_serialized', false)->where('is_active', true) as $material)
                                     <option value="{{ $material->id }}" {{ old('material_id') == $material->id ? 'selected' : '' }}>
                                         {{ ucfirst($material->type) }} {{ $material->model ? ' - '.$material->model : '' }}
                                     </option>
@@ -110,7 +119,7 @@
                             <label for="material_id_serial" class="form-label">Material</label>
                             <select id="material_id_serial" name="material_id" class="form-select" required>
                                 <option value="">Selecciona un material</option>
-                                @foreach ($materials->where('is_serialized', true) as $material)
+                                @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
                                     <option value="{{ $material->id }}" {{ old('material_id') == $material->id ? 'selected' : '' }}>
                                         {{ ucfirst($material->type) }} {{ $material->model ? ' - '.$material->model : '' }}
                                     </option>
@@ -135,7 +144,7 @@
                             <label for="remove_material_id_quantity" class="form-label">Material</label>
                             <select id="remove_material_id_quantity" name="material_id" class="form-select" required>
                                 <option value="">Selecciona un material</option>
-                                @foreach ($materials->where('is_serialized', false) as $material)
+                                @foreach ($materials->where('is_serialized', false)->where('is_active', true) as $material)
                                     @php
                                         $quantity = $material->inventories->first()?->quantity ?? 0;
                                     @endphp
@@ -165,7 +174,7 @@
                             <label for="remove_material_id_serial" class="form-label">Material</label>
                             <select id="remove_material_id_serial" name="material_id" class="form-select" required>
                                 <option value="">Selecciona un material</option>
-                                @foreach ($materials->where('is_serialized', true) as $material)
+                                @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
                                     @if (($material->serials ?? collect())->isNotEmpty())
                                         <option value="{{ $material->id }}">
                                             {{ ucfirst($material->type) }} {{ $material->model ? ' - '.$material->model : '' }} (Series disponibles: {{ $material->serials->count() }})
@@ -177,7 +186,7 @@
                         <div class="mb-3">
                             <label for="remove_serial_ids" class="form-label">Series a retirar</label>
                             <select id="remove_serial_ids" name="serial_ids[]" class="form-select" multiple size="6" required>
-                                @foreach ($materials->where('is_serialized', true) as $material)
+                                @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
                                     @if (($material->serials ?? collect())->isNotEmpty())
                                         <optgroup label="{{ ucfirst($material->type) }} {{ $material->model ? ' - '.$material->model : '' }}">
                                             @foreach ($material->serials as $serial)
@@ -216,7 +225,7 @@
                             <label for="assign_material_id" class="form-label">Material</label>
                             <select id="assign_material_id" name="material_id" class="form-select" required>
                                 <option value="">Selecciona un material</option>
-                                @foreach ($materials->where('is_serialized', false) as $material)
+                                @foreach ($materials->where('is_serialized', false)->where('is_active', true) as $material)
                                     <option value="{{ $material->id }}" {{ old('material_id') == $material->id ? 'selected' : '' }}>
                                         {{ ucfirst($material->type) }} {{ $material->model ? ' - '.$material->model : '' }}
                                     </option>
@@ -252,7 +261,7 @@
                             <label for="assign_serial_material_id" class="form-label">Material</label>
                             <select id="assign_serial_material_id" name="material_id" class="form-select" required>
                                 <option value="">Selecciona un material</option>
-                                @foreach ($materials->where('is_serialized', true) as $material)
+                                @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
                                     <option value="{{ $material->id }}" {{ old('material_id') == $material->id ? 'selected' : '' }}>
                                         {{ ucfirst($material->type) }} {{ $material->model ? ' - '.$material->model : '' }}
                                     </option>
@@ -262,7 +271,7 @@
                         <div class="mb-3">
                             <label for="assign_serial_ids" class="form-label">Series disponibles</label>
                             <select id="assign_serial_ids" name="serial_ids[]" class="form-select" multiple size="6" required>
-                                @foreach ($materials->where('is_serialized', true) as $material)
+                                @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
                                     @if (($material->serials ?? collect())->isNotEmpty())
                                         <optgroup label="{{ ucfirst($material->type) }} {{ $material->model ? ' - '.$material->model : '' }}">
                                             @foreach ($material->serials as $serial)

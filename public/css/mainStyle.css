@@ -1,0 +1,65 @@
+:root{
+  --st-primary:#1E88E5;
+  --st-primary-dark:#1565C0;
+  --st-accent:#00BFA5;
+  --st-text:#0F172A;
+  --st-text-2:#64748B;
+  --st-bg:#FFFFFF;
+  --st-bg-soft:#F1F5F9;
+  --st-radius:.5rem;
+}
+
+/* COMPONENTES Y ELEMENTOS BASE */
+body {
+  background: var(--st-bg-soft);
+  color: var(--st-text);
+  font-family: "Poppins", "Segoe UI", Arial, sans-serif;
+}
+
+.st-card{ border-radius:var(--st-radius); background:#fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.st-section{ background:var(--st-bg-soft); border-radius:var(--st-radius); padding: 1rem; }
+.st-muted{ color:var(--st-text-2); }
+.st-brand{ color:var(--st-primary); }
+.st-accent{ color:var(--st-accent); }
+
+.btn-st{ 
+  background:var(--st-primary); 
+  border-color:var(--st-primary); 
+  color:#fff; 
+  border-radius: var(--st-radius);
+  transition: all .2s ease;
+}
+.btn-st:hover{ 
+  background:var(--st-primary-dark); 
+  border-color:var(--st-primary-dark);
+}
+
+.badge-soft{ 
+  background:rgba(30,136,229,.12); 
+  color:var(--st-primary); 
+  border-radius: .25rem;
+  font-weight: 500;
+}
+
+.badge-accent{ 
+  background:rgba(0,191,165,.12); 
+  color:var(--st-accent);
+  border-radius: .25rem;
+}
+
+.form-control, .form-select{ 
+  border-radius:var(--st-radius); 
+  border-color: #E2E8F0;
+}
+.card, .modal-content{ border-radius:var(--st-radius); }
+
+a{ text-underline-offset: 3px; color: var(--st-primary); text-decoration: none; }
+a:hover{ text-decoration: underline; }
+
+.table thead th {
+  background-color: var(--st-primary);
+  color: #fff;
+}
+.table-hover tbody tr:hover {
+  background-color: rgba(30,136,229,0.05);
+}
