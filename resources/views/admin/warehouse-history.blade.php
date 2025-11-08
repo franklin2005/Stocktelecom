@@ -8,7 +8,6 @@
                 Registros de ajustes, transferencias y bajas aplicadas al almacén{{ $warehouse ? ' '.$warehouse->name : '' }}.
             </p>
         </div>
-        <a href="{{ route('admin.materials') }}" class="btn btn-outline-secondary">Volver a materiales</a>
     </div>
 
     <form method="GET" class="st-card p-3 mb-4">

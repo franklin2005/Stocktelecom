@@ -15,9 +15,6 @@
             <h1 class="h3 mb-1">Gestión de materiales</h1>
             <p class="st-muted mb-0">Consulta el inventario y realiza ingresos, bajas y asignaciones según permisos.</p>
         </div>
-        <a href="{{ route('admin.warehouse-movements') }}" class="btn btn-outline-secondary">
-            Ver histórico del almacén
-        </a>
     </div>
 
     @if (session('status'))

@@ -7,9 +7,6 @@
             <p class="st-muted mb-0">Solicita a un técnico la devolución de materiales al almacén principal.</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.returns.history') }}" class="btn btn-outline-secondary btn-sm">
-                Histórico de devoluciones
-            </a>
         </div>
     </div>
 
@@ -274,7 +271,7 @@
 
         form.addEventListener('submit', function (event) {
             const totalUnits = Number(form.dataset.totalUnits || 0);
-            const technicianName = @json($selectedTechnician?->name ?? 'el técnico');
+            const technicianName = @json(optional($selectedTechnician)->name ?? 'el técnico');
 
             const message = `Solicitarás la devolución de ${totalUnits} ${totalUnits === 1 ? 'elemento' : 'elementos'} a ${technicianName}. ¿Deseas continuar?`;
 

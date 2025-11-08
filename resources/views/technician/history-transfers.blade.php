@@ -31,10 +31,6 @@
             </p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('admin.technicians.returns.history', $technician) }}" class="btn btn-outline-secondary btn-sm">
-                Histórico de devoluciones
-            </a>
-            <a href="{{ $backUrl }}" class="btn btn-outline-secondary btn-sm">Volver</a>
         </div>
     </div>
 

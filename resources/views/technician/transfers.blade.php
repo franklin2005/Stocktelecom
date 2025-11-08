@@ -7,9 +7,6 @@
             <p class="st-muted mb-0">Gestiona las salidas y recepciones desde tu inventario personal.</p>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('technician.returns.history') }}" class="btn btn-outline-secondary btn-sm">
-                Histórico de devoluciones
-            </a>
         </div>
     </div>
 

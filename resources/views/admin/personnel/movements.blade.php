@@ -33,9 +33,6 @@
                 @endif
             </p>
         </div>
-        <a href="{{ route('admin.personnel', ['tab' => $backTab]) }}" class="btn btn-outline-secondary">
-            Volver a personal
-        </a>
     </div>
 
     <form method="GET" class="card st-card shadow-sm mb-4">

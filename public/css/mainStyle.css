@@ -203,3 +203,15 @@ a:hover {
 .alert {
   border-radius: var(--st-radius);
 }
+
+/* Ajustes para tamaños en el login-selection.blade*/
+/* Altura mínima para que el contenido no colapse en anchos medios */
+.role-card { min-height: 260px; }
+
+/* Evita que “Entrar” se parta o se salga del botón */
+.role-btn { white-space: nowrap; }
+
+/* Ajuste de tipografía de títulos en anchos entre tablet y laptop */
+@media (max-width: 1199.98px) {
+  .role-card h5 { font-size: 1.1rem; }
+}

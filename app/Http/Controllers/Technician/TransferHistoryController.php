@@ -58,7 +58,7 @@ class TransferHistoryController extends Controller
             ->paginate(25)
             ->withQueryString();
 
-        return view('personnel.technician-transfers', [
+        return view('technician.history-transfers', [
             'technician' => $technician,
             'location' => $location,
             'transfers' => $transfers,
@@ -116,7 +116,7 @@ class TransferHistoryController extends Controller
             ->paginate(25)
             ->withQueryString();
 
-        return view('personnel.technician-returns', [
+        return view('technician.history-returns', [
             'technician' => $technician,
             'location' => $location,
             'returns' => $returns,
