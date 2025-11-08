@@ -8,35 +8,39 @@
         </div>
     </div>
 
+    @php
+        $menuItems = [
+            ['label' => 'Dashboard', 'route' => 'technician.dashboard'],
+            ['label' => 'Histórico de devoluciones', 'route' => 'technician.returns.history'],
+            ['label' => 'Histórico de transferencias', 'route' => 'technician.transfers.history', 'params' => [auth()->user()]],
+            ['label' => 'Mi stock', 'route' => 'technician.stock'],
+            ['label' => 'Órdenes de trabajo', 'route' => 'technician.work-orders'],
+            ['label' => 'Transferencias', 'route' => 'technician.transfers'],
+        ];
+
+        usort($menuItems, fn ($a, $b) => strcmp(mb_strtolower($a['label']), mb_strtolower($b['label'])));
+
+        $descriptions = [
+            'Dashboard' => 'Resumen general de tus herramientas de trabajo.',
+            'Histórico de devoluciones' => 'Consulta todas las devoluciones que has gestionado.',
+            'Histórico de transferencias' => 'Revisa transferencias enviadas o recibidas.',
+            'Mi stock' => 'Visualiza los materiales asignados a tu inventario.',
+            'Órdenes de trabajo' => 'Crea y actualiza tus órdenes en curso.',
+            'Transferencias' => 'Envía materiales o acepta solicitudes pendientes.',
+        ];
+    @endphp
+
     <div class="row g-4">
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="st-card p-3 h-100">
-                <h5 class="card-title">Mi stock</h5>
-                <p class="st-muted flex-grow-1 mb-3">
-                    Consulta los materiales actualmente asignados a tu inventario personal.
-                </p>
-                <a href="{{ route('technician.stock') }}" class="btn btn-st w-100">Ver mi stock</a>
+        @foreach ($menuItems as $item)
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="st-card p-3 h-100 d-flex flex-column">
+                    <h5 class="card-title">{{ $item['label'] }}</h5>
+                    <p class="st-muted flex-grow-1 mb-3">
+                        {{ $descriptions[$item['label']] ?? 'Acceso directo a este módulo.' }}
+                    </p>
+                    <a href="{{ route($item['route'], $item['params'] ?? []) }}" class="btn btn-st w-100">Abrir</a>
+                </div>
             </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="st-card p-3 h-100">
-                <h5 class="card-title">Transferencias</h5>
-                <p class="st-muted flex-grow-1 mb-3">
-                    Envía materiales a otros técnicos o acepta recepciones pendientes.
-                </p>
-                <a href="{{ route('technician.transfers') }}" class="btn btn-st w-100">Gestionar transferencias</a>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="st-card p-3 h-100">
-                <h5 class="card-title">Órdenes de trabajo</h5>
-                <p class="st-muted flex-grow-1 mb-3">
-                    Crea, consulta y actualiza tus órdenes de trabajo activas o completadas.
-                </p>
-                <a href="{{ route('technician.work-orders') }}" class="btn btn-st w-100">Ver órdenes</a>
-            </div>
-        </div>
+        @endforeach
     </div>
 @endsection

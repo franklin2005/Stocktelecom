@@ -41,6 +41,9 @@
                                         <a href="{{ route('admin.technicians.transfers.history', $technician) }}" class="btn btn-sm btn-outline-secondary">
                                             Transferencias
                                         </a>
+                                        <a href="{{ route('admin.technicians.returns.history', $technician) }}" class="btn btn-sm btn-outline-info">
+                                            Devoluciones
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

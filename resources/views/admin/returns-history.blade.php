@@ -26,30 +26,16 @@
     </div>
 
     <form method="GET" class="st-card p-3 mb-4">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-3">
+        <div class="row g-2 g-lg-3 align-items-end">
+            <div class="col-6 col-lg-3">
                 <label class="form-label">Desde</label>
                 <input type="date" name="from" value="{{ request('from') }}" class="form-control">
             </div>
-            <div class="col-md-3">
+            <div class="col-6 col-lg-3">
                 <label class="form-label">Hasta</label>
                 <input type="date" name="to" value="{{ request('to') }}" class="form-control">
             </div>
-            <div class="col-md-3">
-                <label class="form-label">Técnico</label>
-                <select name="technician_id" class="form-select">
-                    <option value="">Todos</option>
-                    @foreach ($technicians as $technician)
-                        <option value="{{ $technician->id }}" @selected($selectedTechnicianId === $technician->id)>
-                            {{ $technician->name }}
-                            @if ($technician->tech_code)
-                                ({{ $technician->tech_code }})
-                            @endif
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-2">
+            <div class="col-6 col-lg-2">
                 <label class="form-label">Estado</label>
                 <select name="status" class="form-select">
                     @foreach ($statusOptions as $value => $label)
@@ -57,8 +43,8 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-1 d-flex gap-2">
-                <button type="submit" class="btn btn-st flex-grow-1">Filtrar</button>
+            <div class="col-12 col-lg-1 d-grid d-lg-flex gap-2">
+                <button type="submit" class="btn btn-st">Filtrar</button>
                 <a href="{{ route('admin.returns.history') }}" class="btn btn-outline-secondary">Limpiar</a>
             </div>
         </div>

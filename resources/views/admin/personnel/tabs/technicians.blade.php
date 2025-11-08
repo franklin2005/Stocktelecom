@@ -54,6 +54,9 @@
                                                 <a href="{{ route('admin.technicians.transfers.history', $technician) }}" class="btn btn-sm btn-outline-secondary" title="Histórico de transferencias">
                                                     Transferencias
                                                 </a>
+                                                <a href="{{ route('admin.technicians.returns.history', $technician) }}" class="btn btn-sm btn-outline-info" title="Histórico de devoluciones">
+                                                    Devoluciones
+                                                </a>
 
                                                 @if ($canManageTechnicians)
                                                     <a href="{{ route('admin.personnel', ['tab' => 'technicians', 'edit_technician' => $technician->id]) }}" class="btn btn-sm btn-outline-primary" title="Editar técnico">

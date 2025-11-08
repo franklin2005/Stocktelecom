@@ -10,98 +10,79 @@
 
     @php
         $dashboardRole = auth()->user()->role ?? null;
+        $menuByRole = [
+            'super_admin' => [
+                ['label' => 'Dashboard', 'route' => 'admin.dashboard'],
+                ['label' => 'Devoluciones', 'route' => 'admin.returns'],
+                ['label' => 'Histórico de devoluciones', 'route' => 'admin.returns.history'],
+                ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements'],
+                ['label' => 'Histórico de usuarios', 'route' => 'admin.user-history'],
+                ['label' => 'Materiales', 'route' => 'admin.materials'],
+                ['label' => 'Crear material', 'route' => 'admin.materials.create'],
+                ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index'],
+                ['label' => 'Personal', 'route' => 'admin.personnel', 'params' => ['tab' => 'technicians']],
+                ['label' => 'Transferencias', 'route' => 'admin.transfers'],
+                ['label' => 'Técnicos', 'route' => 'admin.technicians.overview'],
+            ],
+            'admin' => [
+                ['label' => 'Dashboard', 'route' => 'admin.dashboard'],
+                ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements'],
+                ['label' => 'Histórico de usuarios', 'route' => 'admin.user-history'],
+                ['label' => 'Materiales', 'route' => 'admin.materials'],
+                ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index'],
+                ['label' => 'Personal', 'route' => 'admin.personnel', 'params' => ['tab' => 'technicians']],
+                ['label' => 'Técnicos', 'route' => 'admin.technicians.overview'],
+            ],
+            'logistics' => [
+                ['label' => 'Dashboard', 'route' => 'admin.dashboard'],
+                ['label' => 'Devoluciones', 'route' => 'admin.returns'],
+                ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements'],
+                ['label' => 'Histórico de devoluciones', 'route' => 'admin.returns.history'],
+                ['label' => 'Materiales', 'route' => 'admin.materials'],
+                ['label' => 'Crear material', 'route' => 'admin.materials.create'],
+                ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index'],
+                ['label' => 'Transferencias', 'route' => 'admin.transfers'],
+                ['label' => 'Técnicos', 'route' => 'admin.technicians.overview'],
+            ],
+        ];
+
+        $menuItems = $menuByRole[$dashboardRole] ?? [];
+        usort($menuItems, fn ($a, $b) => strcmp(mb_strtolower($a['label']), mb_strtolower($b['label'])));
+
+        $descriptions = [
+            'Dashboard' => 'Resumen general del panel administrativo.',
+            'Devoluciones' => 'Genera solicitudes para que los técnicos devuelvan material al almacén.',
+            'Histórico de devoluciones' => 'Revisa todas las devoluciones registradas.',
+            'Histórico de almacén' => 'Consulta los movimientos y ajustes del inventario central.',
+            'Histórico de usuarios' => 'Audita los cambios realizados sobre las cuentas.',
+            'Materiales' => 'Explora el catálogo y estado de cada material.',
+            'Crear material' => 'Da de alta nuevas plantillas de materiales.',
+            'Órdenes de trabajo' => 'Supervisa y administra las órdenes en curso.',
+            'Personal' => 'Gestiona técnicos, logística y otros perfiles.',
+            'Transferencias' => 'Controla los envíos desde el almacén hacia los técnicos.',
+            'Técnicos' => 'Consulta información consolidada de cada técnico.',
+        ];
     @endphp
 
     <div class="row g-4">
-        @if(in_array($dashboardRole, ['admin', 'super_admin'], true))
-            <div class="col-12 col-md-6 col-lg-4">
+        @forelse ($menuItems as $item)
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
                 <div class="card st-card h-100 shadow-sm">
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">Personal</h5>
-                        <p class="st-muted mb-3">Gestiona técnicos, logística y niveles de administración.</p>
-                        <div class="mt-auto">
-                            <a href="{{ route('admin.personnel', ['tab' => 'technicians']) }}" class="btn btn-st">
-                                Gestionar personal
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        @if($dashboardRole === 'super_admin')
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card st-card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">Transferencias</h5>
-                        <p class="st-muted mb-3">Gestiona movimientos de materiales entre almacén y técnicos.</p>
-                        <div class="mt-auto">
-                            <a href="{{ route('admin.transfers') }}" class="btn btn-st">
-                                Ver transferencias
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="card st-card h-100 shadow-sm">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">Materiales</h5>
-                    <p class="st-muted mb-3">Revisa catálogos, números de serie y disponibilidad.</p>
-                    <div class="mt-auto">
-                        <a href="{{ route('admin.materials') }}" class="btn btn-st">
-                            Gestionar materiales
+                        <h5 class="card-title">{{ $item['label'] }}</h5>
+                        <p class="st-muted mb-3 flex-grow-1">
+                            {{ $descriptions[$item['label']] ?? 'Acceso directo a este módulo.' }}
+                        </p>
+                        <a href="{{ route($item['route'], $item['params'] ?? []) }}" class="btn btn-st">
+                            Abrir
                         </a>
                     </div>
                 </div>
             </div>
-        </div>
-
-        @if(in_array($dashboardRole, ['admin', 'super_admin'], true))
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card st-card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">Histórico de usuarios</h5>
-                        <p class="st-muted mb-3">Consulta las acciones realizadas sobre las cuentas de usuario.</p>
-                        <div class="mt-auto">
-                            <a href="{{ route('admin.user-history') }}" class="btn btn-st">
-                                Ver histórico
-                            </a>
-                        </div>
-                    </div>
-                </div>
+        @empty
+            <div class="col-12">
+                <div class="alert alert-warning mb-0">No hay accesos disponibles para tu perfil.</div>
             </div>
-
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card st-card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">Órdenes de trabajo</h5>
-                        <p class="st-muted mb-3">Monitorea órdenes creadas, pendientes y consumos registrados.</p>
-                        <div class="mt-auto">
-                            <a href="{{ route('admin.work-orders.index') }}" class="btn btn-st">
-                                Ver órdenes
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @else
-            {{-- Para perfiles como logística --}}
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="card st-card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">Histórico del almacén</h5>
-                        <p class="st-muted mb-3">Consulta los movimientos y ajustes del inventario.</p>
-                        <div class="mt-auto">
-                            <a href="{{ route('admin.warehouse-movements') }}" class="btn btn-st">
-                                Ver histórico
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
+        @endforelse
     </div>
 @endsection

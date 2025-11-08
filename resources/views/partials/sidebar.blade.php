@@ -2,6 +2,10 @@
     $role = $role ?? (auth()->user()->role ?? null);
     $menuItems = $menuItems ?? [];
 
+    usort($menuItems, function ($a, $b) {
+        return strcmp(mb_strtolower($a['label']), mb_strtolower($b['label']));
+    });
+
     // Traducción de roles
     $roleLabels = [
         'technician'   => 'Técnico',
