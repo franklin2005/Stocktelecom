@@ -111,6 +111,10 @@
                         $serialsByMaterial = $availableSerials->groupBy('material_id');
                         $serializedLookup = $serializedInventory;
                     @endphp
+                    <div class="input-group input-group-sm mb-3">
+                        <span class="input-group-text">Nº serie</span>
+                        <input type="text" class="form-control" id="serialSearchAdmin" placeholder="Buscar serie…" autocomplete="off">
+                    </div>
                     <form method="POST" action="{{ route('admin.transfers.cart.add') }}">
                         @csrf
                         <input type="hidden" name="intent" value="serial">
@@ -139,10 +143,10 @@
                                     </h2>
                                     <div id="collapse-{{ $accordionId }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ $accordionId }}" data-bs-parent="#warehouseSerials">
                                         <div class="accordion-body">
-                                            <ul class="list-unstyled mb-0">
+                                            <ul class="list-unstyled mb-0" data-serial-list>
                                                 @foreach ($serialGroup as $serial)
                                                     @php $inCart = in_array($serial->id, $serialsInCart, true); @endphp
-                                                    <li class="mb-2">
+                                                    <li class="mb-2" data-serial-text="{{ strtolower($serial->serial_number) }}">
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="checkbox" value="{{ $serial->id }}" id="serial-{{ $serial->id }}" name="serial_ids[]" {{ $inCart ? 'disabled' : '' }}>
                                                             <label class="form-check-label" for="serial-{{ $serial->id }}">
@@ -155,6 +159,7 @@
                                                     </li>
                                                 @endforeach
                                             </ul>
+                                            <p class="st-muted small mb-0 d-none" data-no-results>Sin resultados para este material.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -296,6 +301,38 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+  const input = document.getElementById('serialSearchAdmin');
+  const accordion = document.getElementById('warehouseSerials');
+  if (!input || !accordion) return;
+
+  function filter(term) {
+    const lists = accordion.querySelectorAll('[data-serial-list]');
+    lists.forEach(listEl => {
+      const items = Array.from(listEl.querySelectorAll('[data-serial-text]'));
+      let visible = 0;
+      items.forEach(li => {
+        const haystack = (li.getAttribute('data-serial-text') || '').trim();
+        const match = !term || haystack.includes(term);
+        li.classList.toggle('d-none', !match);
+        if (match) visible++;
+      });
+      const emptyMsg = listEl.parentElement.querySelector('[data-no-results]');
+      const noResults = visible === 0;
+      listEl.classList.toggle('d-none', noResults);
+      if (emptyMsg) emptyMsg.classList.toggle('d-none', !noResults);
+    });
+  }
+
+  input.addEventListener('input', () => {
+    filter(input.value.trim().toLowerCase());
+  });
+})();
+</script>
+@endpush
 
 @push('scripts')
 <script>

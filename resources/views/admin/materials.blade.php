@@ -166,7 +166,7 @@
                                 <label for="remove_quantity" class="form-label">Cantidad a retirar</label>
                                 <input type="number" min="1" class="form-control" id="remove_quantity" name="quantity">
                             </div>
-                            <button type="submit" class="btn btn-danger-st w-100">Eliminar del almacén</button>
+                            <button type="submit" class="btn btn-outline-danger w-100">Eliminar del almacén</button>
                         </form>
                     </div>
                 </div>
@@ -192,6 +192,10 @@
                             </div>
                             <div class="mb-3">
                                 <label for="remove_serial_ids" class="form-label">Series a retirar</label>
+                                <div class="input-group input-group-sm mb-2">
+                                    <span class="input-group-text">Nº serie</span>
+                                    <input type="text" class="form-control" id="serialSearchMaterials" placeholder="Buscar serie…" autocomplete="off">
+                                </div>
                                 <select id="remove_serial_ids" name="serial_ids[]" class="form-select" multiple size="6" required>
                                     @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
                                         @if (($material->serials ?? collect())->isNotEmpty())
@@ -207,108 +211,47 @@
                                 </select>
                                 <small class="st-muted">Selecciona cada número de serie que deseas dar de baja.</small>
                             </div>
-                            <button type="submit" class="btn btn-danger-st w-100">Eliminar series</button>
+                            <button type="submit" class="btn btn-outline-danger w-100">Eliminar series</button>
                         </form>
-                    </div>
-                </div>
-
-                {{-- Asignar a técnico (no serializado) --}}
-                <div class="card st-card shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Asignar a técnico (no serializado)</h5>
-                        <form method="POST" action="{{ route('admin.materials.assign') }}">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="assign_technician_id" class="form-label">Técnico</label>
-                                <select id="assign_technician_id" name="technician_id" class="form-select" required>
-                                    <option value="">Selecciona un técnico</option>
-                                    @foreach ($technicians as $technician)
-                                        <option value="{{ $technician->id }}" {{ old('technician_id') == $technician->id ? 'selected' : '' }}>
-                                            {{ $technician->name }} ({{ $technician->tech_code }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="assign_material_id" class="form-label">Material</label>
-                                <select id="assign_material_id" name="material_id" class="form-select" required>
-                                    <option value="">Selecciona un material</option>
-                                    @foreach ($materials->where('is_serialized', false)->where('is_active', true) as $material)
-                                        <option value="{{ $material->id }}" {{ old('material_id') == $material->id ? 'selected' : '' }}>
-                                            {{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="assign_quantity" class="form-label">Cantidad</label>
-                                <input type="number" min="1" class="form-control" id="assign_quantity" name="quantity" value="{{ old('quantity') }}">
-                            </div>
-                            <button type="submit" class="btn btn-success-st w-100">Generar solicitud</button>
-                        </form>
-                    </div>
-                </div>
-
-                {{-- Asignar a técnico (serializado) --}}
-                <div class="card st-card shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Asignar a técnico (serializado)</h5>
-                        <form method="POST" action="{{ route('admin.materials.assign') }}">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="assign_serial_technician_id" class="form-label">Técnico</label>
-                                <select id="assign_serial_technician_id" name="technician_id" class="form-select" required>
-                                    <option value="">Selecciona un técnico</option>
-                                    @foreach ($technicians as $technician)
-                                        <option value="{{ $technician->id }}" {{ old('technician_id') == $technician->id ? 'selected' : '' }}>
-                                            {{ $technician->name }} ({{ $technician->tech_code }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="assign_serial_material_id" class="form-label">Material</label>
-                                <select id="assign_serial_material_id" name="material_id" class="form-select" required>
-                                    <option value="">Selecciona un material</option>
-                                    @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
-                                        <option value="{{ $material->id }}" {{ old('material_id') == $material->id ? 'selected' : '' }}>
-                                            {{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="assign_serial_ids" class="form-label">Series disponibles</label>
-                                <select id="assign_serial_ids" name="serial_ids[]" class="form-select" multiple size="6" required>
-                                    @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
-                                        @if (($material->serials ?? collect())->isNotEmpty())
-                                            <optgroup label="{{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }}">
-                                                @foreach ($material->serials as $serial)
-                                                    <option value="{{ $serial->id }}" @selected(collect(old('serial_ids', []))->contains($serial->id))>
-                                                        {{ $serial->serial_number }}
-                                                    </option>
-                                                @endforeach
-                                            </optgroup>
-                                        @endif
-                                    @endforeach
-                                </select>
-                                <small class="st-muted">Selecciona solo series del material elegido.</small>
-                            </div>
-                            <button type="submit" class="btn btn-success-st w-100">Generar solicitud</button>
-                        </form>
-                    </div>
-                </div>
-            @else
-                <div class="card st-card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Acciones restringidas</h5>
-                        <p class="st-muted mb-0">
-                            Solo el personal de logística y el superadministrador pueden registrar ingresos, salidas o asignaciones de materiales.
-                            Puedes consultar el stock y revisar el histórico, pero sin capacidad de mover inventario desde este módulo.
-                        </p>
                     </div>
                 </div>
             @endif
+            
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+  const input = document.getElementById('serialSearchMaterials');
+  const select = document.getElementById('remove_serial_ids');
+  if (!input || !select) return;
+
+  function filterOptions(term) {
+    const groups = Array.from(select.querySelectorAll('optgroup'));
+    const options = Array.from(select.querySelectorAll('option'));
+    const t = term.trim().toLowerCase();
+
+    if (!t) {
+      options.forEach(o => o.classList.remove('d-none'));
+      groups.forEach(g => g.classList.remove('d-none'));
+      return;
+    }
+
+    options.forEach(o => {
+      const txt = (o.textContent || '').toLowerCase();
+      const match = txt.includes(t);
+      o.classList.toggle('d-none', !match);
+    });
+
+    groups.forEach(g => {
+      const visibleChild = Array.from(g.children).some(ch => !ch.classList.contains('d-none'));
+      g.classList.toggle('d-none', !visibleChild);
+    });
+  }
+
+  input.addEventListener('input', () => filterOptions(input.value));
+})();
+</script>
+@endpush

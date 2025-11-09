@@ -48,19 +48,48 @@
                 <tbody>
                     @forelse ($movements as $movement)
                         @php
-                            $type = $movement->movement_type; // p.ej. 'transfer', 'adjustment', 'deletion'...
-                            $badgeClass = match($type) {
-                                'transfer'   => 'badge-accent',
-                                'adjustment' => 'badge-soft',
-                                'deletion', 'removal', 'write_off' => 'badge-danger-soft',
-                                default      => 'badge-soft',
+                            // ------- Traducciones de movement_type (tipo de movimiento) -------
+                            $movementType = $movement->movement_type; // p.ej. transfer_in, transfer_out, adjustment, deletion...
+                            $movementTypeLabels = [
+                                'transfer_in'       => 'Transferencia (entrada)',
+                                'transfer_out'      => 'Transferencia (salida)',
+                                'transfer'          => 'Transferencia',
+                                'adjustment'        => 'Ajuste',
+                                'manual_adjustment' => 'Ajuste manual',
+                                'deletion'          => 'Baja',
+                                'removal'           => 'Baja',
+                                'write_off'         => 'Baja',
+                            ];
+                            $typeLabel = $movementTypeLabels[$movementType] ?? ucfirst(str_replace('_', ' ', $movementType));
+
+                            // Clases para badge según el tipo de movimiento
+                            $badgeClass = match($movementType) {
+                                'transfer', 'transfer_in', 'transfer_out' => 'badge-accent',
+                                'adjustment', 'manual_adjustment'         => 'badge-soft',
+                                'deletion', 'removal', 'write_off'        => 'badge-danger-soft',
+                                default                                    => 'badge-soft',
                             };
+
+                            // ------- Traducciones de reference_type (tipo de referencia) -------
+                            $refType = $movement->reference_type; // valores reales: transfer, work_order, manual_adjustment
+                            $refTypeLabels = [
+                                'transfer'          => 'Transferencia',
+                                'work_order'        => 'Orden de trabajo',
+                                'manual_adjustment' => 'Ajuste manual',
+                            ];
+                            $refLabel = $refType ? ($refTypeLabels[$refType] ?? ucfirst(str_replace('_', ' ', $refType))) : null;
+
+                            // Quien envía (solo aplica a transferencias)
+                            $senderName = null;
+                            if ($refType === 'transfer') {
+                                $senderName = $movement->transfer?->initiator?->name;
+                            }
                         @endphp
                         <tr>
                             <td>{{ $movement->performed_at?->format('d/m/Y H:i') ?? $movement->created_at->format('d/m/Y H:i') }}</td>
                             <td>
                                 <span class="badge {{ $badgeClass }} text-uppercase">
-                                    {{ str_replace('_', ' ', $type) }}
+                                    {{ $typeLabel }}
                                 </span>
                             </td>
                             <td>
@@ -74,23 +103,15 @@
                             <td>{{ $movement->toLocation->name ?? '—' }}</td>
                             <td>{{ $movement->quantity }}</td>
                             <td>
-                                @if ($movement->reference_type && $movement->reference_id)
+                                @if ($refType && $movement->reference_id)
                                     <span class="badge badge-soft">
-                                        {{ $movement->reference_type }} #{{ $movement->reference_id }}
+                                        {{ $refLabel }} #{{ $movement->reference_id }}
                                     </span>
                                 @else
                                     <span class="st-muted">—</span>
                                 @endif
                             </td>
-                            <td>
-                                @php
-                                    $senderName = null;
-                                    if ($movement->reference_type === 'transfer') {
-                                        $senderName = $movement->transfer?->initiator?->name;
-                                    }
-                                @endphp
-                                {{ $senderName ?? '—' }}
-                            </td>
+                            <td>{{ $senderName ?? '—' }}</td>
                             <td>{{ $movement->performer->name ?? 'Sistema' }}</td>
                         </tr>
                     @empty

@@ -6,8 +6,6 @@
             <h1 class="h3 mb-1">Devoluciones desde técnico</h1>
             <p class="st-muted mb-0">Solicita a un técnico la devolución de materiales al almacén principal.</p>
         </div>
-        <div class="d-flex gap-2">
-        </div>
     </div>
 
     @if (session('status'))
@@ -30,6 +28,7 @@
 
     <div class="row g-4 mb-4">
         <div class="col-12 col-xxl-8">
+            {{-- MATERIALES NO SERIALIZADOS --}}
             <div class="st-card p-3 mb-4">
                 <h2 class="h5 mb-1">Materiales no serializados</h2>
                 <p class="st-muted small mb-3">
@@ -60,6 +59,12 @@
                                         $cartReserved = $reservedQuantities[$reservedKey] ?? 0;
                                         $available = max(($item->quantity ?? 0) - $pending - $cartReserved, 0);
                                     @endphp
+
+                                    {{-- Si no hay disponibilidad, saltar el material --}}
+                                    @if ($available === 0)
+                                        @continue
+                                    @endif
+
                                     <tr>
                                         <td>
                                             {{ ucfirst($item->material->type) }}
@@ -84,9 +89,8 @@
                                                     max="{{ $available }}"
                                                     value="1"
                                                     style="width: 90px;"
-                                                    {{ $available === 0 ? 'disabled' : '' }}
                                                 >
-                                                <button type="submit" class="btn btn-sm btn-outline-primary" {{ $available === 0 ? 'disabled' : '' }}>
+                                                <button type="submit" class="btn btn-sm btn-outline-primary">
                                                     Añadir
                                                 </button>
                                             </form>
@@ -99,6 +103,7 @@
                 @endif
             </div>
 
+            {{-- MATERIALES SERIALIZADOS --}}
             <div class="st-card p-3 mb-4">
                 <h2 class="h5 mb-1">Materiales serializados</h2>
                 <p class="st-muted small mb-3">
@@ -151,6 +156,7 @@
                 @endif
             </div>
 
+            {{-- LISTA DE DEVOLUCIÓN --}}
             <div class="st-card p-3">
                 <div class="d-flex align-items-center justify-content-between mb-3">
                     <h2 class="h5 mb-0">Lista de devolución</h2>
@@ -208,6 +214,7 @@
             </div>
         </div>
 
+        {{-- PANEL LATERAL --}}
         <div class="col-12 col-xxl-4">
             <div class="st-card p-3 mb-4">
                 <h2 class="h5 mb-3">Seleccionar técnico</h2>
@@ -272,7 +279,6 @@
         form.addEventListener('submit', function (event) {
             const totalUnits = Number(form.dataset.totalUnits || 0);
             const technicianName = @json(optional($selectedTechnician)->name ?? 'el técnico');
-
             const message = `Solicitarás la devolución de ${totalUnits} ${totalUnits === 1 ? 'elemento' : 'elementos'} a ${technicianName}. ¿Deseas continuar?`;
 
             if (!window.confirm(message)) {

@@ -2,18 +2,23 @@
 
 @php
     $statusOptions = [
-        '' => 'Todos',
-        'pending' => 'Pendiente',
-        'accepted' => 'Aceptada',
-        'rejected' => 'Rechazada',
+        ''          => 'Todos',
+        'pending'   => 'Pendiente',
+        'accepted'  => 'Aceptada',
+        'rejected'  => 'Rechazada',
         'cancelled' => 'Cancelada',
     ];
 
     $statusClasses = [
-        'pending' => 'badge-warning-soft',
-        'accepted' => 'badge-success-soft',
-        'rejected' => 'badge-danger-soft',
+        'pending'   => 'badge-warning-soft',
+        'accepted'  => 'badge-success-soft',
+        'rejected'  => 'badge-danger-soft',
         'cancelled' => 'badge-danger-soft',
+    ];
+
+    // Alias por si la BD trae "canceled"
+    $statusAliases = [
+        'canceled' => 'cancelled',
     ];
 @endphp
 
@@ -70,12 +75,20 @@
                     <tbody>
                         @foreach ($returns as $return)
                             @php
-                                $statusClass = $statusClasses[$return->status] ?? 'badge-soft';
+                                // Normaliza el estado para buscar en los mapas
+                                $rawStatus   = strtolower((string) $return->status);
+                                $statusKey   = $statusAliases[$rawStatus] ?? $rawStatus;
+
+                                $statusClass = $statusClasses[$statusKey] ?? 'badge-soft';
+                                $statusLabel = $statusOptions[$statusKey] ?? ucfirst($rawStatus);
                             @endphp
                             <tr>
                                 <td>{{ $return->order_number }}</td>
                                 <td>{{ $return->created_at->format('d/m/Y H:i') }}</td>
-                                <td><span class="badge {{ $statusClass }}">{{ ucfirst($return->status) }}</span></td>
+
+                                {{-- usa el label mapeado en español --}}
+                                <td><span class="badge {{ $statusClass }}">{{ $statusLabel }}</span></td>
+
                                 <td>{{ $return->fromLocation->name ?? '—' }}</td>
                                 <td>{{ $return->toLocation->name ?? '—' }}</td>
                                 <td>

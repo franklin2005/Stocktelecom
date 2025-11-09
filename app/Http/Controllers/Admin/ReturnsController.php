@@ -29,77 +29,108 @@ class ReturnsController extends Controller
     }
 
     public function index(Request $request): View
-    {
-        $user = $request->user();
+{
+    $user = $request->user();
 
-        $this->ensureCanManageReturns($user);
+    $this->ensureCanManageReturns($user);
 
-        $technicians = User::technicians()
-            ->orderBy('name')
+    $technicians = User::technicians()
+        ->orderBy('name')
+        ->get();
+
+    $selectedTechnicianId = (int) $request->query(
+        'technician_id',
+        (int) $request->session()->get(self::SELECTED_TECHNICIAN_SESSION_KEY, 0)
+    );
+
+    $selectedTechnician = $technicians->firstWhere('id', $selectedTechnicianId) ?: null;
+
+    if ($selectedTechnician) {
+        $request->session()->put(self::SELECTED_TECHNICIAN_SESSION_KEY, $selectedTechnician->id);
+    } else {
+        $request->session()->forget(self::SELECTED_TECHNICIAN_SESSION_KEY);
+    }
+
+    $warehouse = $this->warehouseLocation();
+    $technicianLocation = $selectedTechnician ? $this->ensureTechnicianLocation($selectedTechnician) : null;
+
+    $inventory = collect();
+    $availableSerials = collect();
+    $pendingReservations = [
+        'quantities' => [],
+        'serial_ids' => [],
+    ];
+
+    if ($technicianLocation) {
+        $inventory = Inventory::query()
+            ->with('material')
+            ->where('location_id', $technicianLocation->id)
+            ->orderBy('material_id')
             ->get();
 
-        $selectedTechnicianId = (int) $request->query(
-            'technician_id',
-            (int) $request->session()->get(self::SELECTED_TECHNICIAN_SESSION_KEY, 0)
-        );
+        $availableSerials = MaterialSerial::query()
+            ->with('material')
+            ->where('current_location_id', $technicianLocation->id)
+            ->where('status', 'assigned')
+            ->orderBy('material_id')
+            ->orderBy('serial_number')
+            ->get();
 
-        $selectedTechnician = $technicians->firstWhere('id', $selectedTechnicianId) ?: null;
-
-        if ($selectedTechnician) {
-            $request->session()->put(self::SELECTED_TECHNICIAN_SESSION_KEY, $selectedTechnician->id);
-        } else {
-            $request->session()->forget(self::SELECTED_TECHNICIAN_SESSION_KEY);
-        }
-
-        $warehouse = $this->warehouseLocation();
-        $technicianLocation = $selectedTechnician ? $this->ensureTechnicianLocation($selectedTechnician) : null;
-
-        $inventory = collect();
-        $availableSerials = collect();
-        $pendingReservations = [
-            'quantities' => [],
-            'serial_ids' => [],
-        ];
-
-        if ($technicianLocation) {
-            $inventory = Inventory::query()
-                ->with('material')
-                ->where('location_id', $technicianLocation->id)
-                ->orderBy('material_id')
-                ->get();
-
-            $availableSerials = MaterialSerial::query()
-                ->with('material')
-                ->where('current_location_id', $technicianLocation->id)
-                ->where('status', 'assigned')
-                ->orderBy('material_id')
-                ->orderBy('serial_number')
-                ->get();
-
-            $pendingReservations = $this->pendingReturnReservations($technicianLocation);
-        }
-
-        $cartData = $this->prepareCart($request, $technicianLocation, $inventory, $availableSerials, $pendingReservations);
-        $cartItems = $cartData['items'];
-        $cartSummary = $cartData['summary'];
-        $reservedQuantities = $cartData['reserved_quantities'];
-        $serialsInCart = $cartData['serials_in_cart'];
-
-        return view('admin.returns', [
-            'warehouse' => $warehouse,
-            'technicians' => $technicians,
-            'selectedTechnician' => $selectedTechnician,
-            'technicianLocation' => $technicianLocation,
-            'nonSerializedInventory' => $inventory->filter(fn ($item) => $item->material && ! $item->material->is_serialized)->values(),
-            'serializedInventory' => $inventory->filter(fn ($item) => $item->material && $item->material->is_serialized)->values()->keyBy('material_id'),
-            'availableSerials' => $availableSerials,
-            'pendingReservations' => $pendingReservations,
-            'cartItems' => $cartItems,
-            'cartSummary' => $cartSummary,
-            'reservedQuantities' => $reservedQuantities,
-            'serialsInCart' => $serialsInCart,
-        ]);
+        $pendingReservations = $this->pendingReturnReservations($technicianLocation);
     }
+
+    $cartData = $this->prepareCart($request, $technicianLocation, $inventory, $availableSerials, $pendingReservations);
+    $cartItems = $cartData['items'];
+    $cartSummary = $cartData['summary'];
+    $reservedQuantities = $cartData['reserved_quantities'];
+    $serialsInCart = $cartData['serials_in_cart'];
+
+    // Filtrar no-serializados para mostrar solo los que realmente tienen disponibilidad (>0)
+    $nonSerializedInventoryFiltered = $inventory
+        ->filter(fn ($item) => $item->material && ! $item->material->is_serialized)
+        ->filter(function ($item) use ($pendingReservations, $reservedQuantities) {
+            $reservedKey  = 'quantity-' . $item->material_id;
+            $pending      = $pendingReservations['quantities'][$reservedKey] ?? 0;
+            $cartReserved = $reservedQuantities[$reservedKey] ?? 0;
+            $available    = max(($item->quantity ?? 0) - $pending - $cartReserved, 0);
+            return $available > 0;
+        })
+        ->values();
+
+    // Ocultar seriales que ya están reservados en otra solicitud o añadidos al carrito
+    $availableSerialsFiltered = $availableSerials
+        ->reject(function ($serial) use ($pendingReservations, $serialsInCart) {
+            return isset($pendingReservations['serial_ids'][$serial->id])
+                || in_array($serial->id, $serialsInCart, true);
+        })
+        ->values();
+
+    return view('admin.returns', [
+        'warehouse' => $warehouse,
+        'technicians' => $technicians,
+        'selectedTechnician' => $selectedTechnician,
+        'technicianLocation' => $technicianLocation,
+
+        // Usar colección filtrada:
+        'nonSerializedInventory' => $nonSerializedInventoryFiltered,
+
+        // Mantener agrupado por material para totales/etiquetas en la vista:
+        'serializedInventory' => $inventory
+            ->filter(fn ($item) => $item->material && $item->material->is_serialized)
+            ->values()
+            ->keyBy('material_id'),
+
+        // Usar seriales filtrados:
+        'availableSerials' => $availableSerialsFiltered,
+
+        'pendingReservations' => $pendingReservations,
+        'cartItems' => $cartItems,
+        'cartSummary' => $cartSummary,
+        'reservedQuantities' => $reservedQuantities,
+        'serialsInCart' => $serialsInCart,
+    ]);
+}
+
 
     public function addToCart(Request $request): RedirectResponse
     {
