@@ -29,7 +29,6 @@
                 <small class="st-muted">Ubicación: {{ $location->name }}</small>
             </p>
         </div>
-        <a href="{{ $backUrl }}" class="btn btn-outline-secondary btn-sm">Volver</a>
     </div>
 
     <form method="GET" class="st-card p-3 mb-4">

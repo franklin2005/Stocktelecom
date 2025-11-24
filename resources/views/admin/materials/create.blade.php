@@ -33,7 +33,6 @@
         <h1 class="h3 mb-1">Crear material</h1>
         <p class="st-muted mb-0">Da de alta nuevos materiales usando plantillas y define si son serializados.</p>
     </div>
-    <a href="{{ route('admin.materials') }}" class="btn btn-outline-secondary">Volver al listado</a>
 </div>
 
 @if (session('status'))
