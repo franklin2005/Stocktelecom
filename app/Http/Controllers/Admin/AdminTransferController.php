@@ -6,24 +6,25 @@ use App\Http\Controllers\Controller;
 use App\Models\Inventory;
 use App\Models\Material;
 use App\Models\MaterialSerial;
-use App\Models\StockLocation;
-use App\Models\Transfer;
-use App\Models\TransferItem;
 use App\Models\User;
+use App\Services\AdminTransfer\AdminTransferCartService;
+use App\Services\AdminTransfer\AdminTransferCreationService;
+use App\Services\AdminTransfer\AdminTransferLocationService;
+use App\Services\AdminTransfer\AdminTransferSerialService;
 use App\Services\InventoryService;
 use App\Services\StockMovementLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use RuntimeException;
 
 class AdminTransferController extends Controller
 {
-    private const CART_SESSION_KEY = 'admin_transfer_cart';
-
     public function __construct(
+        private readonly AdminTransferCartService $cartService,
+        private readonly AdminTransferSerialService $serialService,
+        private readonly AdminTransferLocationService $locationService,
+        private readonly AdminTransferCreationService $creationService,
         private readonly InventoryService $inventoryService,
         private readonly StockMovementLogger $movementLogger,
     ) {
@@ -36,11 +37,11 @@ class AdminTransferController extends Controller
     {
         $user = $request->user();
 
-        if (! $this->canInitiateTransfers($user)) {
+        if (! $this->locationService->canInitiateTransfers($user)) {
             abort(403);
         }
 
-        $warehouse = $this->warehouseLocation();
+        $warehouse = $this->locationService->warehouseLocation();
 
         $inventory = Inventory::query()
             ->with('material')
@@ -60,7 +61,7 @@ class AdminTransferController extends Controller
             ->orderBy('serial_number')
             ->get();
 
-        $cartData = $this->prepareCart($request, $warehouse, $inventory, $availableSerials, (int) $user->id);
+        $cartData = $this->cartService->prepareCart($request, $warehouse, $inventory, $availableSerials, (int) $user->id);
         $cartItems = $cartData['items'];
         $cartSummary = $cartData['summary'];
         $reservedQuantities = $cartData['reserved_quantities'];
@@ -103,11 +104,11 @@ class AdminTransferController extends Controller
     {
         $user = $request->user();
 
-        if (! $this->canInitiateTransfers($user)) {
+        if (! $this->locationService->canInitiateTransfers($user)) {
             abort(403);
         }
 
-        $warehouse = $this->warehouseLocation();
+        $warehouse = $this->locationService->warehouseLocation();
         $inventory = Inventory::query()
             ->with('material')
             ->where('location_id', $warehouse->id)
@@ -119,7 +120,7 @@ class AdminTransferController extends Controller
             return back()->withErrors(['cart' => 'No se pudo determinar la accion solicitada.']);
         }
 
-        $cart = $this->getCart($request);
+        $cart = $this->cartService->getCart($request);
 
         if ($intent === 'quantity') {
             $validated = $request->validate([
@@ -154,7 +155,7 @@ class AdminTransferController extends Controller
                 'quantity' => $requested + $reserved,
             ];
 
-            $this->saveCart($request, $cart);
+            $this->cartService->saveCart($request, $cart);
 
             return back()->with('status', 'Se agregaron ' . $requested . ' unidades de ' . ucfirst($material->type) . ' a la lista.');
         }
@@ -176,7 +177,7 @@ class AdminTransferController extends Controller
         }
 
         try {
-            $reservedSerials = $this->reserveSerials($warehouse, $serialIds->all(), (int) $user->id);
+            $reservedSerials = $this->serialService->reserveSerials($warehouse, $serialIds->all(), (int) $user->id);
         } catch (RuntimeException $exception) {
             return back()->withErrors(['serial_ids' => $exception->getMessage()]);
         }
@@ -189,7 +190,7 @@ class AdminTransferController extends Controller
             ];
         }
 
-        $this->saveCart($request, $cart);
+        $this->cartService->saveCart($request, $cart);
 
         return back()->with('status', 'Se agregaron ' . $reservedSerials->count() . ' numeros de serie a la lista.');
     }
@@ -201,11 +202,11 @@ class AdminTransferController extends Controller
     {
         $user = $request->user();
 
-        if (! $this->canInitiateTransfers($user)) {
+        if (! $this->locationService->canInitiateTransfers($user)) {
             abort(403);
         }
 
-        $cart = $this->getCart($request);
+        $cart = $this->cartService->getCart($request);
 
         if (! isset($cart[$itemKey])) {
             return back()->withErrors(['cart' => 'El elemento seleccionado ya no estaba en la lista.']);
@@ -214,11 +215,11 @@ class AdminTransferController extends Controller
         $item = $cart[$itemKey];
 
         if (($item['type'] ?? null) === 'serial' && isset($item['serial_id'])) {
-            $this->releaseSerialReservations([(int) $item['serial_id']], (int) $user->id);
+            $this->serialService->releaseSerialReservations([(int) $item['serial_id']], (int) $user->id);
         }
 
         unset($cart[$itemKey]);
-        $this->saveCart($request, $cart);
+        $this->cartService->saveCart($request, $cart);
 
         return back()->with('status', 'Elemento retirado de la lista.');
     }
@@ -230,11 +231,11 @@ class AdminTransferController extends Controller
     {
         $user = $request->user();
 
-        if (! $this->canInitiateTransfers($user)) {
+        if (! $this->locationService->canInitiateTransfers($user)) {
             abort(403);
         }
 
-        $cart = $this->getCart($request);
+        $cart = $this->cartService->getCart($request);
 
         $serialIds = collect($cart)
             ->filter(fn ($item) => is_array($item) && ($item['type'] ?? null) === 'serial' && isset($item['serial_id']))
@@ -243,10 +244,10 @@ class AdminTransferController extends Controller
             ->all();
 
         if (! empty($serialIds)) {
-            $this->releaseSerialReservations($serialIds, (int) $user->id);
+            $this->serialService->releaseSerialReservations($serialIds, (int) $user->id);
         }
 
-        $this->clearCartSession($request);
+        $this->cartService->clearCartSession($request);
 
         return back()->with('status', 'Se vacio la lista de transferencia.');
     }
@@ -258,11 +259,11 @@ class AdminTransferController extends Controller
     {
         $user = $request->user();
 
-        if (! $this->canInitiateTransfers($user)) {
+        if (! $this->locationService->canInitiateTransfers($user)) {
             abort(403);
         }
 
-        $warehouse = $this->warehouseLocation();
+        $warehouse = $this->locationService->warehouseLocation();
         $inventory = Inventory::query()
             ->with('material')
             ->where('location_id', $warehouse->id)
@@ -277,7 +278,7 @@ class AdminTransferController extends Controller
             })
             ->get();
 
-        $cartData = $this->prepareCart($request, $warehouse, $inventory, $availableSerials, (int) $user->id);
+        $cartData = $this->cartService->prepareCart($request, $warehouse, $inventory, $availableSerials, (int) $user->id);
         $cartItems = $cartData['items'];
         $cartSummary = $cartData['summary'];
 
@@ -295,7 +296,7 @@ class AdminTransferController extends Controller
             return back()->withErrors(['technician_id' => 'Selecciona un tecnico valido.']);
         }
 
-        $technicianLocation = $this->ensureTechnicianLocation($technician);
+        $technicianLocation = $this->locationService->ensureTechnicianLocation($technician);
         $userId = (int) $user->id;
 
         $materialIds = collect($cartItems)->pluck('material_id')->filter()->unique()->values();
@@ -309,420 +310,14 @@ class AdminTransferController extends Controller
             ->values();
 
         try {
-            DB::transaction(function () use ($warehouse, $technicianLocation, $userId, $materials, $serialIds, $cartItems) {
-                $transfer = Transfer::create([
-                    'order_number' => $this->generateTransferNumber(),
-                    'type' => 'transfer',
-                    'from_location_id' => $warehouse->id,
-                    'to_location_id' => $technicianLocation->id,
-                    'initiator_user_id' => $userId,
-                    'requires_receiver_accept' => true,
-                    'status' => 'pending',
-                    'notes' => null,
-                ]);
-
-                $serialModels = $serialIds->isEmpty()
-                    ? collect()
-                    : MaterialSerial::query()
-                        ->whereIn('id', $serialIds->all())
-                        ->lockForUpdate()
-                        ->get()
-                        ->keyBy('id');
-
-                foreach ($cartItems as $item) {
-                    $material = $materials[$item['material_id']] ?? null;
-
-                    if (! $material) {
-                        throw new RuntimeException('No se pudo recuperar el material seleccionado.');
-                    }
-
-                    if ($item['type'] === 'quantity') {
-                        $this->inventoryService->decrease($warehouse, $material, (int) $item['quantity']);
-
-                        TransferItem::create([
-                            'transfer_id' => $transfer->id,
-                            'material_id' => $material->id,
-                            'quantity' => (int) $item['quantity'],
-                        ]);
-
-                        $this->movementLogger->log(
-                            'transfer_out',
-                            $material,
-                            null,
-                            $warehouse,
-                            $technicianLocation,
-                            (int) $item['quantity'],
-                            'transfer',
-                            $transfer->id,
-                            $userId
-                        );
-
-                        continue;
-                    }
-
-                    $serial = $serialModels[$item['serial_id']] ?? null;
-
-                    if (! $serial || $serial->current_location_id !== $warehouse->id) {
-                        throw new RuntimeException('Alguno de los numeros de serie seleccionados ya no esta disponible.');
-                    }
-
-                    if ((int) $serial->reserved_by_user_id !== $userId || $serial->status !== 'reserved') {
-                        throw new RuntimeException('El numero de serie ' . $serial->serial_number . ' ya no esta reservado para tu usuario.');
-                    }
-
-                    $serial->update([
-                        'status' => 'assigned',
-                        'current_location_id' => null,
-                        'reserved_by_user_id' => null,
-                        'reserved_at' => null,
-                    ]);
-
-                    $this->inventoryService->decrease($warehouse, $material, 1);
-
-                    TransferItem::create([
-                        'transfer_id' => $transfer->id,
-                        'material_id' => $material->id,
-                        'material_serial_id' => $serial->id,
-                    ]);
-
-                    $this->movementLogger->log(
-                        'transfer_out',
-                        $material,
-                        $serial,
-                        $warehouse,
-                        $technicianLocation,
-                        1,
-                        'transfer',
-                        $transfer->id,
-                        $userId
-                    );
-                }
-            });
+            $this->creationService->createTransfer($warehouse, $technicianLocation, $userId, $materials, $serialIds, $cartItems);
         } catch (RuntimeException $exception) {
             return back()->withErrors(['cart' => $exception->getMessage()]);
         }
 
-        $this->clearCartSession($request);
+        $this->cartService->clearCartSession($request);
 
         return redirect()->route('admin.transfers')
             ->with('status', 'Transferencia generada: ' . $cartSummary['total_units'] . ' elementos enviados.');
-    }
-
-    protected function prepareCart(Request $request, StockLocation $warehouse, $inventory, $serials, int $userId)
-    {
-        $cart = $this->getCart($request);
-
-        if (empty($cart)) {
-            return [
-                'items' => [],
-                'summary' => ['total_items' => 0, 'total_units' => 0],
-                'reserved_quantities' => [],
-                'serials_in_cart' => [],
-                'warnings' => [],
-            ];
-        }
-
-        $inventoryLookup = collect($inventory)->keyBy('material_id');
-        $serialLookup = collect($serials)->keyBy('id');
-
-        $materialIds = [];
-        $serialIds = [];
-
-        foreach ($cart as $entry) {
-            if (! is_array($entry) || ! isset($entry['type'], $entry['material_id'])) {
-                continue;
-            }
-
-            $materialIds[] = (int) $entry['material_id'];
-
-            if ($entry['type'] === 'serial' && isset($entry['serial_id'])) {
-                $serialIds[] = (int) $entry['serial_id'];
-            }
-        }
-
-        $materials = Material::query()->whereIn('id', array_unique($materialIds))->get()->keyBy('id');
-
-        $items = [];
-        $summary = ['total_items' => 0, 'total_units' => 0];
-        $reservedQuantities = [];
-        $serialsInCart = [];
-        $dirty = false;
-        $warnings = [];
-        $serialsToRelease = [];
-
-        foreach ($cart as $key => $entry) {
-            if (! is_array($entry) || ! isset($entry['type'], $entry['material_id'])) {
-                unset($cart[$key]);
-                $dirty = true;
-                continue;
-            }
-
-            $materialId = (int) $entry['material_id'];
-            $material = $materials->get($materialId);
-
-            if (! $material) {
-                unset($cart[$key]);
-                $dirty = true;
-                continue;
-            }
-
-            if ($entry['type'] === 'quantity') {
-                $quantity = (int) ($entry['quantity'] ?? 0);
-                $available = $inventoryLookup->get($materialId)?->quantity ?? 0;
-
-                if ($quantity < 1 || $available < 1) {
-                    unset($cart[$key]);
-                    $dirty = true;
-                    continue;
-                }
-
-                if ($quantity > $available) {
-                    $quantity = $available;
-                    $cart[$key]['quantity'] = $quantity;
-                    $dirty = true;
-                }
-
-                if ($quantity < 1) {
-                    unset($cart[$key]);
-                    continue;
-                }
-
-                $reservedQuantities['quantity-' . $materialId] = $quantity;
-                $items[] = [
-                    'key' => $key,
-                    'type' => 'quantity',
-                    'material_id' => $materialId,
-                    'material' => $material,
-                    'quantity' => $quantity,
-                ];
-
-                $summary['total_items']++;
-                $summary['total_units'] += $quantity;
-                continue;
-            }
-
-            if ($entry['type'] === 'serial' && isset($entry['serial_id'])) {
-                $serialId = (int) $entry['serial_id'];
-                $serial = $serialLookup->get($serialId);
-
-                if (! $serial) {
-                    unset($cart[$key]);
-                    $dirty = true;
-                    $warnings[] = 'Un numero de serie seleccionado ya no existe y se retiro de la lista.';
-                    continue;
-                }
-
-                if ($serial->current_location_id !== $warehouse->id) {
-                    if ((int) $serial->reserved_by_user_id === $userId) {
-                        $serialsToRelease[] = $serial->id;
-                    }
-
-                    unset($cart[$key]);
-                    $dirty = true;
-                    $warnings[] = 'El numero de serie ' . $serial->serial_number . ' ya no esta en el almacen y se retiro de la lista.';
-                    continue;
-                }
-
-                if ((int) $serial->reserved_by_user_id !== $userId || $serial->status !== 'reserved') {
-                    if ((int) $serial->reserved_by_user_id === $userId) {
-                        $serialsToRelease[] = $serial->id;
-                    }
-
-                    if ($serial->reserved_by_user_id && (int) $serial->reserved_by_user_id !== $userId) {
-                        $warnings[] = 'El numero de serie ' . $serial->serial_number . ' fue reservado por otro usuario y se retiro de la lista.';
-                    } else {
-                        $warnings[] = 'El numero de serie ' . $serial->serial_number . ' ya no esta disponible y se retiro de la lista.';
-                    }
-
-                    unset($cart[$key]);
-                    $dirty = true;
-                    continue;
-                }
-
-                $serialsInCart[] = $serialId;
-                $items[] = [
-                    'key' => $key,
-                    'type' => 'serial',
-                    'material_id' => $materialId,
-                    'serial_id' => $serialId,
-                    'material' => $material,
-                    'serial' => $serial,
-                ];
-
-                $summary['total_items']++;
-                $summary['total_units']++;
-                continue;
-            }
-
-            unset($cart[$key]);
-            $dirty = true;
-        }
-
-        if (! empty($serialsToRelease)) {
-            $this->releaseSerialReservations(array_values(array_unique($serialsToRelease)), $userId);
-        }
-
-        if ($dirty) {
-            $this->saveCart($request, $cart);
-        }
-
-        return [
-            'items' => array_values($items),
-            'summary' => $summary,
-            'reserved_quantities' => $reservedQuantities,
-            'serials_in_cart' => $serialsInCart,
-            'warnings' => $warnings,
-        ];
-    }
-
-    protected function getCart(Request $request): array
-    {
-        return $request->session()->get(self::CART_SESSION_KEY, []);
-    }
-
-    protected function saveCart(Request $request, array $cart): void
-    {
-        $request->session()->put(self::CART_SESSION_KEY, $cart);
-    }
-
-    protected function clearCartSession(Request $request): void
-    {
-        $request->session()->forget(self::CART_SESSION_KEY);
-    }
-
-    protected function canInitiateTransfers(?User $user): bool
-    {
-        if (! $user) {
-            return false;
-        }
-
-        return in_array($user->role, ['super_admin', 'logistics'], true);
-    }
-
-    /**
-     * @param  array<int, int>  $serialIds
-     */
-    protected function reserveSerials(StockLocation $warehouse, array $serialIds, int $userId): Collection
-    {
-        $uniqueIds = array_values(array_unique($serialIds));
-
-        if (empty($uniqueIds)) {
-            return collect();
-        }
-
-        $now = now();
-
-        return DB::transaction(function () use ($warehouse, $uniqueIds, $userId, $now) {
-            $serials = MaterialSerial::query()
-                ->whereIn('id', $uniqueIds)
-                ->lockForUpdate()
-                ->get()
-                ->keyBy('id');
-
-            if ($serials->count() !== count($uniqueIds)) {
-                throw new RuntimeException('Alguno de los numeros de serie seleccionados ya no esta disponible.');
-            }
-
-            foreach ($serials as $serial) {
-                if ($serial->current_location_id !== $warehouse->id) {
-                    throw new RuntimeException('El numero de serie ' . $serial->serial_number . ' ya no esta disponible.');
-                }
-
-                if ($serial->reserved_by_user_id && (int) $serial->reserved_by_user_id !== $userId) {
-                    throw new RuntimeException('El numero de serie ' . $serial->serial_number . ' ya esta reservado por otro usuario.');
-                }
-
-                $validStatus = $serial->status === 'available'
-                    || ($serial->status === 'reserved' && (int) $serial->reserved_by_user_id === $userId);
-
-                if (! $validStatus) {
-                    throw new RuntimeException('El numero de serie ' . $serial->serial_number . ' ya no esta disponible.');
-                }
-            }
-
-            foreach ($serials as $serial) {
-                if ($serial->status === 'reserved' && (int) $serial->reserved_by_user_id === $userId) {
-                    continue;
-                }
-
-                $serial->update([
-                    'status' => 'reserved',
-                    'reserved_by_user_id' => $userId,
-                    'reserved_at' => $now,
-                ]);
-
-                $serial->status = 'reserved';
-                $serial->reserved_by_user_id = $userId;
-                $serial->reserved_at = $now;
-            }
-
-            return $serials;
-        });
-    }
-
-    /**
-     * @param  array<int, int>  $serialIds
-     */
-    protected function releaseSerialReservations(array $serialIds, int $userId): void
-    {
-        $uniqueIds = array_values(array_unique($serialIds));
-
-        if (empty($uniqueIds)) {
-            return;
-        }
-
-        DB::transaction(function () use ($uniqueIds, $userId) {
-            $serials = MaterialSerial::query()
-                ->whereIn('id', $uniqueIds)
-                ->lockForUpdate()
-                ->get();
-
-            foreach ($serials as $serial) {
-                if ((int) $serial->reserved_by_user_id !== $userId) {
-                    continue;
-                }
-
-                $serial->update([
-                    'status' => $serial->status === 'reserved' ? 'available' : $serial->status,
-                    'reserved_by_user_id' => null,
-                    'reserved_at' => null,
-                ]);
-            }
-        });
-    }
-
-    protected function warehouseLocation(): StockLocation
-    {
-        $location = StockLocation::warehouses()->first();
-
-        if (! $location) {
-            throw new RuntimeException('No se encontro la ubicacion del almacen principal.');
-        }
-
-        return $location;
-    }
-
-    protected function ensureTechnicianLocation(User $technician): StockLocation
-    {
-        $location = $technician->stockLocation()->first();
-
-        if ($location) {
-            return $location;
-        }
-
-        return StockLocation::create([
-            'location_type' => 'user',
-            'ref_id' => $technician->id,
-            'name' => 'Stock de ' . $technician->name,
-        ]);
-    }
-
-    protected function generateTransferNumber(): string
-    {
-        do {
-            $number = 'TRF-' . now()->format('YmdHis') . '-' . str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-        } while (Transfer::where('order_number', $number)->exists());
-
-        return $number;
     }
 }
