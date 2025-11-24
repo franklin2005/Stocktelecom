@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\Staff\StaffCreator;
-use App\Services\Staff\StaffDeleter;
-use App\Services\Staff\StaffHelper;
-use App\Services\Staff\StaffUpdater;
+use App\Services\Staff\StaffService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -15,15 +12,11 @@ use Illuminate\Validation\Rule;
 class StaffController extends Controller
 {
     public function __construct(
-        protected StaffCreator $creator,
-        protected StaffUpdater $updater,
-        protected StaffDeleter $deleter,
-        protected StaffHelper $helper,
-    ) {
-    }
+        protected StaffService $staffService
+    ) {}
 
     /**
-     * Redirects to the personnel dashboard preserving filters.
+     * Redireccionar a la pestaña de personal logístico por defecto.
      */
     public function index(Request $request): RedirectResponse
     {
@@ -37,54 +30,54 @@ class StaffController extends Controller
     }
 
     /**
-     * Create a new administrator or logistics user.
+     * Crear un nuevo usuario de administrador o logística (staff user).
      */
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validateWithBag('createStaff', [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'logistics', 'super_admin'])],
+            'role'     => ['required', Rule::in(['admin', 'logistics', 'super_admin'])],
         ]);
 
-        $this->creator->create($validated, $request->user());
+        $staff = $this->staffService->createStaff($validated, $request->user());
 
         return redirect()
-            ->route('admin.personnel', ['tab' => $this->helper->tabForRole($validated['role'])])
+            ->route('admin.personnel', ['tab' => $this->staffService->tabForRole($staff->role)])
             ->with('status', 'Usuario creado correctamente.');
     }
 
     /**
-     * Update an administrator or logistics user.
+     * Actualizar un usuario de administrador o logística.
      */
     public function update(Request $request, User $staff): RedirectResponse
     {
         $validated = $request->validateWithBag('updateStaff', [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($staff->id)],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($staff->id)],
             'password' => ['nullable', 'confirmed', 'min:8'],
-            'role' => ['required', Rule::in(['admin', 'logistics', 'super_admin'])],
+            'role'     => ['required', Rule::in(['admin', 'logistics', 'super_admin'])],
         ]);
 
-        $updatedStaff = $this->updater->update($staff, $validated, $request->user());
+        $updatedStaff = $this->staffService->updateStaff($staff, $validated, $request->user());
 
         return redirect()
-            ->route('admin.personnel', ['tab' => $this->helper->tabForRole($updatedStaff->role)])
+            ->route('admin.personnel', ['tab' => $this->staffService->tabForRole($updatedStaff->role)])
             ->with('status', 'Usuario actualizado correctamente.');
     }
 
     /**
-     * Delete an administrator or logistics user.
+     * Eliminar un usuario administrador o logística.
      */
     public function destroy(Request $request, User $staff): RedirectResponse
     {
-        $redirectTab = $this->helper->tabForRole($staff->role);
+        $role = $staff->role;
 
-        $this->deleter->delete($staff, $request->user());
+        $this->staffService->deleteStaff($staff, $request->user());
 
         return redirect()
-            ->route('admin.personnel', ['tab' => $redirectTab])
+            ->route('admin.personnel', ['tab' => $this->staffService->tabForRole($role)])
             ->with('status', 'Usuario eliminado correctamente.');
     }
 }
