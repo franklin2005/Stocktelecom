@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('materials', function (Blueprint $table) {
             $table->id();
-            $table->enum('category', ['equipment', 'acometida', 'roseta'])->index();
+            $table->enum('category', ['equipment', 'acometida', 'roseta', 'other'])->index();
             $table->string('type');
             $table->string('model')->nullable();
             $table->boolean('is_serialized')->default(false)->index();

@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('transfers', function (Blueprint $table) {
             $table->id();
             $table->string('order_number')->unique();
+            $table->enum('type', ['transfer', 'return'])->default('transfer')->index();
             $table->foreignId('from_location_id')->constrained('stock_locations')->restrictOnDelete();
             $table->foreignId('to_location_id')->constrained('stock_locations')->restrictOnDelete();
             $table->foreignId('initiator_user_id')->constrained('users')->restrictOnDelete();

@@ -17,9 +17,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'technician'])->default('technician')->index();
+            $table->string('role', 50)->default('technician')->index();
             $table->string('tech_code')->unique()->nullable();
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
 

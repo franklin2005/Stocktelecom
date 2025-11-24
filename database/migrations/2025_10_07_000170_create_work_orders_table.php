@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('technician_name');
             $table->enum('status', ['open', 'confirmed', 'cancelled'])->default('open')->index();
             $table->text('notes')->nullable();
+            $table->string('notes_author_type', 20)->nullable();
+            $table->string('notes_author_name', 255)->nullable();
             $table->timestamps();
         });
     }
