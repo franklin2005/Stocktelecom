@@ -3,20 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Inventory;
-use App\Models\MaterialSerial;
-use App\Models\StockLocation;
 use App\Models\User;
-use App\Models\UserActionLog;
+use App\Services\Staff\StaffCreator;
+use App\Services\Staff\StaffDeleter;
+use App\Services\Staff\StaffHelper;
+use App\Services\Staff\StaffUpdater;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 class StaffController extends Controller
 {
+    public function __construct(
+        protected StaffCreator $creator,
+        protected StaffUpdater $updater,
+        protected StaffDeleter $deleter,
+        protected StaffHelper $helper,
+    ) {
+    }
+
     /**
      * Redirects to the personnel dashboard preserving filters.
      */
@@ -43,45 +48,10 @@ class StaffController extends Controller
             'role' => ['required', Rule::in(['admin', 'logistics', 'super_admin'])],
         ]);
 
-        $actorId = auth()->id();
-        $roleLabel = $this->roleLabel($validated['role']);
-        $currentUserRole = $request->user()->role;
-
-        if (in_array($validated['role'], ['admin', 'super_admin'], true) && $currentUserRole !== 'super_admin') {
-            abort(403);
-        }
-
-        DB::transaction(function () use ($validated, $actorId, $roleLabel) {
-            $staffUser = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'password' => Hash::make($validated['password']),
-                'role' => $validated['role'],
-                'tech_code' => null,
-            ]);
-
-            if ($validated['role'] === 'logistics') {
-                StockLocation::updateOrCreate(
-                    [
-                        'location_type' => 'user',
-                        'ref_id' => $staffUser->id,
-                    ],
-                    [
-                        'name' => 'Stock de ' . $staffUser->name,
-                    ]
-                );
-            }
-
-            UserActionLog::create([
-                'actor_id' => $actorId,
-                'target_id' => $staffUser->id,
-                'action' => 'created',
-                'details' => 'Creacion de usuario ' . $roleLabel . ': ' . $staffUser->name . ' (' . $staffUser->email . ')',
-            ]);
-        });
+        $this->creator->create($validated, $request->user());
 
         return redirect()
-            ->route('admin.personnel', ['tab' => $this->tabForRole($validated['role'])])
+            ->route('admin.personnel', ['tab' => $this->helper->tabForRole($validated['role'])])
             ->with('status', 'Usuario creado correctamente.');
     }
 
@@ -90,16 +60,6 @@ class StaffController extends Controller
      */
     public function update(Request $request, User $staff): RedirectResponse
     {
-        if (! in_array($staff->role, ['admin', 'logistics', 'super_admin'], true)) {
-            abort(404);
-        }
-
-        $previousRole = $staff->role;
-        $actorId = auth()->id();
-        $currentUserRole = $request->user()->role;
-        $original = $staff->only(['name', 'email', 'role']);
-        $fieldsChanged = [];
-
         $validated = $request->validateWithBag('updateStaff', [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($staff->id)],
@@ -107,96 +67,10 @@ class StaffController extends Controller
             'role' => ['required', Rule::in(['admin', 'logistics', 'super_admin'])],
         ]);
 
-        if (in_array($staff->role, ['admin', 'super_admin'], true) && $currentUserRole !== 'super_admin') {
-            abort(403);
-        }
-
-        if (in_array($validated['role'], ['admin', 'super_admin'], true) && $currentUserRole !== 'super_admin') {
-            abort(403);
-        }
-
-        if ($staff->role === 'admin' && $validated['role'] !== 'admin') {
-            $otherAdmins = User::admins()
-                ->where('id', '!=', $staff->id)
-                ->count();
-
-            if ($otherAdmins === 0) {
-                throw ValidationException::withMessages([
-                    'role' => 'Debe quedar al menos un administrador activo en el sistema.',
-                ])->errorBag('updateStaff')->redirectTo(
-                    route('admin.personnel', ['tab' => 'admins', 'edit_admin' => $staff->id])
-                );
-            }
-        }
-
-        if ($staff->role === 'super_admin' && $validated['role'] !== 'super_admin') {
-            $otherSuperAdmins = User::superAdmins()
-                ->where('id', '!=', $staff->id)
-                ->count();
-
-            if ($otherSuperAdmins === 0) {
-                throw ValidationException::withMessages([
-                    'role' => 'Debe quedar al menos un super administrador activo en el sistema.',
-                ])->errorBag('updateStaff')->redirectTo(
-                    route('admin.personnel', ['tab' => 'super_admins', 'edit_super_admin' => $staff->id])
-                );
-            }
-        }
-
-        if ($original['name'] !== $validated['name']) {
-            $fieldsChanged[] = 'nombre';
-        }
-
-        if ($original['email'] !== $validated['email']) {
-            $fieldsChanged[] = 'correo';
-        }
-
-        if ($original['role'] !== $validated['role']) {
-            $fieldsChanged[] = 'rol';
-        }
-
-        $payload = [
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'role' => $validated['role'],
-        ];
-
-        if (! empty($validated['password'])) {
-            $payload['password'] = Hash::make($validated['password']);
-            $fieldsChanged[] = 'contrasena';
-        }
-
-        $newRoleLabel = $this->roleLabel($validated['role']);
-
-        DB::transaction(function () use ($staff, $payload, $previousRole, $actorId, $fieldsChanged, $newRoleLabel) {
-            $staff->update($payload);
-
-            if ($payload['role'] === 'logistics') {
-                StockLocation::updateOrCreate(
-                    [
-                        'location_type' => 'user',
-                        'ref_id' => $staff->id,
-                    ],
-                    [
-                        'name' => 'Stock de ' . $payload['name'],
-                    ]
-                );
-            } elseif ($previousRole === 'logistics') {
-                $staff->stockLocation()->delete();
-            }
-
-            UserActionLog::create([
-                'actor_id' => $actorId,
-                'target_id' => $staff->id,
-                'action' => 'updated',
-                'details' => $fieldsChanged
-                    ? 'Actualizacion de usuario (' . $newRoleLabel . '). Campos modificados: ' . implode(', ', $fieldsChanged)
-                    : 'Actualizacion de usuario sin cambios en los datos principales.',
-            ]);
-        });
+        $updatedStaff = $this->updater->update($staff, $validated, $request->user());
 
         return redirect()
-            ->route('admin.personnel', ['tab' => $this->tabForRole($payload['role'])])
+            ->route('admin.personnel', ['tab' => $this->helper->tabForRole($updatedStaff->role)])
             ->with('status', 'Usuario actualizado correctamente.');
     }
 
@@ -205,132 +79,12 @@ class StaffController extends Controller
      */
     public function destroy(Request $request, User $staff): RedirectResponse
     {
-        if (! in_array($staff->role, ['admin', 'logistics', 'super_admin'], true)) {
-            abort(404);
-        }
+        $redirectTab = $this->helper->tabForRole($staff->role);
 
-        if (in_array($staff->role, ['admin', 'super_admin'], true) && $request->user()->role !== 'super_admin') {
-            abort(403);
-        }
-
-        $location = null;
-
-        if ($staff->role === 'logistics') {
-            $location = $staff->stockLocation()->first();
-
-            if ($location) {
-                $hasInventory = Inventory::query()
-                    ->where('location_id', $location->id)
-                    ->where('quantity', '>', 0)
-                    ->exists();
-
-                $hasSerials = MaterialSerial::query()
-                    ->where('current_location_id', $location->id)
-                    ->exists();
-
-                if ($hasInventory || $hasSerials) {
-                    throw ValidationException::withMessages([
-                        'general' => 'No se puede eliminar este usuario de logistica mientras tenga stock asignado.',
-                    ])->errorBag('deleteStaff')->redirectTo(
-                        route('admin.personnel', ['tab' => 'logistics'])
-                    );
-                }
-            }
-        }
-
-        if (auth()->id() === $staff->id) {
-            throw ValidationException::withMessages([
-                'general' => 'No puedes eliminar tu propio usuario.',
-            ])->errorBag('deleteStaff')->redirectTo(
-                route('admin.personnel', ['tab' => $this->tabForRole($staff->role)])
-            );
-        }
-
-        if ($staff->role === 'admin') {
-            $otherAdmins = User::admins()
-                ->where('id', '!=', $staff->id)
-                ->count();
-
-            if ($otherAdmins === 0) {
-                throw ValidationException::withMessages([
-                    'general' => 'Debe quedar al menos un administrador activo en el sistema.',
-                ])->errorBag('deleteStaff')->redirectTo(
-                    route('admin.personnel', ['tab' => 'admins'])
-                );
-            }
-        }
-
-        if ($staff->role === 'super_admin') {
-            $otherSuperAdmins = User::superAdmins()
-                ->where('id', '!=', $staff->id)
-                ->count();
-
-            if ($otherSuperAdmins === 0) {
-                throw ValidationException::withMessages([
-                    'general' => 'Debe quedar al menos un super administrador activo en el sistema.',
-                ])->errorBag('deleteStaff')->redirectTo(
-                    route('admin.personnel', ['tab' => 'super_admins'])
-                );
-            }
-        }
-
-        $actorId = auth()->id();
-        $staffName = $staff->name;
-        $staffEmail = $staff->email;
-        $roleLabel = $this->roleLabel($staff->role);
-        $redirectTab = $this->tabForRole($staff->role);
-
-        DB::transaction(function () use ($staff, $actorId, $staffName, $staffEmail, $roleLabel, $location) {
-            UserActionLog::create([
-                'actor_id' => $actorId,
-                'target_id' => $staff->id,
-                'action' => 'deleted',
-                'details' => 'Eliminacion de usuario ' . $roleLabel . ': ' . $staffName . ' (' . $staffEmail . ')',
-            ]);
-
-            if ($staff->role === 'logistics' && $location) {
-                Inventory::query()
-                    ->where('location_id', $location->id)
-                    ->delete();
-
-                $location->delete();
-            }
-
-            $staff->delete();
-        });
+        $this->deleter->delete($staff, $request->user());
 
         return redirect()
             ->route('admin.personnel', ['tab' => $redirectTab])
             ->with('status', 'Usuario eliminado correctamente.');
     }
-
-    /**
-     * Helper to transform role to readable label.
-     */
-    protected function roleLabel(string $role): string
-    {
-        return match ($role) {
-            'admin' => 'administrador',
-            'logistics' => 'logistica',
-            'super_admin' => 'super administrador',
-            default => $role,
-        };
-    }
-
-    /**
-     * Map role to personnel tab.
-     */
-    protected function tabForRole(string $role): string
-    {
-        return match ($role) {
-            'technician' => 'technicians',
-            'logistics' => 'logistics',
-            'admin' => 'admins',
-            'super_admin' => 'super_admins',
-            default => 'logistics',
-        };
-    }
 }
-
-
-

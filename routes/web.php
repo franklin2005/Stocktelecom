@@ -41,7 +41,6 @@ Route::get('/', function () {
                 : 'technician.dashboard'
         );
     }
-
     return view('welcome');
 })->name('home');
 
@@ -115,7 +114,7 @@ Route::middleware('auth')->group(function () {
                 Route::put('/{technician}', 'update')->name('update');
                 Route::delete('/{technician}', 'destroy')->name('destroy');
             });
-            // CRUD de personal logístico 
+            // CRUD de administradores  y logistica
             Route::controller(StaffController::class)->prefix('staff')->name('staff.')->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::post('/', 'store')->name('store');
