@@ -22,7 +22,7 @@ class WorkOrderItem extends Model
     ];
 
     /**
-     * Parent work order.
+     * relacion con la orden de trabajo.
      */
     public function workOrder(): BelongsTo
     {
@@ -30,7 +30,7 @@ class WorkOrderItem extends Model
     }
 
     /**
-     * Material reference.
+     * relacion con el material.
      */
     public function material(): BelongsTo
     {
@@ -38,7 +38,7 @@ class WorkOrderItem extends Model
     }
 
     /**
-     * Serialized material reference.
+     * relacion con el material con numero de serie (si aplica).
      */
     public function serial(): BelongsTo
     {

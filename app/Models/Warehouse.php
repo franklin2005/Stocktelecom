@@ -13,7 +13,7 @@ class Warehouse extends Model
     ];
 
     /**
-     * Get the stock location representing this warehouse.
+     * relación con la ubicación de stock asociada al almacén.
      */
     public function stockLocation(): HasOne
     {

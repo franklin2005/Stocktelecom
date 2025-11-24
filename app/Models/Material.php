@@ -25,7 +25,7 @@ class Material extends Model
     ];
 
     /**
-     * Scope materials by category helpers.
+     * buscar por categorias y si está activo.
      */
     public function scopeEquipment(Builder $query): Builder
     {
@@ -48,7 +48,7 @@ class Material extends Model
     }
 
     /**
-     * Serialized units for the material.
+     * seriales asociados a este material.
      */
     public function serials(): HasMany
     {
@@ -64,7 +64,7 @@ class Material extends Model
     }
 
     /**
-     * Work order items referencing the material.
+     * ordenes de trabajo que incluyen este material.
      */
     public function workOrderItems(): HasMany
     {
@@ -72,7 +72,7 @@ class Material extends Model
     }
 
     /**
-     * Transfer items referencing the material.
+     * ítems de transferencia que incluyen este material.
      */
     public function transferItems(): HasMany
     {

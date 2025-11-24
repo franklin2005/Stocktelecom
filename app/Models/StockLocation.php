@@ -19,7 +19,7 @@ class StockLocation extends Model
     ];
 
     /**
-     * Scope query to only user locations.
+     * buscar por ubicaciones de usuarios.
      */
     public function scopeUsers(Builder $query): Builder
     {
@@ -27,7 +27,7 @@ class StockLocation extends Model
     }
 
     /**
-     * Scope query to only warehouse locations.
+     * buscar por ubicaciones de almacenes.
      */
     public function scopeWarehouses(Builder $query): Builder
     {
@@ -35,7 +35,7 @@ class StockLocation extends Model
     }
 
     /**
-     * Inventory records associated with the location.
+     * relacion con inventarios.
      */
     public function inventories(): HasMany
     {
@@ -43,7 +43,7 @@ class StockLocation extends Model
     }
 
     /**
-     * Serialized materials currently at the location.
+     * numeros de serie ubicados en la StockLocation.
      */
     public function materialSerials(): HasMany
     {

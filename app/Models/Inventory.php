@@ -20,7 +20,7 @@ class Inventory extends Model
     ];
 
     /**
-     * Location the inventory record belongs to.
+     * ubicación del inventario.
      */
     public function location(): BelongsTo
     {
@@ -28,7 +28,7 @@ class Inventory extends Model
     }
 
     /**
-     * Material tracked in the inventory record.
+     * material del inventario.
      */
     public function material(): BelongsTo
     {

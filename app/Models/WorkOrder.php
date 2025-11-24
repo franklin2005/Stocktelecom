@@ -25,7 +25,7 @@ class WorkOrder extends Model
     ];
 
     /**
-     * Scope to posted work orders.
+     * buscar ordenes de trabajo confirmadas.
      */
     public function scopeConfirmed(Builder $query): Builder
     {
@@ -33,7 +33,7 @@ class WorkOrder extends Model
     }
 
     /**
-     * Scope to open work orders.
+     * buscar ordenes de trabajo abiertas.
      */
     public function scopeOpen(Builder $query): Builder
     {
@@ -41,7 +41,7 @@ class WorkOrder extends Model
     }
 
     /**
-     * Determine if the work order is open.
+     * comprobar si la orden de trabajo está abierta.
      */
     public function isOpen(): bool
     {
@@ -49,7 +49,7 @@ class WorkOrder extends Model
     }
 
     /**
-     * Determine if the work order is confirmed.
+     * comprobar si la orden de trabajo está confirmada.
      */
     public function isConfirmed(): bool
     {
@@ -57,7 +57,7 @@ class WorkOrder extends Model
     }
 
     /**
-     * Determine if the work order is cancelled.
+     * comprobar si la orden de trabajo está cancelada.
      */
     public function isCancelled(): bool
     {
@@ -65,7 +65,7 @@ class WorkOrder extends Model
     }
 
     /**
-     * Items associated with the work order.
+     * relación con los ítems de la orden de trabajo.
      */
     public function items(): HasMany
     {
@@ -73,7 +73,7 @@ class WorkOrder extends Model
     }
 
     /**
-     * Technician assigned to the work order.
+     * relacion con tecnico que crea la orden de trabajo.
      */
     public function technician(): BelongsTo
     {

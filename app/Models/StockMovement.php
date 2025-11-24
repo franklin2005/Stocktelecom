@@ -34,7 +34,7 @@ class StockMovement extends Model
     ];
 
     /**
-     * Scope movements by movement type.
+     * buscar por tipo de movimiento.
      */
     public function scopeMovementType(Builder $query, string $type): Builder
     {
@@ -42,40 +42,51 @@ class StockMovement extends Model
     }
 
     /**
-     * Scope movements by performed_at date range.
+     * buscar por fechas.
      */
     public function scopeBetweenDates(Builder $query, $from, $to): Builder
     {
         return $query->whereBetween('performed_at', [$from, $to]);
     }
 
+    /**
+     * relacion con material
+     */
     public function material(): BelongsTo
     {
         return $this->belongsTo(Material::class);
     }
-
+    /**
+     * relacion con numero de serie
+     */
     public function serial(): BelongsTo
     {
         return $this->belongsTo(MaterialSerial::class, 'material_serial_id');
     }
-
+    /**
+     * relacion con ubicaciones
+     */
     public function fromLocation(): BelongsTo
     {
         return $this->belongsTo(StockLocation::class, 'from_location_id');
     }
-
+    /**
+     * relacion con ubicaciones
+     */
     public function toLocation(): BelongsTo
     {
         return $this->belongsTo(StockLocation::class, 'to_location_id');
     }
-
+    /**
+     * relacion con usuario que realizó el movimiento.
+     */
     public function performer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'performed_by');
     }
 
     /**
-     * Related transfer when reference_type is transfer.
+     * Relacion con transferencia
      */
     public function transfer(): BelongsTo
     {

@@ -15,9 +15,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable, SoftDeletes;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
+     * atributos asignables masivamente.
      */
     protected $fillable = [
         'name',
@@ -28,9 +26,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * atributos ocultos.
      */
     protected $hidden = [
         'password',
@@ -38,9 +34,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+    * atributos casteados
      */
     protected function casts(): array
     {
@@ -51,7 +45,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope to only admin users.
+     * buscar administradores.
      */
     public function scopeAdmins(Builder $query): Builder
     {
@@ -59,7 +53,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope to only super administrator users.
+     * buscar super administradores.
      */
     public function scopeSuperAdmins(Builder $query): Builder
     {
@@ -67,7 +61,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope to only technician users.
+     * buscar tecnicos.
      */
     public function scopeTechnicians(Builder $query): Builder
     {
@@ -75,7 +69,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Scope to only logistics users.
+     * Buscar personal de logistica.
      */
     public function scopeLogistics(Builder $query): Builder
     {
@@ -83,7 +77,7 @@ class User extends Authenticatable
     }
 
     /**
-     * User stock location relation.
+     * relacion con la ubicacion de stock asociada al usuario.
      */
     public function stockLocation()
     {
@@ -92,7 +86,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Work orders assigned to the user.
+     * ordenes de trabajo asignadas al usuario.
      */
     public function workOrders()
     {
@@ -100,7 +94,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Transfers initiated by the user.
+     * Transferencias iniciadas por el usuario.
      */
     public function initiatedTransfers()
     {

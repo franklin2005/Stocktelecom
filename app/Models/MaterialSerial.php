@@ -26,7 +26,7 @@ class MaterialSerial extends Model
     ];
 
     /**
-     * Scope to only available serial numbers.
+     * buscar por seriales disponibles.
      */
     public function scopeAvailable(Builder $query): Builder
     {
@@ -34,7 +34,7 @@ class MaterialSerial extends Model
     }
 
     /**
-     * Scope to only assigned serial numbers.
+     * buscar por seriales asignados.
      */
     public function scopeAssigned(Builder $query): Builder
     {
@@ -42,7 +42,7 @@ class MaterialSerial extends Model
     }
 
     /**
-     * Material definition this serial belongs to.
+     * relacion con material
      */
     public function material(): BelongsTo
     {
@@ -50,7 +50,7 @@ class MaterialSerial extends Model
     }
 
     /**
-     * Current location for the serial.
+     * ubicación actual de la unidad.
      */
     public function location(): BelongsTo
     {

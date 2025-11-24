@@ -29,7 +29,7 @@ class Transfer extends Model
     ];
 
     /**
-     * Scope transfers by type.
+     * buscar por tipo de transferencia.
      */
     public function scopeType(Builder $query, string $type): Builder
     {
@@ -37,7 +37,7 @@ class Transfer extends Model
     }
 
     /**
-     * Scope pending transfers.
+     * buscar transferencias pendientes.
      */
     public function scopePending(Builder $query): Builder
     {
@@ -45,7 +45,7 @@ class Transfer extends Model
     }
 
     /**
-     * Scope accepted transfers.
+     * buscar transferencias aceptadas.
      */
     public function scopeAccepted(Builder $query): Builder
     {
@@ -53,7 +53,7 @@ class Transfer extends Model
     }
 
     /**
-     * Transfer line items.
+     * buscar transferencias rechazadas.
      */
     public function items(): HasMany
     {
@@ -61,7 +61,7 @@ class Transfer extends Model
     }
 
     /**
-     * Origin location.
+     * ubicacion de origen.
      */
     public function fromLocation(): BelongsTo
     {
@@ -69,7 +69,7 @@ class Transfer extends Model
     }
 
     /**
-     * Destination location.
+     * ubicacion de destino.
      */
     public function toLocation(): BelongsTo
     {
@@ -77,7 +77,7 @@ class Transfer extends Model
     }
 
     /**
-     * User who initiated the transfer.
+     * usuario que inició la transferencia.
      */
     public function initiator(): BelongsTo
     {

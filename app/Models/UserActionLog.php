@@ -10,11 +10,7 @@ class UserActionLog extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+   
     protected $fillable = [
         'actor_id',
         'target_id',
@@ -23,7 +19,7 @@ class UserActionLog extends Model
     ];
 
     /**
-     * Actor relationship.
+     * relación con el actor/autor
      */
     public function actor(): BelongsTo
     {
@@ -31,7 +27,7 @@ class UserActionLog extends Model
     }
 
     /**
-     * Target relationship.
+     * relación con el objetivo/destinatario
      */
     public function target(): BelongsTo
     {

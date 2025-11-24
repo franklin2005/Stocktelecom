@@ -22,7 +22,7 @@ class TransferItem extends Model
     ];
 
     /**
-     * Parent transfer record.
+     * transferencia asociada.
      */
     public function transfer(): BelongsTo
     {
@@ -30,7 +30,7 @@ class TransferItem extends Model
     }
 
     /**
-     * Material being transferred.
+     * material transferido.
      */
     public function material(): BelongsTo
     {
@@ -38,7 +38,7 @@ class TransferItem extends Model
     }
 
     /**
-     * Serialized material, if applicable.
+     * material con serie (si aplica).
      */
     public function serial(): BelongsTo
     {
