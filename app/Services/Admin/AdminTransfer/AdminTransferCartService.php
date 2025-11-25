@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AdminTransfer;
+namespace App\Services\Admin\AdminTransfer;
 
 use App\Models\Material;
 use App\Models\StockLocation;

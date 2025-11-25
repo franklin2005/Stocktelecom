@@ -1,28 +1,19 @@
 <?php
 
-namespace App\Services\AdminTransfer;
+namespace App\Services\Admin\Material;
 
 use App\Models\StockLocation;
 use App\Models\User;
 use RuntimeException;
 
-class AdminTransferLocationService
+class AdminMaterialLocationService
 {
-    public function canInitiateTransfers(?User $user): bool
-    {
-        if (! $user) {
-            return false;
-        }
-
-        return in_array($user->role, ['super_admin', 'logistics'], true);
-    }
-
     public function warehouseLocation(): StockLocation
     {
         $location = StockLocation::warehouses()->first();
 
         if (! $location) {
-            throw new RuntimeException('No se encontro la ubicacion del almacen principal.');
+            throw new RuntimeException('No se encontro la ubicacion de almacen.');
         }
 
         return $location;
