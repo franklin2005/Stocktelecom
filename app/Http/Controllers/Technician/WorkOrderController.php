@@ -3,20 +3,19 @@
 namespace App\Http\Controllers\Technician;
 
 use App\Http\Controllers\Controller;
-use App\Models\Inventory;
-use App\Models\Material;
-use App\Models\MaterialSerial;
-use App\Models\StockLocation;
 use App\Models\User;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderItem;
 use App\Services\InventoryService;
 use App\Services\StockMovementLogger;
-use Carbon\Carbon;
+use App\Services\Technician\TechnicianWorkOrder\TechnicianWorkOrderAuthorizationService;
+use App\Services\Technician\TechnicianWorkOrder\TechnicianWorkOrderCreationService;
+use App\Services\Technician\TechnicianWorkOrder\TechnicianWorkOrderItemService;
+use App\Services\Technician\TechnicianWorkOrder\TechnicianWorkOrderLocationService;
+use App\Services\Technician\TechnicianWorkOrder\TechnicianWorkOrderStatusService;
+use App\Services\Technician\TechnicianWorkOrder\TechnicianWorkOrderViewService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -25,6 +24,12 @@ class WorkOrderController extends Controller
     public function __construct(
         private readonly InventoryService $inventoryService,
         private readonly StockMovementLogger $movementLogger,
+        private readonly TechnicianWorkOrderLocationService $locationService,
+        private readonly TechnicianWorkOrderAuthorizationService $authorizationService,
+        private readonly TechnicianWorkOrderViewService $viewService,
+        private readonly TechnicianWorkOrderCreationService $creationService,
+        private readonly TechnicianWorkOrderItemService $itemService,
+        private readonly TechnicianWorkOrderStatusService $statusService,
     ) {
     }
 
@@ -39,23 +44,9 @@ class WorkOrderController extends Controller
             abort(403);
         }
 
-        $workOrder->load(['items.material', 'items.serial.material']);
+        $data = $this->viewService->buildShowData($workOrder);
 
-        $statusLabel = [
-            'open' => ['label' => 'Abierta', 'class' => 'bg-warning text-dark'],
-            'confirmed' => ['label' => 'Confirmada', 'class' => 'bg-success'],
-            'cancelled' => ['label' => 'Cancelada', 'class' => 'bg-danger'],
-        ][$workOrder->status] ?? ['label' => ucfirst($workOrder->status), 'class' => 'bg-secondary'];
-
-        $quantityItems = $workOrder->items->whereNull('material_serial_id');
-        $serialItems = $workOrder->items->whereNotNull('material_serial_id');
-
-        return view('technician.work-orders.show', [
-            'workOrder' => $workOrder,
-            'statusLabel' => $statusLabel,
-            'quantityItems' => $quantityItems,
-            'serialItems' => $serialItems,
-        ]);
+        return view('technician.work-orders.show', $data);
     }
 
     /**
@@ -63,67 +54,9 @@ class WorkOrderController extends Controller
      */
     public function index(Request $request): View
     {
-        $technician = $request->user();
-        $location = $this->ensureTechnicianLocation($technician);
+        $data = $this->viewService->buildIndexData($request);
 
-        $openOrder = WorkOrder::query()
-            ->with([
-                'items.material',
-                'items.serial.material',
-            ])
-            ->where('technician_id', $technician->id)
-            ->where('status', 'open')
-            ->orderByDesc('created_at')
-            ->first();
-
-        $inventory = Inventory::query()
-            ->with('material')
-            ->where('location_id', $location->id)
-            ->orderBy('material_id')
-            ->get();
-
-        $nonSerializedInventory = $inventory
-            ->filter(fn ($item) => $item->material && ! $item->material->is_serialized)
-            ->values();
-
-        $serializedInventory = $inventory
-            ->filter(fn ($item) => $item->material && $item->material->is_serialized)
-            ->values()
-            ->keyBy('material_id');
-
-        $serialsInOrder = $openOrder
-            ? $openOrder->items->pluck('material_serial_id')->filter()->all()
-            : [];
-
-        $availableSerials = MaterialSerial::query()
-            ->with('material')
-            ->where('current_location_id', $location->id)
-            ->where('status', 'assigned')
-            ->when(! empty($serialsInOrder), fn ($query) => $query->whereNotIn('id', $serialsInOrder))
-            ->orderBy('material_id')
-            ->orderBy('serial_number')
-            ->get()
-            ->groupBy('material_id');
-
-        $workOrders = WorkOrder::query()
-            ->withCount('items')
-            ->where('technician_id', $technician->id)
-            ->when($request->filled('from'), fn ($query) => $query->where('created_at', '>=', Carbon::parse($request->query('from'))->startOfDay()))
-            ->when($request->filled('to'), fn ($query) => $query->where('created_at', '<=', Carbon::parse($request->query('to'))->endOfDay()))
-            ->orderByDesc('created_at')
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('technician.work-orders', [
-            'location' => $location,
-            'openOrder' => $openOrder,
-            'nonSerializedInventory' => $nonSerializedInventory,
-            'serializedInventory' => $serializedInventory,
-            'availableSerials' => $availableSerials,
-            'workOrders' => $workOrders,
-            'from' => $request->query('from'),
-            'to' => $request->query('to'),
-        ]);
+        return view('technician.work-orders', $data);
     }
 
     /**
@@ -133,17 +66,6 @@ class WorkOrderController extends Controller
     {
         $technician = $request->user();
 
-        $existingOpenOrder = WorkOrder::query()
-            ->where('technician_id', $technician->id)
-            ->where('status', 'open')
-            ->exists();
-
-        if ($existingOpenOrder) {
-            return back()->withErrors([
-                'order_number' => 'Ya cuentas con una orden abierta. Confirma o cancela antes de crear una nueva.',
-            ])->withInput();
-        }
-
         $validated = $request->validate([
             'order_number' => ['required', 'string', 'max:50', 'unique:work_orders,order_number'],
             'notes' => ['nullable', 'string', 'max:1000'],
@@ -152,16 +74,13 @@ class WorkOrderController extends Controller
             'order_number.unique' => 'El numero de orden ya existe.',
         ]);
 
-        WorkOrder::create([
-            'order_number' => $validated['order_number'],
-            'technician_id' => $technician->id,
-            'technician_code' => $technician->tech_code ?: ('TEC-' . $technician->id),
-            'technician_name' => $technician->name,
-            'status' => 'open',
-            'notes' => $validated['notes'] ?? null,
-            'notes_author_type' => $validated['notes'] ? 'technician' : null,
-            'notes_author_name' => $validated['notes'] ? $technician->name : null,
-        ]);
+        try {
+            $this->creationService->createOpenOrder($technician, $validated['order_number'], $validated['notes'] ?? null);
+        } catch (RuntimeException $exception) {
+            return back()->withErrors([
+                'order_number' => $exception->getMessage(),
+            ])->withInput();
+        }
 
         return redirect()->route('technician.work-orders')
             ->with('status', 'Orden de trabajo creada en estado abierta.');
@@ -173,7 +92,7 @@ class WorkOrderController extends Controller
     public function addQuantityItem(Request $request, WorkOrder $workOrder): RedirectResponse
     {
         $technician = $request->user();
-        $this->assertOwnsOpenOrder($workOrder, $technician);
+        $this->authorizationService->assertOwnsOpenOrder($workOrder, $technician);
 
         $validated = $request->validate([
             'material_id' => ['required', 'integer'],
@@ -184,49 +103,15 @@ class WorkOrderController extends Controller
             'quantity.min' => 'La cantidad debe ser al menos 1.',
         ]);
 
-        $location = $this->ensureTechnicianLocation($technician);
-
-        $material = Material::query()
-            ->whereKey($validated['material_id'])
-            ->where('is_serialized', false)
-            ->first();
-
-        if (! $material) {
-            return back()->withErrors(['material_id' => 'El material seleccionado no es valido.']);
-        }
-
-        $inventory = Inventory::query()
-            ->where('location_id', $location->id)
-            ->where('material_id', $material->id)
-            ->first();
-
-        $available = $inventory?->quantity ?? 0;
-        $requested = (int) $validated['quantity'];
-
-        $existingQuantity = WorkOrderItem::query()
-            ->where('work_order_id', $workOrder->id)
-            ->where('material_id', $material->id)
-            ->whereNull('material_serial_id')
-            ->sum('quantity');
-
-        if ($available <= 0 || ($existingQuantity + $requested) > $available) {
+        try {
+            $this->itemService->addQuantityItem($workOrder, $technician, (int) $validated['material_id'], (int) $validated['quantity']);
+        } catch (RuntimeException $exception) {
             return back()->withErrors([
-                'quantity' => 'No cuentas con stock suficiente para este material.',
+                'quantity' => $exception->getMessage(),
             ]);
         }
 
-        $item = WorkOrderItem::firstOrNew([
-            'work_order_id' => $workOrder->id,
-            'material_id' => $material->id,
-            'material_serial_id' => null,
-        ]);
-
-        $item->quantity = ($item->quantity ?? 0) + $requested;
-        $item->save();
-
-        $this->inventoryService->decrease($location, $material, $requested);
-
-        return back()->with('status', 'Se registraron ' . $requested . ' unidades en la orden.');
+        return back()->with('status', 'Se registraron ' . (int) $validated['quantity'] . ' unidades en la orden.');
     }
 
     /**
@@ -235,7 +120,7 @@ class WorkOrderController extends Controller
     public function addSerialItem(Request $request, WorkOrder $workOrder): RedirectResponse
     {
         $technician = $request->user();
-        $this->assertOwnsOpenOrder($workOrder, $technician);
+        $this->authorizationService->assertOwnsOpenOrder($workOrder, $technician);
 
         $validated = $request->validate([
             'serial_ids' => ['required', 'array', 'min:1'],
@@ -244,62 +129,15 @@ class WorkOrderController extends Controller
             'serial_ids.required' => 'Selecciona al menos un numero de serie.',
         ]);
 
-        $serialIds = collect($validated['serial_ids'])
-            ->map(fn ($id) => (int) $id)
-            ->unique()
-            ->values();
-
-        if ($serialIds->isEmpty()) {
-            return back()->withErrors(['serial_ids' => 'Selecciona al menos un numero de serie.']);
-        }
-
-        $location = $this->ensureTechnicianLocation($technician);
-
-        $existing = WorkOrderItem::query()
-            ->where('work_order_id', $workOrder->id)
-            ->whereIn('material_serial_id', $serialIds->all())
-            ->pluck('material_serial_id');
-
-        if ($existing->isNotEmpty()) {
+        try {
+            $this->itemService->addSerialItems($workOrder, $technician, $validated['serial_ids']);
+        } catch (RuntimeException $exception) {
             return back()->withErrors([
-                'serial_ids' => 'Los numeros de serie ' . $existing->implode(', ') . ' ya forman parte de la orden.',
+                'serial_ids' => $exception->getMessage(),
             ]);
         }
 
-        $serials = MaterialSerial::query()
-            ->with('material')
-            ->whereIn('id', $serialIds->all())
-            ->where('current_location_id', $location->id)
-            ->where('status', 'assigned')
-            ->get();
-
-        if ($serials->count() !== $serialIds->count()) {
-            return back()->withErrors([
-                'serial_ids' => 'Algunos numeros de serie ya no estan disponibles en tu stock.',
-            ]);
-        }
-
-        $location = $this->ensureTechnicianLocation($technician);
-
-        DB::transaction(function () use ($serials, $workOrder, $location, $technician) {
-            foreach ($serials as $serial) {
-                $lockedSerial = MaterialSerial::query()
-                    ->whereKey($serial->id)
-                    ->lockForUpdate()
-                    ->firstOrFail();
-
-                $lockedSerial->loadMissing('material');
-
-                WorkOrderItem::create([
-                    'work_order_id' => $workOrder->id,
-                    'material_id' => $lockedSerial->material_id,
-                    'material_serial_id' => $lockedSerial->id,
-                    'quantity' => null,
-                ]);
-            }
-        });
-
-        return back()->with('status', 'Se agregaron ' . $serials->count() . ' numeros de serie a la orden.');
+        return back()->with('status', 'Se agregaron ' . count($validated['serial_ids']) . ' numeros de serie a la orden.');
     }
 
     /**
@@ -308,39 +146,15 @@ class WorkOrderController extends Controller
     public function removeItem(Request $request, WorkOrder $workOrder, WorkOrderItem $item): RedirectResponse
     {
         $technician = $request->user();
-        $this->assertOwnsOpenOrder($workOrder, $technician);
+        $this->authorizationService->assertOwnsOpenOrder($workOrder, $technician);
 
-        if ($item->work_order_id !== $workOrder->id) {
-            abort(403);
+        try {
+            $this->itemService->removeItem($workOrder, $item, $technician);
+        } catch (RuntimeException $exception) {
+            return back()->withErrors([
+                'work_order' => $exception->getMessage(),
+            ]);
         }
-
-        $location = $this->ensureTechnicianLocation($technician);
-
-        DB::transaction(function () use ($item, $location) {
-            $item->loadMissing(['material', 'serial.material']);
-
-            if ($item->material_serial_id && $item->serial) {
-                $serial = MaterialSerial::query()
-                    ->whereKey($item->material_serial_id)
-                    ->lockForUpdate()
-                    ->first();
-
-                if ($serial) {
-                    $serial->update([
-                        'status' => 'assigned',
-                        'current_location_id' => $location->id,
-                        'reserved_by_user_id' => null,
-                        'reserved_at' => null,
-                    ]);
-
-                    $this->inventoryService->increase($location, $item->material, 1);
-                }
-            } elseif ($item->quantity && $item->material) {
-                $this->inventoryService->increase($location, $item->material, (int) $item->quantity);
-            }
-
-            $item->delete();
-        });
 
         return back()->with('status', 'El material se elimino de la orden y se regreso al stock.');
     }
@@ -351,102 +165,18 @@ class WorkOrderController extends Controller
     public function confirm(Request $request, WorkOrder $workOrder): RedirectResponse
     {
         $technician = $request->user();
-        $this->assertOwnsOpenOrder($workOrder, $technician);
+        $this->authorizationService->assertOwnsOpenOrder($workOrder, $technician);
 
-        $location = $this->ensureTechnicianLocation($technician);
+        $location = $this->locationService->ensureTechnicianLocation($technician);
 
-        $workOrder->load(['items.material', 'items.serial.material']);
-
-        if ($workOrder->items->isEmpty()) {
+        if ($workOrder->items()->count() === 0) {
             return back()->withErrors([
                 'work_order' => 'Agrega materiales antes de confirmar la orden.',
             ]);
         }
 
         try {
-            DB::transaction(function () use ($workOrder, $location, $technician) {
-                $quantityItems = $workOrder->items
-                    ->filter(fn (WorkOrderItem $item) => $item->material && $item->material_serial_id === null)
-                    ->groupBy('material_id');
-
-                foreach ($quantityItems as $materialId => $items) {
-                    $material = $items->first()->material;
-                    $totalQuantity = (int) $items->sum('quantity');
-
-                    if ($totalQuantity < 1) {
-                        continue;
-                    }
-
-                    $this->movementLogger->log(
-                        'consumption',
-                        $material,
-                        null,
-                        $location,
-                        null,
-                        $totalQuantity,
-                        'work_order',
-                        $workOrder->id,
-                        $technician->id
-                    );
-                }
-
-                $serialItems = $workOrder->items
-                    ->filter(fn (WorkOrderItem $item) => $item->serial !== null);
-
-                if ($serialItems->isNotEmpty()) {
-                    $serialIds = $serialItems->pluck('material_serial_id')->unique()->values()->all();
-
-                    /** @var Collection<int, MaterialSerial> $serialModels */
-                    $serialModels = MaterialSerial::query()
-                        ->whereIn('id', $serialIds)
-                        ->lockForUpdate()
-                        ->get()
-                        ->keyBy('id');
-
-                    if ($serialModels->count() !== count($serialIds)) {
-                        throw new RuntimeException('Algunos numeros de serie ya no estan disponibles.');
-                    }
-
-                   foreach ($serialItems as $item) {
-                        $serial = $serialModels[$item->material_serial_id];
-                        $material = $item->material;
-
-                        $serial->loadMissing('material');
-
-                        if ($serial->current_location_id !== $location->id) {
-                            throw new RuntimeException('El numero de serie ' . $serial->serial_number . ' ya no esta en tu stock.');
-                        }
-
-                        if (
-                            ! in_array($serial->status, ['assigned', 'reserved'], true) ||
-                            ($serial->status === 'reserved' && (int) $serial->reserved_by_user_id !== $technician->id)
-                        ) {
-                            throw new RuntimeException('El numero de serie ' . $serial->serial_number . ' ya no esta disponible para usar.');
-                        }
-
-                        $serial->update([
-                            'status' => 'installed',
-                            'current_location_id' => null,
-                            'reserved_by_user_id' => null,
-                            'reserved_at' => null,
-                        ]);
-
-                        $this->movementLogger->log(
-                            'consumption',
-                            $material,
-                            $serial,
-                            $location,
-                            null,
-                            1,
-                            'work_order',
-                            $workOrder->id,
-                            $technician->id
-                        );
-                    }
-                }
-
-                $workOrder->update(['status' => 'confirmed']);
-            });
+            $this->statusService->confirmOrder($workOrder, $technician, $location);
         } catch (RuntimeException $exception) {
             return back()->withErrors([
                 'work_order' => $exception->getMessage(),
@@ -463,66 +193,13 @@ class WorkOrderController extends Controller
     public function cancel(Request $request, WorkOrder $workOrder): RedirectResponse
     {
         $technician = $request->user();
-        $this->assertOwnsOpenOrder($workOrder, $technician);
+        $this->authorizationService->assertOwnsOpenOrder($workOrder, $technician);
 
-        $location = $this->ensureTechnicianLocation($technician);
+        $location = $this->locationService->ensureTechnicianLocation($technician);
 
-        DB::transaction(function () use ($workOrder, $location) {
-            $workOrder->loadMissing(['items.material', 'items.serial.material']);
-
-            foreach ($workOrder->items as $item) {
-                if ($item->material_serial_id && $item->serial) {
-                    $serial = MaterialSerial::query()
-                        ->whereKey($item->material_serial_id)
-                        ->lockForUpdate()
-                        ->first();
-
-                    if ($serial) {
-                        $serial->update([
-                            'status' => 'assigned',
-                            'current_location_id' => $location->id,
-                            'reserved_by_user_id' => null,
-                            'reserved_at' => null,
-                        ]);
-
-                        if ($item->material) {
-                            $this->inventoryService->increase($location, $item->material, 1);
-                        }
-                    }
-                } elseif ($item->quantity && $item->material) {
-                    $this->inventoryService->increase($location, $item->material, (int) $item->quantity);
-                }
-            }
-
-            $workOrder->update(['status' => 'cancelled']);
-        });
+        $this->statusService->cancelOrder($workOrder, $technician, $location);
 
         return redirect()->route('technician.work-orders')
             ->with('status', 'Orden cancelada y materiales restituidos al stock.');
-    }
-
-    private function assertOwnsOpenOrder(WorkOrder $workOrder, User $technician): void
-    {
-        if (
-            $workOrder->technician_id !== $technician->id ||
-            $workOrder->status !== 'open'
-        ) {
-            abort(403);
-        }
-    }
-
-    private function ensureTechnicianLocation(User $technician): StockLocation
-    {
-        $location = $technician->stockLocation()->first();
-
-        if ($location) {
-            return $location;
-        }
-
-        return StockLocation::create([
-            'location_type' => 'user',
-            'ref_id' => $technician->id,
-            'name' => 'Stock de ' . $technician->name,
-        ]);
     }
 }
