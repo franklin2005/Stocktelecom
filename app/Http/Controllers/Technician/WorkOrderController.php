@@ -159,33 +159,28 @@ class WorkOrderController extends Controller
         return back()->with('status', 'El material se elimino de la orden y se regreso al stock.');
     }
 
-    /**
-     * Confirma la orden y descuenta el stock utilizado.
-     */
-    public function confirm(Request $request, WorkOrder $workOrder): RedirectResponse
-    {
-        $technician = $request->user();
-        $this->authorizationService->assertOwnsOpenOrder($workOrder, $technician);
+   /**
+ * Confirma la orden y descuenta el stock utilizado (si hay materiales).
+ */
+public function confirm(Request $request, WorkOrder $workOrder): RedirectResponse
+{
+    $technician = $request->user();
+    $this->authorizationService->assertOwnsOpenOrder($workOrder, $technician);
 
-        $location = $this->locationService->ensureTechnicianLocation($technician);
+    $location = $this->locationService->ensureTechnicianLocation($technician);
 
-        if ($workOrder->items()->count() === 0) {
-            return back()->withErrors([
-                'work_order' => 'Agrega materiales antes de confirmar la orden.',
-            ]);
-        }
-
-        try {
-            $this->statusService->confirmOrder($workOrder, $technician, $location);
-        } catch (RuntimeException $exception) {
-            return back()->withErrors([
-                'work_order' => $exception->getMessage(),
-            ]);
-        }
-
-        return redirect()->route('technician.work-orders')
-            ->with('status', 'Orden confirmada correctamente.');
+    try {
+        $this->statusService->confirmOrder($workOrder, $technician, $location);
+    } catch (RuntimeException $exception) {
+        return back()->withErrors([
+            'work_order' => $exception->getMessage(),
+        ]);
     }
+
+    return redirect()->route('technician.work-orders')
+        ->with('status', 'Orden confirmada correctamente.');
+}
+
 
     /**
      * Cancela la orden abierta.

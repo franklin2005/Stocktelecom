@@ -23,9 +23,6 @@ class TechnicianWorkOrderStatusService
     {
         $workOrder->load(['items.material', 'items.serial.material']);
 
-        if ($workOrder->items->isEmpty()) {
-            throw new RuntimeException('Agrega materiales antes de confirmar la orden.');
-        }
 
         DB::transaction(function () use ($workOrder, $location, $technician) {
             $quantityItems = $workOrder->items
