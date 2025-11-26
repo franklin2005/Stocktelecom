@@ -79,7 +79,8 @@
                             aria-controls="mobileSidebar">
                         Menú
                     </button>
-                    <span class="small d-none d-md-inline">Hola, {{ auth()->user()->name }}</span>
+                    <span class="small text-white d-none d-md-inline">Hola, {{ auth()->user()->name }}</span>
+                    <a href="{{ route('profile.show') }}" class="btn btn-outline-light btn-sm">Perfil</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>

@@ -22,6 +22,7 @@ use App\Http\Controllers\Technician\TransferController as TechnicianTransferCont
 use App\Http\Controllers\Technician\ReturnsController as TechnicianReturnsController;
 use App\Http\Controllers\Technician\WorkOrderController as TechnicianWorkOrderController;
 use App\Http\Controllers\Technician\TransferHistoryController as TechnicianTransferHistoryController;
+use App\Http\Controllers\Auth\ProfileController;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -64,6 +65,10 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     // Cierre de sesión
     Route::post('/logout', [LogoutController::class, 'destroy'])->name('logout');
+    // Perfil - cambio de contrasena
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/password', [ProfileController::class, 'passwordEdit'])->name('profile.edit');
+    Route::patch('/profile/password', [ProfileController::class, 'passwordUpdate'])->name('profile.update');
     /*
      * MÓDULO ADMIN / LOGÍSTICA
      * Panel de gestión, transferencias desde almacén, materiales y

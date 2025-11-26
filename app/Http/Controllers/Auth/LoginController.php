@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -55,18 +56,27 @@ class LoginController extends Controller
      */
     public function login(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'role_key' => ['required', Rule::in(array_keys($this->roleGroups))],
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $credentials = $request->validate(
+            [
+                'role_key' => ['required', Rule::in(array_keys($this->roleGroups))],
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+            ],
+            [
+                'email.required' => 'El correo electrónico es obligatorio.',
+                'email.email' => 'Ingresa un correo electrónico válido.',
+                'password.required' => 'La contraseña es obligatoria.',
+            ]
+        );
 
         $roleKey = $credentials['role_key'];
         unset($credentials['role_key']);
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        $remember = $request->boolean('remember');
+
+        if (! Auth::attempt($credentials, $remember)) {
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => 'Las credenciales no coinciden con nuestros registros.',
             ]);
         }
 
@@ -74,6 +84,7 @@ class LoginController extends Controller
 
         $user = Auth::user();
 
+        // Comprobamos rol permitido
         if (! $user || ! in_array($user->role, $this->roleGroups[$roleKey], true)) {
             Auth::logout();
             $request->session()->invalidate();
@@ -82,6 +93,16 @@ class LoginController extends Controller
             throw ValidationException::withMessages([
                 'email' => 'No tienes permisos para acceder a esta área.',
             ]);
+        }
+
+        // 👇 IMPORTANTE: si NO ha marcado "recordarme", limpiamos cualquier remember anterior
+        if (! $remember) {
+            // limpamos el token de "remember" en BD
+            $user->setRememberToken(null);
+            $user->save();
+
+            // y borramos la cookie de "remember" del navegador
+            Cookie::queue(Cookie::forget(Auth::getRecallerName()));
         }
 
         return redirect()->intended($this->redirectPath());

@@ -106,6 +106,7 @@ a:hover {
 .btn-st:hover {
   background: var(--st-primary-dark);
   border-color: var(--st-primary-dark);
+  color: #fff;
 }
 
 /* Verdes y amarillos personalizados */
@@ -117,6 +118,7 @@ a:hover {
 .btn-success-st:hover {
   background-color: #1B5E20;
   border-color: #1B5E20;
+  color: #fff;
 }
 
 .btn-warning-st {
@@ -127,6 +129,7 @@ a:hover {
 .btn-warning-st:hover {
   background-color: #F57F17;
   border-color: #F57F17;
+  color: #fff;
 }
 
 /* ------------------------------------------------------
