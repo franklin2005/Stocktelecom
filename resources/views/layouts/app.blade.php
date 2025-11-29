@@ -3,143 +3,104 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'STOCKTELECOM') }}</title>
+    <title>STOCKTELECOM</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+
 
     {{-- Bootstrap + jQuery --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+    {{-- Bootstrap Icons --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
     {{-- Estilos del proyecto --}}
     <link rel="stylesheet" href="{{ asset('css/mainStyle.css') }}">
 </head>
+
 <body class="bg-light">
+
     @php
         $navRole = auth()->user()->role ?? null;
+
+        // ----------------------------
+        //   MENÚ POR ROL + ICONOS
+        // ----------------------------
+
         $menuByRole = [
             'super_admin' => [
-                ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
-                ['label' => 'Devoluciones', 'route' => 'admin.returns', 'pattern' => 'admin.returns'],
-                ['label' => 'Histórico de devoluciones', 'route' => 'admin.returns.history', 'pattern' => 'admin.returns.history'],
-                ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
-                ['label' => 'Histórico de usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
-                ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
-                ['label' => 'Crear material', 'route' => 'admin.materials.create', 'pattern' => 'admin.materials.create'],
-                ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
-                ['label' => 'Personal', 'route' => 'admin.personnel', 'pattern' => 'admin.personnel*'],
-                ['label' => 'Transferencias', 'route' => 'admin.transfers', 'pattern' => 'admin.transfers'],
-                ['label' => 'Técnicos', 'route' => 'admin.technicians.overview', 'pattern' => ['admin.technicians.overview', 'admin.technicians.stock.overview', 'admin.technicians.transfers.history', 'admin.technicians.returns.history']],
+                ['label' => 'Dashboard',                  'route' => 'admin.dashboard',          'pattern' => 'admin.dashboard',           'icon' => 'speedometer2'],
+                ['label' => 'Devoluciones',               'route' => 'admin.returns',            'pattern' => 'admin.returns',             'icon' => 'arrow-left-right'],
+                ['label' => 'Histórico de devoluciones',  'route' => 'admin.returns.history',    'pattern' => 'admin.returns.history',     'icon' => 'clock-history'],
+                ['label' => 'Histórico de almacén',       'route' => 'admin.warehouse-movements','pattern' => 'admin.warehouse-movements', 'icon' => 'clock-history'],
+                ['label' => 'Histórico de usuarios',      'route' => 'admin.user-history',       'pattern' => 'admin.user-history',        'icon' => 'clock-history'],
+                ['label' => 'Materiales',                 'route' => 'admin.materials',          'pattern' => 'admin.materials',           'icon' => 'box-seam'],
+                ['label' => 'Crear material',             'route' => 'admin.materials.create',   'pattern' => 'admin.materials.create',    'icon' => 'plus-circle'],
+                ['label' => 'Órdenes de trabajo',         'route' => 'admin.work-orders.index',  'pattern' => 'admin.work-orders.*',       'icon' => 'clipboard-check'],
+                ['label' => 'Personal',                   'route' => 'admin.personnel',          'pattern' => 'admin.personnel*',          'icon' => 'people'],
+                ['label' => 'Transferencias',             'route' => 'admin.transfers',          'pattern' => 'admin.transfers',           'icon' => 'arrow-repeat'],
+                ['label' => 'Técnicos',                   'route' => 'admin.technicians.overview','pattern' => ['admin.technicians.overview', 'admin.technicians.stock.overview', 'admin.technicians.transfers.history', 'admin.technicians.returns.history'], 'icon' => 'person-badge'],
             ],
+
             'admin' => [
-                ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
-                ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
-                ['label' => 'Histórico de usuarios', 'route' => 'admin.user-history', 'pattern' => 'admin.user-history'],
-                ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
-                ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
-                ['label' => 'Personal', 'route' => 'admin.personnel', 'pattern' => 'admin.personnel*'],
-                ['label' => 'Técnicos', 'route' => 'admin.technicians.overview', 'pattern' => ['admin.technicians.overview', 'admin.technicians.stock.overview', 'admin.technicians.transfers.history']],
+                ['label' => 'Dashboard',                  'route' => 'admin.dashboard',          'pattern' => 'admin.dashboard',           'icon' => 'speedometer2'],
+                ['label' => 'Histórico de almacén',       'route' => 'admin.warehouse-movements','pattern' => 'admin.warehouse-movements', 'icon' => 'clock-history'],
+                ['label' => 'Histórico de usuarios',      'route' => 'admin.user-history',       'pattern' => 'admin.user-history',        'icon' => 'clock-history'],
+                ['label' => 'Materiales',                 'route' => 'admin.materials',          'pattern' => 'admin.materials',           'icon' => 'box-seam'],
+                ['label' => 'Órdenes de trabajo',         'route' => 'admin.work-orders.index',  'pattern' => 'admin.work-orders.*',       'icon' => 'clipboard-check'],
+                ['label' => 'Personal',                   'route' => 'admin.personnel',          'pattern' => 'admin.personnel*',          'icon' => 'people'],
+                ['label' => 'Técnicos',                   'route' => 'admin.technicians.overview','pattern' => ['admin.technicians.overview', 'admin.technicians.stock.overview', 'admin.technicians.transfers.history'], 'icon' => 'person-badge'],
             ],
+
             'logistics' => [
-                ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'pattern' => 'admin.dashboard'],
-                ['label' => 'Devoluciones', 'route' => 'admin.returns', 'pattern' => 'admin.returns'],
-                ['label' => 'Histórico de almacén', 'route' => 'admin.warehouse-movements', 'pattern' => 'admin.warehouse-movements'],
-                ['label' => 'Histórico de devoluciones', 'route' => 'admin.returns.history', 'pattern' => 'admin.returns.history'],
-                ['label' => 'Materiales', 'route' => 'admin.materials', 'pattern' => 'admin.materials'],
-                ['label' => 'Crear material', 'route' => 'admin.materials.create', 'pattern' => 'admin.materials.create'],
-                ['label' => 'Órdenes de trabajo', 'route' => 'admin.work-orders.index', 'pattern' => 'admin.work-orders.*'],
-                ['label' => 'Transferencias', 'route' => 'admin.transfers', 'pattern' => 'admin.transfers'],
-                ['label' => 'Técnicos', 'route' => 'admin.technicians.overview', 'pattern' => ['admin.technicians.overview', 'admin.technicians.stock.overview', 'admin.technicians.transfers.history', 'admin.technicians.returns.history']],
+                ['label' => 'Dashboard',                  'route' => 'admin.dashboard',          'pattern' => 'admin.dashboard',           'icon' => 'speedometer2'],
+                ['label' => 'Devoluciones',               'route' => 'admin.returns',            'pattern' => 'admin.returns',             'icon' => 'arrow-left-right'],
+                ['label' => 'Histórico de almacén',       'route' => 'admin.warehouse-movements','pattern' => 'admin.warehouse-movements', 'icon' => 'clock-history'],
+                ['label' => 'Histórico de devoluciones',  'route' => 'admin.returns.history',    'pattern' => 'admin.returns.history',     'icon' => 'clock-history'],
+                ['label' => 'Materiales',                 'route' => 'admin.materials',          'pattern' => 'admin.materials',           'icon' => 'box-seam'],
+                ['label' => 'Crear material',             'route' => 'admin.materials.create',   'pattern' => 'admin.materials.create',    'icon' => 'plus-circle'],
+                ['label' => 'Órdenes de trabajo',         'route' => 'admin.work-orders.index',  'pattern' => 'admin.work-orders.*',       'icon' => 'clipboard-check'],
+                ['label' => 'Transferencias',             'route' => 'admin.transfers',          'pattern' => 'admin.transfers',           'icon' => 'arrow-repeat'],
+                ['label' => 'Técnicos',                   'route' => 'admin.technicians.overview','pattern' => ['admin.technicians.overview', 'admin.technicians.stock.overview', 'admin.technicians.transfers.history', 'admin.technicians.returns.history'], 'icon' => 'person-badge'],
             ],
+
             'technician' => [
-                ['label' => 'Dashboard', 'route' => 'technician.dashboard', 'pattern' => 'technician.dashboard'],
-                ['label' => 'Histórico de devoluciones', 'route' => 'technician.returns.history', 'pattern' => 'technician.returns.history'],
-                ['label' => 'Histórico de transferencias', 'route' => 'technician.transfers.history', 'pattern' => 'technician.transfers.history', 'params' => [auth()->user()]],
-                ['label' => 'Mi stock', 'route' => 'technician.stock', 'pattern' => 'technician.stock'],
-                ['label' => 'Órdenes de trabajo', 'route' => 'technician.work-orders', 'pattern' => 'technician.work-orders'],
-                ['label' => 'Transferencias', 'route' => 'technician.transfers', 'pattern' => 'technician.transfers'],
+                ['label' => 'Dashboard',                  'route' => 'technician.dashboard',     'pattern' => 'technician.dashboard',      'icon' => 'speedometer2'],
+                ['label' => 'Histórico de devoluciones',  'route' => 'technician.returns.history','pattern' => 'technician.returns.history','icon' => 'clock-history'],
+                ['label' => 'Histórico de transferencias','route' => 'technician.transfers.history', 'pattern' => 'technician.transfers.history', 'params' => [auth()->user()], 'icon' => 'clock-history'],
+                ['label' => 'Mi stock',                   'route' => 'technician.stock',         'pattern' => 'technician.stock',          'icon' => 'boxes'],
+                ['label' => 'Órdenes de trabajo',         'route' => 'technician.work-orders',   'pattern' => 'technician.work-orders',    'icon' => 'clipboard-check'],
+                ['label' => 'Transferencias',             'route' => 'technician.transfers',     'pattern' => 'technician.transfers',      'icon' => 'arrow-repeat'],
             ],
         ];
+
         $menuItemsRaw = $menuByRole[$navRole] ?? [];
-        usort($menuItemsRaw, function ($a, $b) {
-            return strcmp(mb_strtolower($a['label']), mb_strtolower($b['label']));
-        });
+        usort($menuItemsRaw, fn($a, $b) => strcmp(mb_strtolower($a['label']), mb_strtolower($b['label'])));
         $menuItems = $menuItemsRaw;
+
     @endphp
 
-    <header class="bg-dark text-white py-2">
-        <div class="container-fluid d-flex align-items-center justify-content-between">
-            <a class="navbar-brand text-white fw-semibold" href="{{ route('home') }}">
-                STOCKTELECOM
-            </a>
-            <div class="d-flex align-items-center gap-3">
-                @auth
-                    <button class="btn btn-outline-light btn-sm d-lg-none"
-                            type="button"
-                            data-bs-toggle="offcanvas"
-                            data-bs-target="#mobileSidebar"
-                            aria-controls="mobileSidebar">
-                        Menú
-                    </button>
-                    <span class="small text-white d-none d-md-inline">Hola, {{ auth()->user()->name }}</span>
-                    <a href="{{ route('profile.show') }}" class="btn btn-outline-light btn-sm">Perfil</a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-light btn-sm">Cerrar sesión</button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-outline-light btn-sm">Iniciar sesión</a>
-                @endauth
-            </div>
-        </div>
-    </header>
+    {{-- NAVBAR + MENÚ MÓVIL --}}
+    @include('partials.navbar', ['menuItems' => $menuItems, 'navRole' => $navRole])
 
-    @auth
-        <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="mobileSidebarLabel">Menú</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-            </div>
-            <div class="offcanvas-body">
-                <div class="list-group list-group-flush">
-                    @foreach ($menuItems as $item)
-                        @php
-                            $pattern = $item['pattern'] ?? $item['route'];
-                            $isActive = request()->routeIs($pattern);
-                            $classes = 'list-group-item list-group-item-action';
-                            if ($isActive) {
-                                $classes .= ' active';
-                            }
-                        @endphp
-
-                        <a href="{{ route($item['route'], $item['params'] ?? []) }}"
-                           class="{{ $classes }}"
-                           @if($isActive) aria-current="true" @endif>
-                            {{ $item['label'] }}
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    @endauth
 
     {{-- LAYOUT --}}
     <div class="container-fluid">
         <div class="row">
-            @auth
-                @php
-                    $navRole = $navRole ?? (auth()->user()->role ?? null);
-                    $menuItems = $menuItems ?? [];
-                @endphp
 
-                {{-- Sidebar: solo visible en escritorio (>= lg), ocupa 2/12 --}}
+            @auth
+                {{-- Sidebar escritorio --}}
                 <aside class="d-none d-lg-block col-lg-2 p-0">
                     @include('partials.sidebar', ['menuItems' => $menuItems, 'role' => $navRole])
                 </aside>
 
-                {{-- Contenido principal: 12/12 en móvil, 10/12 en escritorio --}}
+                {{-- Contenido principal --}}
                 <main class="col-12 col-lg-10 px-4 py-4">
                     @yield('content')
                 </main>
+
             @else
+                {{-- Vista invitado --}}
                 <main class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3 py-5">
                     @yield('content')
                 </main>
@@ -150,5 +111,6 @@
     {{-- Scripts --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
+
 </body>
 </html>

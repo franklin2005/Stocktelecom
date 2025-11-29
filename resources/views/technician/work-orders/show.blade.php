@@ -12,14 +12,11 @@
 
 @section('content')
     <div class="mb-3">
-        <a href="{{ route('technician.work-orders') }}" class="btn btn-sm btn-outline-secondary">
-            &larr; Volver al listado
-        </a>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h3 mb-1">Orden #{{ $workOrder->order_number }}</h1>
+            <h1 class="h3 mb-1"><i class="bi bi-clipboard-check me-2"></i>Orden #{{ $workOrder->order_number }}</h1>
             <p class="st-muted mb-0">
                 Creada el {{ $workOrder->created_at?->format('d/m/Y H:i') }} ·
                 Estado: <span class="badge {{ $st['class'] }}">{{ $st['label'] }}</span>

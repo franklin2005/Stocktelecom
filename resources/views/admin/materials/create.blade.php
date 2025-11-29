@@ -30,7 +30,7 @@
 
 <div class="d-flex align-items-center justify-content-between mb-3">
     <div>
-        <h1 class="h3 mb-1">Crear material</h1>
+        <h1 class="h3 mb-1"><i class="bi bi-box-seam me-2"></i>Crear material</h1>
         <p class="st-muted mb-0">Da de alta nuevos materiales usando plantillas y define si son serializados.</p>
     </div>
 </div>
@@ -153,8 +153,8 @@
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-st">Guardar</button>
-                    <a href="{{ route('admin.materials') }}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-st"><i class="bi bi-check-circle me-1"></i>Guardar</button>
+                    <a href="{{ route('admin.materials') }}" class="btn btn-warning-st"><i class="bi bi-x-circle me-1"></i>Cancelar</a>
                 </div>
             </div>
         </div>
@@ -231,14 +231,13 @@
                         <td class="text-end">
                             <div class="d-flex justify-content-end gap-2">
                                 <button
-                                    class="btn btn-sm btn-outline-primary"
+                                    class="btn btn-sm btn-st"
                                     type="button"
                                     data-bs-toggle="collapse"
                                     data-bs-target="#{{ $editFormId }}"
                                     aria-expanded="{{ $shouldShowEdit ? 'true' : 'false' }}"
                                     aria-controls="{{ $editFormId }}"
-                                >
-                                    Editar
+                                ><i class="bi bi-pencil-square me-1"></i>Editar
                                 </button>
                                 <form
                                     method="POST"
@@ -247,7 +246,7 @@
                                 >
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                    <button type="submit" class="btn btn-sm btn-danger-st"><i class="bi bi-trash me-1"></i>Eliminar</button>
                                 </form>
                             </div>
                         </td>
@@ -338,16 +337,16 @@
                                         </div>
                                     </div>
                                     <div class="col-12 d-flex justify-content-end gap-2">
-                                        <button type="submit" class="btn btn-st">Guardar cambios</button>
+                                        <button type="submit" class="btn btn-st"><i class="bi bi-check-circle me-1"></i>Guardar cambios</button>
                                         <button
                                             type="button"
-                                            class="btn btn-outline-secondary"
+                                            class="btn btn-warning-st"
                                             data-bs-toggle="collapse"
                                             data-bs-target="#{{ $editFormId }}"
                                             aria-expanded="true"
                                             aria-controls="{{ $editFormId }}"
                                         >
-                                            Cancelar
+                                            <i class="bi bi-x-circle me-1"></i>Cancelar
                                         </button>
                                     </div>
                                 </div>

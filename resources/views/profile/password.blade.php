@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-sm">
-                <div class="card-header fw-semibold">Actualizar contraseña</div>
+                <div class="card-header fw-semibold"><i class="bi bi-pencil-square me-1"></i>Actualizar contraseña</div>
                 <div class="card-body">
                     @if(session('status'))
                         <div class="alert alert-success" role="alert">
@@ -39,7 +39,7 @@
                         </div>
 
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-st">Guardar</button>
+                            <button type="submit" class="btn btn-success-st"><i class="bi bi-check-circle me-1"></i>Guardar</button>
                         </div>
                     </form>
                 </div>

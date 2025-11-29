@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 mb-1">Órdenes de trabajo</h1>
+            <h1 class="h3 mb-1"><i class="bi bi-clipboard-check me-2"></i>Órdenes de trabajo</h1>
             <p class="st-muted mb-0">Gestiona tus órdenes abiertas y consulta el historial de intervenciones.</p>
         </div>
     </div>
@@ -44,14 +44,14 @@
                         @csrf
                         <button type="submit" class="btn btn-success-st"
                                 onclick="return confirm('¿Confirmar esta orden? No se podrá modificar después.');">
-                            Confirmar orden
+                            <i class="bi bi-check-circle me-1"></i>Confirmar orden
                         </button>
                     </form>
                     <form method="POST" action="{{ route('technician.work-orders.cancel', $openOrder) }}">
                         @csrf
-                        <button type="submit" class="btn btn-outline-danger"
+                        <button type="submit" class="btn btn-danger-st"
                                 onclick="return confirm('¿Cancelar esta orden?');">
-                            Cancelar orden
+                            <i class="bi bi-x-circle me-1"></i>Cancelar orden
                         </button>
                     </form>
                 </div>
@@ -93,7 +93,7 @@
                                     <input type="number" name="quantity" min="1" value="1" class="form-control">
                                 </div>
                                 <div class="col-2">
-                                    <button type="submit" class="btn btn-st w-100">Añadir</button>
+                                    <button type="submit" class="btn btn-success-st w-100"><i class="bi bi-plus-circle me-1"></i>Añadir</button>
                                 </div>
                             </form>
                         @endif
@@ -152,8 +152,8 @@
                                     @endforeach
                                 </div>
                                 <div class="d-flex justify-content-end mt-3">
-                                    <button type="submit" class="btn btn-st">
-                                        Añadir seleccionados
+                                    <button type="submit" class="btn btn-success-st">
+                                        <i class="bi bi-plus-circle me-1"></i>Añadir seleccionados
                                     </button>
                                 </div>
                             </form>
@@ -199,9 +199,9 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
-                                                            class="btn btn-sm btn-outline-danger"
+                                                            class="btn btn-sm btn-warning-st"
                                                             onclick="return confirm('¿Eliminar este material de la orden?');">
-                                                        Quitar
+                                                        <i class="bi bi-x-circle me-1"></i>Quitar
                                                     </button>
                                                 </form>
                                             </td>
@@ -240,9 +240,9 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
-                                                            class="btn btn-sm btn-outline-danger"
+                                                            class="btn btn-sm btn-warning-st"
                                                             onclick="return confirm('¿Eliminar este material de la orden?');">
-                                                        Quitar
+                                                        <i class="bi bi-x-circle me-1"></i>Quitar
                                                     </button>
                                                 </form>
                                             </td>
@@ -275,7 +275,7 @@
                         <input type="text" name="notes" value="{{ old('notes') }}" class="form-control">
                     </div>
                     <div class="col-12 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-st">Crear orden</button>
+                        <button type="submit" class="btn btn-st"><i class="bi bi-check-circle me-1"></i>Crear orden</button>
                     </div>
                 </div>
             </form>
@@ -293,8 +293,8 @@
                 <input type="date" name="to" value="{{ $to }}" class="form-control">
             </div>
             <div class="col-md-4 d-flex gap-2">
-                <button type="submit" class="btn btn-st">Filtrar</button>
-                <a href="{{ route('technician.work-orders') }}" class="btn btn-outline-secondary">Limpiar</a>
+                <button type="submit" class="btn btn-st"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+                <a href="{{ route('technician.work-orders') }}" class="btn btn-danger-st"><i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar</a>
             </div>
         </div>
     </form>
@@ -347,8 +347,8 @@
                                 </td>
                                 <td class="text-end">{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                 <td class="text-end">
-                                    <a href="{{ route('technician.work-orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
-                                        Ver detalle
+                                    <a href="{{ route('technician.work-orders.show', $order) }}" class="btn btn-sm btn-soft-st">
+                                        <i class="bi bi-eye me-1"></i>Ver detalle
                                     </a>
                                 </td>
                             </tr>

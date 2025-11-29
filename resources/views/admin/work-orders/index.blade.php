@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h3 mb-1">Órdenes de trabajo</h1>
+            <h1 class="h3 mb-1"><i class="bi bi-clipboard-check me-2"></i>Órdenes de trabajo</h1>
             <p class="st-muted mb-0">Consulta y filtra las órdenes creadas por el personal técnico.</p>
         </div>
     </div>
@@ -42,8 +42,8 @@
                 </div>
 
                 <div class="col-12 col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-st flex-fill flex-md-grow-0">Filtrar</button>
-                    <a href="{{ route('admin.work-orders.index') }}" class="btn btn-outline-secondary flex-fill flex-md-grow-0">Limpiar</a>
+                    <button type="submit" class="btn btn-st flex-fill flex-md-grow-0"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+                    <a href="{{ route('admin.work-orders.index') }}" class="btn btn-danger-st flex-fill flex-md-grow-0"><i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar</a>
                 </div>
             </div>
         </div>
@@ -88,8 +88,8 @@
                                     <td class="text-end">{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                                     <td class="text-end">{{ $order->updated_at?->format('d/m/Y H:i') }}</td>
                                     <td class="text-end">
-                                        <a href="{{ route('admin.work-orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
-                                            Ver detalle
+                                        <a href="{{ route('admin.work-orders.show', $order) }}" class="btn btn-sm btn-soft-st">
+                                            <i class="bi bi-eye me-1"></i>Ver detalle
                                         </a>
                                     </td>
                                 </tr>

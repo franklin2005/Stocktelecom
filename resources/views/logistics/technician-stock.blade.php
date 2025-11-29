@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-            <h1 class="h3 mb-1">Stock de técnico</h1>
+            <h1 class="h3 mb-1"><i class="bi bi-box-seam me-2"></i>Stock de técnico</h1>
             <p class="st-muted mb-0">
                 {{ $technician->name }} · {{ $technician->email }}
                 @if ($technician->tech_code)
@@ -13,7 +13,6 @@
                 <small class="st-muted">Ubicación: {{ $location->name }}</small>
             </p>
         </div>
-        <a href="{{ route('admin.technicians.overview') }}" class="btn btn-outline-secondary btn-sm">Volver</a>
     </div>
 
     <div class="row g-4">

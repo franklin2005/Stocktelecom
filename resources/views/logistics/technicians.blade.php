@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-3">
-        <h1 class="h3 mb-0">Técnicos</h1>
+        <h1 class="h3 mb-0"><i class="bi bi-person-badge me-2"></i>Técnicos</h1>
     </div>
 
     <div class="st-card p-3">
@@ -35,14 +35,14 @@
                                 <td>{{ $technician->stockLocation->name ?? 'Sin ubicación' }}</td>
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <a href="{{ route('admin.technicians.stock.overview', $technician) }}" class="btn btn-sm btn-st">
-                                            Ver stock
+                                        <a href="{{ route('admin.technicians.stock.overview', $technician) }}" class="btn btn-sm btn-accent-st">
+                                            <i class="bi bi-box-seam me-1"></i>Ver stock
                                         </a>
-                                        <a href="{{ route('admin.technicians.transfers.history', $technician) }}" class="btn btn-sm btn-outline-secondary">
-                                            Transferencias
+                                        <a href="{{ route('admin.technicians.transfers.history', $technician) }}" class="btn btn-sm btn-soft-st">
+                                            <i class="bi bi-arrow-repeat me-1"></i>Transferencias
                                         </a>
-                                        <a href="{{ route('admin.technicians.returns.history', $technician) }}" class="btn btn-sm btn-outline-info">
-                                            Devoluciones
+                                        <a href="{{ route('admin.technicians.returns.history', $technician) }}" class="btn btn-sm btn-info-st">
+                                            <i class="bi bi-arrow-left-right me-1"></i>Devoluciones
                                         </a>
                                     </div>
                                 </td>

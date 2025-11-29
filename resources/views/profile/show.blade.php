@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card st-card">
-                <div class="card-header fw-semibold">Perfil</div>
+                <div class="card-header fw-semibold"><i class="bi bi-person-circle me-2"></i>Perfil</div>
                 <div class="card-body">
                     <dl class="row mb-4">
                         <dt class="col-sm-4">Nombre</dt>
@@ -19,7 +19,7 @@
                     </dl>
 
                     <div class="d-grid">
-                        <a href="{{ route('profile.edit') }}" class="btn btn-st">Cambiar contraseña</a>
+                        <a href="{{ route('profile.edit') }}" class="btn btn-success-st"><i class="bi bi-pencil-square me-1"></i>Cambiar contraseña</a>
                     </div>
                 </div>
             </div>

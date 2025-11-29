@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-            <h1 class="h3 mb-1">Devoluciones desde técnico</h1>
+            <h1 class="h3 mb-1"><i class="bi bi-arrow-left-right me-2"></i>Devoluciones desde técnico</h1>
             <p class="st-muted mb-0">Solicita a un técnico la devolución de materiales al almacén principal.</p>
         </div>
     </div>
@@ -90,8 +90,8 @@
                                                     value="1"
                                                     style="width: 90px;"
                                                 >
-                                                <button type="submit" class="btn btn-sm btn-outline-primary">
-                                                    Añadir
+                                                <button type="submit" class="btn btn-sm btn-success-st">
+                                                    <i class="bi bi-plus-circle me-1"></i>Añadir
                                                 </button>
                                             </form>
                                         </td>
@@ -143,8 +143,8 @@
                                                 <input type="hidden" name="intent" value="serial">
                                                 <input type="hidden" name="technician_id" value="{{ $selectedTechnician?->id }}">
                                                 <input type="hidden" name="serial_ids[]" value="{{ $serial->id }}">
-                                                <button type="submit" class="btn btn-sm btn-outline-primary" {{ $isReserved ? 'disabled' : '' }}>
-                                                    Añadir
+                                                <button type="submit" class="btn btn-sm btn-success-st" {{ $isReserved ? 'disabled' : '' }}>
+                                                    <i class="bi bi-plus-circle me-1"></i></i>Añadir
                                                 </button>
                                             </form>
                                         </td>
@@ -162,7 +162,7 @@
                     <h2 class="h5 mb-0">Lista de devolución</h2>
                     <form method="POST" action="{{ route('admin.returns.cart.clear') }}">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-outline-danger">Vaciar</button>
+                        <button type="submit" class="btn btn-sm btn-danger-st"><i class="bi bi-arrow-counterclockwise me-1"></i></i>Vaciar</button>
                     </form>
                 </div>
 
@@ -197,7 +197,7 @@
                                         <td class="text-end">
                                             <form method="POST" action="{{ route('admin.returns.cart.remove', $cartItem['key']) }}">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">Quitar</button>
+                                                <button type="submit" class="btn btn-sm btn-warning-st"><i class="bi bi-x-circle me-1"></i>Quitar</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -249,10 +249,10 @@
                     <input type="hidden" name="technician_id" value="{{ $selectedTechnician?->id }}">
                     <button
                         type="submit"
-                        class="btn btn-primary w-100"
+                        class="btn btn-st w-100"
                         {{ empty($cartItems) || ! $selectedTechnician ? 'disabled' : '' }}
                     >
-                        Enviar solicitud de devolución
+                        <i class="bi bi-check-circle me-1"></i>Enviar solicitud de devolución
                     </button>
                 </form>
             </div>

@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 mb-1">Transferencias de materiales</h1>
+            <h1 class="h3 mb-1"><i class="bi bi-arrow-repeat me-2"></i>Transferencias de materiales</h1>
             <p class="st-muted mb-0">Gestiona las salidas y recepciones desde tu inventario personal.</p>
         </div>
         <div class="d-flex gap-2">
@@ -85,8 +85,8 @@
                                                     style="width: 90px;"
                                                     {{ $available === 0 ? 'disabled' : '' }}
                                                 >
-                                                <button type="submit" class="btn btn-sm btn-outline-primary" {{ $available === 0 ? 'disabled' : '' }}>
-                                                    Añadir
+                                                <button type="submit" class="btn btn-sm btn-success-st" {{ $available === 0 ? 'disabled' : '' }}>
+                                                    <i class="bi bi-plus-circle me-1"></i>Añadir
                                                 </button>
                                             </form>
                                         </td>
@@ -172,8 +172,8 @@
                         </div>
 
                         <div class="d-flex justify-content-end mt-3">
-                            <button type="submit" class="btn btn-sm btn-outline-primary">
-                                Añadir seleccionados
+                            <button type="submit" class="btn btn-sm btn-success-st">
+                                <i class="bi bi-plus-circle me-1"></i>Añadir seleccionados
                             </button>
                         </div>
                     </form>
@@ -186,8 +186,8 @@
                     <h5 class="card-title mb-0">Lista de transferencia</h5>
                     <form method="POST" action="{{ route('technician.transfers.cart.clear') }}">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-outline-danger" {{ empty($cartItems) ? 'disabled' : '' }}>
-                            Vaciar lista
+                        <button type="submit" class="btn btn-sm btn-danger-st" {{ empty($cartItems) ? 'disabled' : '' }}>
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Vaciar lista
                         </button>
                     </form>
                 </div>
@@ -222,8 +222,8 @@
                                         <td class="text-end">
                                             <form method="POST" action="{{ route('technician.transfers.cart.remove', $item['key']) }}">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary">
-                                                    Quitar
+                                                <button type="submit" class="btn btn-sm btn-warning-st">
+                                                    <i class="bi bi-x-circle me-1"></i>Quitar
                                                 </button>
                                             </form>
                                         </td>
@@ -284,11 +284,11 @@
                                             <div class="d-flex justify-content-end gap-2">
                                                 <form method="POST" action="{{ route('technician.returns.accept', $transfer) }}">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-success-st btn-sm">Aceptar</button>
+                                                    <button type="submit" class="btn btn-success-st btn-sm"><i class="bi bi-check-circle me-1"></i>Aceptar</button>
                                                 </form>
                                                 <form method="POST" action="{{ route('technician.returns.reject', $transfer) }}">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-outline-danger btn-sm">Rechazar</button>
+                                                    <button type="submit" class="btn btn-danger-st btn-sm"><i class="bi bi-x-circle me-1"></i>Rechazar</button>
                                                 </form>
                                             </div>
                                         </td>
@@ -309,7 +309,7 @@
                 <form method="GET" action="{{ route('technician.transfers') }}" class="mb-3">
                     <div class="input-group input-group-sm">
                         <input type="text" name="recipient_search" class="form-control" value="{{ $recipientSearch }}" placeholder="Nombre del técnico">
-                        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                        <button class="btn btn-soft-st" type="submit"><i class="bi bi-search me-1"></i>Buscar</button>
                     </div>
                 </form>
 
@@ -346,7 +346,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-st w-100" {{ $disableSend ? 'disabled' : '' }}>
-                        Transferir {{ $cartSummary['total_units'] }} {{ $cartSummary['total_units'] == 1 ? 'elemento' : 'elementos' }}
+                       <i class="bi bi-check-circle me-1"></i>Transferir {{ $cartSummary['total_units'] }} {{ $cartSummary['total_units'] == 1 ? 'elemento' : 'elementos' }}
                     </button>
                 </form>
             </div>
@@ -410,11 +410,11 @@
                                             <div class="d-flex justify-content-end gap-2">
                                                 <form method="POST" action="{{ route('technician.transfers.accept', $transfer) }}">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-success-st btn-sm">Aceptar</button>
+                                                    <button type="submit" class="btn btn-success-st btn-sm"><i class="bi bi-check-circle me-1"></i>Aceptar</button>
                                                 </form>
                                                 <form method="POST" action="{{ route('technician.transfers.reject', $transfer) }}">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-outline-danger btn-sm">Rechazar</button>
+                                                    <button type="submit" class="btn btn-danger-st btn-sm"><i class="bi bi-x-circle me-1"></i>Rechazar</button>
                                                 </form>
                                             </div>
                                         </td>
@@ -426,89 +426,7 @@
                 @endif
             </div>
         </div>
-
-        <div class="col-12 col-xl-4">
-            <div class="st-card p-3 mb-4">
-                <h5 class="card-title mb-3">Historial de transferencias</h5>
-                @if ($recentTransferHistory->isEmpty())
-                    <p class="st-muted mb-0">Sin transferencias procesadas recientemente.</p>
-                @else
-                    <div class="list-group">
-                        @foreach ($recentTransferHistory as $transfer)
-                            <div class="list-group-item">
-                                <div class="d-flex justify-content-between">
-                                    <span class="fw-semibold">{{ $transfer->order_number }}</span>
-                                    <span class="badge badge-primary-soft">Transferencia</span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mt-1">
-                                    <small class="st-muted">
-                                        {{ $transfer->updated_at?->format('d/m/Y H:i') ?? $transfer->created_at->format('d/m/Y H:i') }}
-                                    </small>
-                                    <span class="badge {{ $transfer->status === 'accepted' ? 'badge-success-soft' : 'badge-danger-soft' }}">
-                                        {{ $transfer->status === 'accepted' ? 'Aceptada' : 'Rechazada' }}
-                                    </span>
-                                </div>
-                                <ul class="mb-0 mt-2 ps-3 small">
-                                    @foreach ($transfer->items as $item)
-                                        <li>
-                                            {{ ucfirst($item->material->type) }}
-                                            @if ($item->material->model)
-                                                - {{ $item->material->model }}
-                                            @endif
-                                            @if ($item->material_serial_id && $item->serial)
-                                                (Serie: {{ $item->serial->serial_number }})
-                                            @else
-                                                (Cantidad: {{ $item->quantity }})
-                                            @endif
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-
-            <div class="st-card p-3">
-                <h5 class="card-title mb-3">Historial de devoluciones</h5>
-                @if ($recentReturnHistory->isEmpty())
-                    <p class="st-muted mb-0">Sin devoluciones procesadas recientemente.</p>
-                @else
-                    <div class="list-group">
-                        @foreach ($recentReturnHistory as $transfer)
-                            <div class="list-group-item">
-                                <div class="d-flex justify-content-between">
-                                    <span class="fw-semibold">{{ $transfer->order_number }}</span>
-                                    <span class="badge badge-info-soft">Devolución</span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mt-1">
-                                    <small class="st-muted">
-                                        {{ $transfer->updated_at?->format('d/m/Y H:i') ?? $transfer->created_at->format('d/m/Y H:i') }}
-                                    </small>
-                                    <span class="badge {{ $transfer->status === 'accepted' ? 'badge-success-soft' : 'badge-danger-soft' }}">
-                                        {{ $transfer->status === 'accepted' ? 'Aceptada' : 'Rechazada' }}
-                                    </span>
-                                </div>
-                                <ul class="mb-0 mt-2 ps-3 small">
-                                    @foreach ($transfer->items as $item)
-                                        <li>
-                                            {{ ucfirst($item->material->type) }}
-                                            @if ($item->material->model)
-                                                - {{ $item->material->model }}
-                                            @endif
-                                            @if ($item->material_serial_id && $item->serial)
-                                                (Serie: {{ $item->serial->serial_number }})
-                                            @else
-                                                (Cantidad: {{ $item->quantity }})
-                                            @endif
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
+        
         </div>
     </div>
 @endsection

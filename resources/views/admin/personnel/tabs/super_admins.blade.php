@@ -29,19 +29,19 @@
                                         <td class="text-end">
                                             <div class="d-flex justify-content-end gap-2">
                                                 @if ($canViewMovements && $canManageSuperAdmins)
-                                                    <a href="{{ route('admin.personnel.movements', $superAdmin) }}" class="btn btn-sm btn-outline-secondary">
-                                                        Ver movimientos
+                                                    <a href="{{ route('admin.personnel.movements', $superAdmin) }}" class="btn btn-sm btn-soft-st">
+                                                        <i class="bi bi-eye me-1"></i>Ver movimientos
                                                     </a>
                                                 @endif
                                                 @if ($canManageSuperAdmins)
-                                                    <a href="{{ route('admin.personnel', ['tab' => 'super_admins', 'edit_super_admin' => $superAdmin->id]) }}" class="btn btn-sm btn-outline-primary">
-                                                        Editar
+                                                    <a href="{{ route('admin.personnel', ['tab' => 'super_admins', 'edit_super_admin' => $superAdmin->id]) }}" class="btn btn-sm btn-st">
+                                                        <i class="bi bi-pencil-square me-1"></i>Editar
                                                     </a>
                                                     <form method="POST" class="d-inline" action="{{ route('admin.staff.destroy', ['staff' => $superAdmin->id, 'tab' => 'super_admins']) }}" onsubmit="return confirm('¿Seguro que deseas eliminar a este superadministrador?');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                            Eliminar
+                                                        <button type="submit" class="btn btn-sm btn-danger-st">
+                                                            <i class="bi bi-trash me-1"></i>Eliminar
                                                         </button>
                                                     </form>
                                                 @elseif (! $canViewMovements)
@@ -92,7 +92,7 @@
                             <label for="super_admin_password_confirmation" class="form-label">Confirmar contraseña</label>
                             <input type="password" id="super_admin_password_confirmation" name="password_confirmation" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-st w-100">Crear superadministrador</button>
+                        <button type="submit" class="btn btn-st w-100"><i class="bi bi-plus-circle me-1"></i>Crear superadministrador</button>
                     </form>
                 </div>
             </div>
@@ -102,7 +102,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Editar superadministrador</h5>
-                            <a href="{{ route('admin.personnel', ['tab' => 'super_admins']) }}" class="btn btn-sm btn-outline-secondary">Cancelar</a>
+                            <a href="{{ route('admin.personnel', ['tab' => 'super_admins']) }}" class="btn btn-sm btn-warning-st"><i class="bi bi-x-circle me-1"></i>Cancelar</a>
                         </div>
                         <form method="POST" action="{{ route('admin.staff.update', ['staff' => $editingSuperAdmin->id, 'tab' => 'super_admins']) }}">
                             @csrf
@@ -142,7 +142,7 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <button type="submit" class="btn btn-success-st w-100">Actualizar superadministrador</button>
+                            <button type="submit" class="btn btn-success-st w-100"><i class="bi bi-check-circle me-1"></i>Actualizar superadministrador</button>
                         </form>
                     </div>
                 </div>

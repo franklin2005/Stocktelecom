@@ -12,7 +12,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="h3 mb-1">Orden #{{ $workOrder->order_number }}</h1>
+            <h1 class="h3 mb-1"><i class="bi bi-clipboard-check me-2"></i>Orden #{{ $workOrder->order_number }}</h1>
             <p class="st-muted mb-0">
                 Técnico: {{ $workOrder->technician_name }} ({{ $workOrder->technician_code }}) ·
                 Creada el {{ $workOrder->created_at?->format('d/m/Y H:i') }}
@@ -99,7 +99,7 @@
                                 <textarea id="notes" name="notes" class="form-control" rows="3">{{ old('notes', $workOrder->notes) }}</textarea>
                             </div>
                             <div class="d-flex justify-content-end">
-                                <button type="submit" class="btn btn-st">Guardar cambios</button>
+                                <button type="submit" class="btn btn-success-st"><i class="bi bi-check-circle me-1"></i>Guardar cambios</button>
                             </div>
                         </form>
                     @else

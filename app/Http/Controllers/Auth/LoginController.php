@@ -40,9 +40,9 @@ class LoginController extends Controller
         }
 
         $titles = [
-            'technician' => 'Iniciar sesión Técnico',
-            'logistics' => 'Iniciar sesión Logística',
-            'admin' => 'Iniciar sesión Administrador',
+            'technician' => 'Técnico',
+            'logistics' => 'Logística',
+            'admin' => 'Administrador',
         ];
 
         return view('auth.login-role', [

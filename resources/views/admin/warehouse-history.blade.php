@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-            <h1 class="h3 mb-1">Histórico de movimientos del almacén</h1>
+            <h1 class="h3 mb-1"><i class="bi bi-arrow-repeat me-2"></i>Histórico de movimientos del almacén</h1>
             <p class="st-muted mb-0">
                 Registros de ajustes, transferencias y bajas aplicadas al almacén{{ $warehouse ? ' '.$warehouse->name : '' }}.
             </p>
@@ -22,8 +22,8 @@
                 <input type="date" name="to" value="{{ $to }}" class="form-control">
             </div>
             <div class="col-md-4 d-flex gap-2">
-                <button type="submit" class="btn btn-st">Filtrar</button>
-                <a href="{{ route('admin.warehouse-movements') }}" class="btn btn-outline-secondary">Limpiar</a>
+                <button type="submit" class="btn btn-st"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+                <a href="{{ route('admin.warehouse-movements') }}" class="btn btn-danger-st"><i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar</a>
             </div>
         </div>
     </form>

@@ -110,7 +110,7 @@
                                 <label for="quantity" class="form-label">Cantidad a ingresar</label>
                                 <input type="number" min="1" class="form-control" id="quantity" name="quantity" value="{{ old('quantity') }}">
                             </div>
-                            <button type="submit" class="btn btn-st w-100">Registrar ingreso</button>
+                            <button type="submit" class="btn btn-st w-100"><i class="bi bi-check-circle me-1"></i>Registrar ingreso</button>
                         </form>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                                 <textarea class="form-control" id="serial_numbers" name="serial_numbers" rows="4" placeholder="Uno por línea">{{ old('serial_numbers') }}</textarea>
                                 <small class="st-muted">Introduce un número de serie por línea.</small>
                             </div>
-                            <button type="submit" class="btn btn-st w-100">Registrar series</button>
+                            <button type="submit" class="btn btn-st w-100"><i class="bi bi-check-circle me-1"></i>Registrar series</button>
                         </form>
                     </div>
                 </div>
@@ -166,7 +166,7 @@
                                 <label for="remove_quantity" class="form-label">Cantidad a retirar</label>
                                 <input type="number" min="1" class="form-control" id="remove_quantity" name="quantity">
                             </div>
-                            <button type="submit" class="btn btn-outline-danger w-100">Eliminar del almacén</button>
+                            <button type="submit" class="btn btn-danger-st w-100"><i class="bi bi-trash me-1"></i>Eliminar del almacén</button>
                         </form>
                     </div>
                 </div>
@@ -211,7 +211,7 @@
                                 </select>
                                 <small class="st-muted">Selecciona cada número de serie que deseas dar de baja.</small>
                             </div>
-                            <button type="submit" class="btn btn-outline-danger w-100">Eliminar series</button>
+                            <button type="submit" class="btn btn-danger-st w-100"><i class="bi bi-trash me-1"></i>Eliminar series</button>
                         </form>
                     </div>
                 </div>

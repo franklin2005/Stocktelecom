@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h1 class="h3 mb-1">Mi stock</h1>
+            <h1 class="h3 mb-1"><i class="bi bi-boxes me-2"></i>Mi stock</h1>
             <p class="st-muted mb-0">Ubicación asignada: {{ $location->name }}</p>
         </div>
     </div>

@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-            <h1 class="h3 mb-1">Transferencias desde almacén</h1>
+            <h1 class="h3 mb-1"><i class="bi bi-arrow-repeat me-2"></i>Transferencias desde almacén</h1>
             <p class="st-muted mb-0">Selecciona materiales del almacén principal y genera solicitudes para los técnicos.</p>
         </div>
     </div>
@@ -86,8 +86,8 @@
                                                     style="width: 90px;"
                                                     {{ $available === 0 ? 'disabled' : '' }}
                                                 >
-                                                <button type="submit" class="btn btn-sm btn-outline-primary" {{ $available === 0 ? 'disabled' : '' }}>
-                                                    Añadir
+                                                <button type="submit" class="btn btn-sm btn-success-st" {{ $available === 0 ? 'disabled' : '' }}>
+                                                    <i class="bi bi-plus-circle me-1"></i>Añadir
                                                 </button>
                                             </form>
                                         </td>
@@ -167,8 +167,8 @@
                         </div>
 
                         <div class="d-flex justify-content-end mt-3">
-                            <button type="submit" class="btn btn-sm btn-outline-primary">
-                                Añadir seleccionados
+                            <button type="submit" class="btn btn-sm btn-st">
+                                <i class="bi bi-plus-circle me-1"></i>Añadir seleccionados
                             </button>
                         </div>
                     </form>
@@ -181,8 +181,8 @@
                     <h2 class="h5 mb-0">Lista de transferencia</h2>
                     <form method="POST" action="{{ route('admin.transfers.cart.clear') }}">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-outline-danger" {{ empty($cartItems) ? 'disabled' : '' }}>
-                            Vaciar lista
+                        <button type="submit" class="btn btn-sm btn-danger-st" {{ empty($cartItems) ? 'disabled' : '' }}>
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Vaciar lista
                         </button>
                     </form>
                 </div>
@@ -217,8 +217,8 @@
                                         <td class="text-end">
                                             <form method="POST" action="{{ route('admin.transfers.cart.remove', $item['key']) }}">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-secondary">
-                                                    Quitar
+                                                <button type="submit" class="btn btn-sm btn-warning-st">
+                                                    <i class="bi bi-x-circle me-1"></i>Quitar
                                                 </button>
                                             </form>
                                         </td>
@@ -244,7 +244,7 @@
                 <form method="GET" action="{{ route('admin.transfers') }}" class="mb-3">
                     <div class="input-group input-group-sm">
                         <input type="text" name="recipient_search" class="form-control" value="{{ $recipientSearch }}" placeholder="Nombre del técnico">
-                        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                        <button class="btn btn-soft-st" type="submit"><i class="bi bi-search me-1"></i>Buscar</button>
                     </div>
                 </form>
 
@@ -284,7 +284,7 @@
                         class="btn btn-st w-100"
                         {{ empty($cartItems) || $technicians->isEmpty() ? 'disabled' : '' }}
                     >
-                        Enviar transferencia
+                        <i class="bi bi-check-circle me-1"></i>Enviar transferencia
                     </button>
                 </form>
             </div>

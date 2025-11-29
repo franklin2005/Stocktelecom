@@ -42,24 +42,24 @@
                                         <td class="text-end">
                                             <div class="d-flex justify-content-end gap-2">
                                                 @if ($canViewMovements)
-                                                    <a href="{{ route('admin.personnel.movements', $logistic) }}" class="btn btn-sm btn-outline-secondary">
-                                                        Ver movimientos
+                                                    <a href="{{ route('admin.personnel.movements', $logistic) }}" class="btn btn-sm btn-soft-st">
+                                                        <i class="bi bi-eye me-1"></i>Ver movimientos
                                                     </a>
                                                 @endif
                                                 @if ($canManageLogistics)
-                                                    <a href="{{ route('admin.personnel', ['tab' => 'logistics', 'edit_logistics' => $logistic->id]) }}" class="btn btn-sm btn-outline-primary">
-                                                        Editar
+                                                    <a href="{{ route('admin.personnel', ['tab' => 'logistics', 'edit_logistics' => $logistic->id]) }}" class="btn btn-sm btn-st">
+                                                        <i class="bi bi-pencil-square me-1"></i>Editar
                                                     </a>
                                                     <form method="POST" class="d-inline" action="{{ route('admin.staff.destroy', ['staff' => $logistic->id, 'tab' => 'logistics']) }}" onsubmit="return confirm('¿Seguro que deseas eliminar a este usuario de logística?');">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button
                                                             type="submit"
-                                                            class="btn btn-sm btn-outline-danger"
+                                                            class="btn btn-sm btn-danger-st"
                                                             {{ $logisticsHasStock ? 'disabled' : '' }}
                                                             @if ($logisticsHasStock) title="Vacía el stock antes de eliminar a este usuario de logística." @endif
                                                         >
-                                                            Eliminar
+                                                            <i class="bi bi-trash me-1"></i>Eliminar
                                                         </button>
                                                     </form>
                                                     @if ($logisticsHasStock)
@@ -113,7 +113,7 @@
                             <label for="logistics_password_confirmation" class="form-label">Confirmar contraseña</label>
                             <input type="password" id="logistics_password_confirmation" name="password_confirmation" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-st w-100">Crear usuario de logística</button>
+                        <button type="submit" class="btn btn-st w-100"><i class="bi bi-plus-circle me-1"></i>Crear usuario de logística</button>
                     </form>
                 </div>
             </div>
@@ -123,7 +123,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Editar usuario de logística</h5>
-                            <a href="{{ route('admin.personnel', ['tab' => 'logistics']) }}" class="btn btn-sm btn-outline-secondary">Cancelar</a>
+                            <a href="{{ route('admin.personnel', ['tab' => 'logistics']) }}" class="btn btn-sm btn-warning-st"><i class="bi bi-x-circle me-1"></i>Cancelar</a>
                         </div>
                         <form method="POST" action="{{ route('admin.staff.update', ['staff' => $editingLogistics->id, 'tab' => 'logistics']) }}">
                             @csrf
@@ -167,7 +167,7 @@
                             @else
                                 <input type="hidden" name="role" value="logistics">
                             @endif
-                            <button type="submit" class="btn btn-success-st w-100">Actualizar usuario</button>
+                            <button type="submit" class="btn btn-success-st w-100"><i class="bi bi-check-circle me-1"></i></i>Actualizar usuario</button>
                         </form>
                     </div>
                 </div>

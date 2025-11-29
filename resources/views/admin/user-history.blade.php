@@ -3,8 +3,10 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-            <h1 class="h3 mb-1">Histórico de acciones de usuarios</h1>
-            <p class="st-muted mb-0">Registros de creación, edición y eliminación realizados por el personal autorizado.</p>
+            <h1 class="h3 mb-1"><i class="bi bi-person-fill-gear me-2"></i>Histórico de acciones de usuarios</h1>
+            <p class="st-muted mb-0">
+                Registros de creación, edición y eliminación realizados por el personal autorizado.
+            </p>
         </div>
     </div>
 
@@ -19,8 +21,12 @@
                 <input type="date" name="to" value="{{ $to ?? '' }}" class="form-control">
             </div>
             <div class="col-md-4 d-flex gap-2">
-                <button type="submit" class="btn btn-st">Filtrar</button>
-                <a href="{{ route('admin.user-history') }}" class="btn btn-outline-secondary">Limpiar</a>
+                <button type="submit" class="btn btn-st">
+                    <i class="bi bi-funnel me-1"></i>Filtrar
+                </button>
+                <a href="{{ route('admin.user-history') }}" class="btn btn-danger-st">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar
+                </a>
             </div>
         </div>
     </form>
@@ -48,23 +54,36 @@
                                     'updated' => 'Actualización',
                                     'deleted' => 'Eliminación',
                                 ];
+
+                                $badgeClasses = [
+                                    'created' => 'badge-success-soft',
+                                    'updated' => 'badge-warning-soft',
+                                    'deleted' => 'badge-danger-soft',
+                                ];
+
                                 $actionLabel = $actionLabels[$log->action] ?? ucfirst($log->action);
+                                $badgeClass  = $badgeClasses[$log->action] ?? 'badge-soft';
                             @endphp
+
                             <tr>
                                 <td>{{ $log->created_at->format('d/m/Y H:i') }}</td>
                                 <td>
-                                    <span class="badge badge-soft">{{ $actionLabel }}</span>
+                                    <span class="badge {{ $badgeClass }}">
+                                        {{ $actionLabel }}
+                                    </span>
                                 </td>
                                 <td>
                                     {{ optional($log->target)->name ?? 'Usuario eliminado' }}
                                     @if (optional($log->target)->email)
-                                        <br><small class="st-muted">{{ optional($log->target)->email }}</small>
+                                        <br>
+                                        <small class="st-muted">{{ optional($log->target)->email }}</small>
                                     @endif
                                 </td>
                                 <td>
                                     {{ optional($log->actor)->name ?? 'Sistema' }}
                                     @if (optional($log->actor)->email)
-                                        <br><small class="st-muted">{{ optional($log->actor)->email }}</small>
+                                        <br>
+                                        <small class="st-muted">{{ optional($log->actor)->email }}</small>
                                     @endif
                                 </td>
                                 <td>{{ $log->details }}</td>

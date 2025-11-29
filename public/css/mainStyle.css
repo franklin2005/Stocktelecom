@@ -100,7 +100,6 @@ a:hover {
   background: var(--st-primary);
   border-color: var(--st-primary);
   color: #fff;
-  border-radius: var(--st-radius);
   transition: all 0.2s ease;
 }
 .btn-st:hover {
@@ -131,6 +130,63 @@ a:hover {
   border-color: #F57F17;
   color: #fff;
 }
+
+/* Botón peligro (eliminar, etc.) */
+.btn-danger-st {
+  background-color: var(--st-danger);
+  border-color: var(--st-danger);
+  color: #fff;
+}
+.btn-danger-st:hover {
+  background-color: #B71C1C;
+  border-color: #B71C1C;
+  color: #fff;
+}
+
+/* Botón suave / secundario (ver, detalles, movimientos...) */
+.btn-soft-st {
+  background-color: var(--st-text-2);
+  border-color: var(--st-text-2);
+  color: #fff;
+}
+.btn-soft-st:hover {
+  background-color: #536072;
+  border-color: #536072;
+  color: #fff;
+}
+.btn-info-st{
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: #fff;
+}
+.btn-info-st:hover{
+    background-color: #0baaca;
+    border-color: #0baaca;
+    color: #fff;
+}
+.btn-accent-st {
+  background-color: var(--st-accent);
+  border-color: var(--st-accent);
+  color: #fff;
+}
+.btn-accent-st:hover {
+  background-color: #008E7E;
+  border-color: #008E7E;
+  color: #fff;
+}
+.btn-icon {
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+
+a.btn,
+a.btn:hover,
+a.btn:focus {
+    text-decoration: none !important;
+}
+
+
+
 
 /* ------------------------------------------------------
    BADGES / ETIQUETAS
@@ -214,7 +270,14 @@ a:hover {
 /* Evita que “Entrar” se parta o se salga del botón */
 .role-btn { white-space: nowrap; }
 
+/*Tamañp de los iconos  */
+.sidebar-icon {
+    font-size: 1.3rem; /* Ajusta aquí: 1.25 = grande pero elegante */
+}
+
+
 /* Ajuste de tipografía de títulos en anchos entre tablet y laptop */
 @media (max-width: 1199.98px) {
   .role-card h5 { font-size: 1.1rem; }
 }
+

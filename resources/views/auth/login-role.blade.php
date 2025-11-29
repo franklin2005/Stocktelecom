@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="st-card mx-auto p-4" style="max-width: 420px;">
-        <h4 class="mb-3 text-center fw-semibold text-primary">{{ $title }}</h4>
+        <h4 class="mb-3 text-center fw-semibold text-primary"><i class="bi bi-person-circle me-2"></i>{{ $title }}</h4>
 
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -54,7 +54,7 @@
                 <label class="form-check-label" for="remember">Recordarme</label>
             </div>
 
-            <button type="submit" class="btn btn-st w-100">Iniciar sesión</button>
+            <button type="submit" class="btn btn-st w-100"><i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión</button>
         </form>
 
         <div class="mt-3 text-center">

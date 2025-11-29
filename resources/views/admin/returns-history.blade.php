@@ -25,8 +25,7 @@
 @section('content')
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-            <h1 class="h3 mb-1">Histórico de devoluciones</h1>
-            <p class="st-muted mb-0">Revisa todas las solicitudes de devolución registradas desde los técnicos hacia el almacén.</p>
+            <h1 class="h3 mb-1"><i class="bi bi-arrow-left-right me-2"></i>Histórico de devoluciones</h1>
         </div>
     </div>
 
@@ -40,7 +39,7 @@
                 <label class="form-label">Hasta</label>
                 <input type="date" name="to" value="{{ request('to') }}" class="form-control">
             </div>
-            <div class="col-6 col-lg-2">
+            <div class="col-6 col-lg-3">
                 <label class="form-label">Estado</label>
                 <select name="status" class="form-select">
                     @foreach ($statusOptions as $value => $label)
@@ -48,9 +47,9 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-12 col-lg-1 d-grid d-lg-flex gap-2">
-                <button type="submit" class="btn btn-st">Filtrar</button>
-                <a href="{{ route('admin.returns.history') }}" class="btn btn-outline-secondary">Limpiar</a>
+            <div class="col-12 col-lg-3 d-grid d-lg-flex gap-2">
+                <button type="submit" class="btn btn-st"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+                <a href="{{ route('admin.returns.history') }}" class="btn btn-danger-st"><i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar</a>
             </div>
         </div>
     </form>
