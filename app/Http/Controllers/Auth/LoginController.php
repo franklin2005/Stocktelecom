@@ -66,6 +66,8 @@ class LoginController extends Controller
                 'email.required' => 'El correo electrónico es obligatorio.',
                 'email.email' => 'Ingresa un correo electrónico válido.',
                 'password.required' => 'La contraseña es obligatoria.',
+                'password.confirmed' => 'La confirmación de contraseña no coincide.',
+                'password.min' => 'La contraseña debe tener al menos :min caracteres.',
             ]
         );
 
@@ -120,8 +122,9 @@ class LoginController extends Controller
         }
 
         return match ($user->role) {
-            'technician' => route('technician.dashboard'),
-            'logistics', 'admin', 'super_admin' => route('admin.dashboard'),
+            'technician' => route('technician.stock'),
+            'logistics' => route('admin.materials'),
+            'admin', 'super_admin' => route('admin.personnel'),
             default => route('login'),
         };
     }

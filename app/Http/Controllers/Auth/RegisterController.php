@@ -31,6 +31,10 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
+        ], [
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'La confirmación de contraseña no coincide.',
+            'password.min' => 'La contraseña debe tener al menos :min caracteres.',
         ]);
 
         $user = User::create([
@@ -49,7 +53,7 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect()->to($user->role === 'admin' ? route('admin.dashboard') : route('technician.dashboard'));
+        return redirect()->to(route('technician.stock'));
     }
 
     /**

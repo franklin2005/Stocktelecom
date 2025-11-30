@@ -29,7 +29,6 @@
 
         $menuByRole = [
             'super_admin' => [
-                ['label' => 'Dashboard',                  'route' => 'admin.dashboard',          'pattern' => 'admin.dashboard',           'icon' => 'speedometer2'],
                 ['label' => 'Devoluciones',               'route' => 'admin.returns',            'pattern' => 'admin.returns',             'icon' => 'arrow-left-right'],
                 ['label' => 'Histórico de devoluciones',  'route' => 'admin.returns.history',    'pattern' => 'admin.returns.history',     'icon' => 'clock-history'],
                 ['label' => 'Histórico de almacén',       'route' => 'admin.warehouse-movements','pattern' => 'admin.warehouse-movements', 'icon' => 'clock-history'],
@@ -43,7 +42,6 @@
             ],
 
             'admin' => [
-                ['label' => 'Dashboard',                  'route' => 'admin.dashboard',          'pattern' => 'admin.dashboard',           'icon' => 'speedometer2'],
                 ['label' => 'Histórico de almacén',       'route' => 'admin.warehouse-movements','pattern' => 'admin.warehouse-movements', 'icon' => 'clock-history'],
                 ['label' => 'Histórico de usuarios',      'route' => 'admin.user-history',       'pattern' => 'admin.user-history',        'icon' => 'clock-history'],
                 ['label' => 'Materiales',                 'route' => 'admin.materials',          'pattern' => 'admin.materials',           'icon' => 'box-seam'],
@@ -53,7 +51,6 @@
             ],
 
             'logistics' => [
-                ['label' => 'Dashboard',                  'route' => 'admin.dashboard',          'pattern' => 'admin.dashboard',           'icon' => 'speedometer2'],
                 ['label' => 'Devoluciones',               'route' => 'admin.returns',            'pattern' => 'admin.returns',             'icon' => 'arrow-left-right'],
                 ['label' => 'Histórico de almacén',       'route' => 'admin.warehouse-movements','pattern' => 'admin.warehouse-movements', 'icon' => 'clock-history'],
                 ['label' => 'Histórico de devoluciones',  'route' => 'admin.returns.history',    'pattern' => 'admin.returns.history',     'icon' => 'clock-history'],
@@ -65,7 +62,6 @@
             ],
 
             'technician' => [
-                ['label' => 'Dashboard',                  'route' => 'technician.dashboard',     'pattern' => 'technician.dashboard',      'icon' => 'speedometer2'],
                 ['label' => 'Histórico de devoluciones',  'route' => 'technician.returns.history','pattern' => 'technician.returns.history','icon' => 'clock-history'],
                 ['label' => 'Histórico de transferencias','route' => 'technician.transfers.history', 'pattern' => 'technician.transfers.history', 'params' => [auth()->user()], 'icon' => 'clock-history'],
                 ['label' => 'Mi stock',                   'route' => 'technician.stock',         'pattern' => 'technician.stock',          'icon' => 'boxes'],

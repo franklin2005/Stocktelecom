@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\AdminTransferController;
 use App\Http\Controllers\Admin\MaterialController;
 use App\Http\Controllers\Admin\PersonnelController;
@@ -16,7 +15,6 @@ use App\Http\Controllers\Admin\ReturnHistoryController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 
-use App\Http\Controllers\Technician\DashboardController as TechnicianDashboardController;
 use App\Http\Controllers\Technician\MenuController as TechnicianMenuController;
 use App\Http\Controllers\Technician\TransferController as TechnicianTransferController;
 use App\Http\Controllers\Technician\ReturnsController as TechnicianReturnsController;
@@ -36,11 +34,12 @@ Route::get('/', function () {
     if (Auth::check()) {
         $role = Auth::user()->role;
 
-        return redirect()->route(
-            in_array($role, ['admin', 'super_admin', 'logistics'], true)
-                ? 'admin.dashboard'
-                : 'technician.dashboard'
-        );
+        return redirect()->route(match ($role) {
+            'technician' => 'technician.stock',
+            'logistics' => 'admin.materials',
+            'admin', 'super_admin' => 'admin.personnel',
+            default => 'login',
+        });
     }
     return view('welcome');
 })->name('home');
@@ -79,7 +78,7 @@ Route::middleware('auth')->group(function () {
          * Acceso: admin, super_admin, logistics
          */
         Route::middleware('role:admin,super_admin,logistics')->group(function () {
-            Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+            // Route dashboard eliminado
             // Transferencias desde almacén
             Route::get('/transfers', [AdminTransferController::class, 'index'])->name('transfers');
             Route::post('/transfers/cart/add', [AdminTransferController::class, 'addToCart'])->name('transfers.cart.add');
@@ -169,7 +168,7 @@ Route::middleware('auth')->group(function () {
      */
     Route::middleware('role:technician')->prefix('technician')->name('technician.')->group(function () {
         // Dashboard técnico
-        Route::get('/dashboard', [TechnicianDashboardController::class, 'index'])->name('dashboard');
+        // Route dashboard eliminado
         // Stock personal
         Route::get('/stock', [TechnicianMenuController::class, 'stock'])->name('stock');
         // Transferencias entre técnicos

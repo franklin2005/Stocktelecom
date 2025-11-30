@@ -39,6 +39,11 @@ class StaffController extends Controller
             'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:8'],
             'role'     => ['required', Rule::in(['admin', 'logistics', 'super_admin'])],
+        ], [
+            'password.required'  => 'La contraseña es obligatoria.',
+            'password.confirmed' => 'La confirmación de contraseña no coincide.',
+            'password.min'       => 'La contraseña debe tener al menos :min caracteres.',
+            'password.min.string'=> 'La contraseña debe tener al menos :min caracteres.',
         ]);
 
         $staff = $this->staffService->createStaff($validated, $request->user());
@@ -58,6 +63,10 @@ class StaffController extends Controller
             'email'    => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($staff->id)],
             'password' => ['nullable', 'confirmed', 'min:8'],
             'role'     => ['required', Rule::in(['admin', 'logistics', 'super_admin'])],
+        ], [
+            'password.confirmed' => 'La confirmación de contraseña no coincide.',
+            'password.min'       => 'La contraseña debe tener al menos :min caracteres.',
+            'password.min.string'=> 'La contraseña debe tener al menos :min caracteres.',
         ]);
 
         $updatedStaff = $this->staffService->updateStaff($staff, $validated, $request->user());

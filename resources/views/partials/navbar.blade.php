@@ -23,23 +23,23 @@
                 </span>
 
                 {{-- Perfil --}}
-                <a href="{{ route('profile.show') }}" class="btn btn-outline-light btn-sm">
+                <a href="{{ route('profile.show') }}" class="btn btn-accent-st btn-sm">
                     <i class="bi bi-person-circle me-1"></i>
                     Perfil
                 </a>
 
                 {{-- Logout --}}
-                <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                <form method="POST" action="{{ route('logout') }}" class="d-inline" id="logout-form">
                     @csrf
-                    <button type="submit" class="btn btn-outline-light btn-sm">
+                    <button type="submit" class="btn btn-danger-st btn-sm">
                         <i class="bi bi-box-arrow-right me-1"></i>
                         Cerrar sesión
                     </button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="btn btn-outline-light btn-sm">
+                <a href="{{ route('login') }}" class="btn btn-success-st btn-sm">
                     <i class="bi bi-box-arrow-in-right me-1"></i>
-                    Iniciar sesión
+                    Selección de perfil
                 </a>
             @endauth
         </div>
@@ -81,3 +81,11 @@
         </div>
     </div>
 @endauth
+
+<script>
+document.getElementById('logout-form').addEventListener('submit', function (e) {
+    if (!confirm('¿Seguro que deseas cerrar sesión?')) {
+        e.preventDefault();
+    }
+});
+</script>
