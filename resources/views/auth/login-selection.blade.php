@@ -6,6 +6,12 @@
         <p class="st-muted">Elige el tipo de usuario para iniciar sesión en el sistema.</p>
     </div>
 
+    @if (session('status'))
+        <div class="alert alert-success text-center">
+            {{ session('status') }}
+        </div>
+    @endif
+
     <div class="row g-4 justify-content-center">
         {{-- Perfil: Técnico --}}
         <div class="col-12 col-md-6 col-xl-4">

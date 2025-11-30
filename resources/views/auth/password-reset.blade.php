@@ -2,7 +2,10 @@
 
 @section('content')
     <div class="st-card mx-auto p-4" style="max-width: 420px;">
-        <h4 class="mb-3 text-center fw-semibold text-primary"><i class="bi bi-person-circle me-2"></i>{{ $title }}</h4>
+        <h4 class="mb-3 text-center fw-semibold text-primary">
+            <i class="bi bi-key me-2"></i>
+            Restablecer contraseña
+        </h4>
 
         @if ($errors->any())
             <div class="alert alert-danger">
@@ -15,9 +18,10 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('login.submit') }}">
+        <form method="POST" action="{{ route('password.update') }}">
             @csrf
-            <input type="hidden" name="role_key" value="{{ $roleKey }}">
+
+            <input type="hidden" name="token" value="{{ $token }}">
 
             <div class="mb-3">
                 <label for="email" class="form-label">Correo electrónico</label>
@@ -25,10 +29,10 @@
                     type="email"
                     id="email"
                     name="email"
-                    value="{{ old('email') }}"
+                    value="{{ old('email', $email) }}"
                     class="form-control @error('email') is-invalid @enderror"
                     required
-                    autofocus
+                    autocomplete="username"
                 >
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>
@@ -36,36 +40,44 @@
             </div>
 
             <div class="mb-3">
-                <label for="password" class="form-label">Contraseña</label>
+                <label for="password" class="form-label">Nueva contraseña</label>
                 <input
                     type="password"
                     id="password"
                     name="password"
                     class="form-control @error('password') is-invalid @enderror"
                     required
+                    autocomplete="new-password"
                 >
                 @error('password')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
-            <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                <label class="form-check-label" for="remember">Recordarme</label>
+            <div class="mb-3">
+                <label for="password_confirmation" class="form-label">Confirmar contraseña</label>
+                <input
+                    type="password"
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    class="form-control @error('password_confirmation') is-invalid @enderror"
+                    required
+                    autocomplete="new-password"
+                >
+                @error('password_confirmation')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            <button type="submit" class="btn btn-st w-100"><i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión</button>
+            <button type="submit" class="btn btn-st w-100">
+                <i class="bi bi-arrow-repeat me-1"></i>
+                Restablecer contraseña
+            </button>
         </form>
 
         <div class="mt-3 text-center">
-            <a href="{{ route('password.request') }}" class="small text-decoration-none st-muted">
-                ¿Olvidaste tu contraseña?
-            </a>
-        </div>
-
-        <div class="mt-2 text-center">
             <a href="{{ route('login') }}" class="small text-decoration-none st-muted">
-                &larr; Volver a la selección de perfil
+                &larr; Volver al inicio de sesión
             </a>
         </div>
     </div>

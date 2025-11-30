@@ -14,6 +14,8 @@ use App\Http\Controllers\Admin\ReturnHistoryController;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 use App\Http\Controllers\Technician\MenuController as TechnicianMenuController;
 use App\Http\Controllers\Technician\TransferController as TechnicianTransferController;
@@ -55,6 +57,12 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showRoleSelection'])->name('login');
     Route::get('/login/{role}', [LoginController::class, 'showRoleLogin'])->name('login.role');
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+
+    // Recuperación de contraseña
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
 /*

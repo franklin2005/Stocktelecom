@@ -275,7 +275,7 @@
                         <input type="text" name="notes" value="{{ old('notes') }}" class="form-control">
                     </div>
                     <div class="col-12 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-st"><i class="bi bi-check-circle me-1"></i>Crear orden</button>
+                        <button type="submit" class="btn btn-success-st"><i class="bi bi-check-circle me-1"></i>Crear orden</button>
                     </div>
                 </div>
             </form>
