@@ -29,7 +29,7 @@
                 </a>
 
                 {{-- Logout --}}
-                <form method="POST" action="{{ route('logout') }}" class="d-inline" id="logout-form">
+                <form method="POST" action="{{ route('logout') }}" class="d-inline-flex align-items-center m-0" id="logout-form">
                     @csrf
                     <button type="submit" class="btn btn-danger-st btn-sm">
                         <i class="bi bi-box-arrow-right me-1"></i>

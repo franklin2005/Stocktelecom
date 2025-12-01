@@ -6,7 +6,6 @@
     <title>STOCKTELECOM</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
-
     {{-- Bootstrap + jQuery --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -17,7 +16,6 @@
     {{-- Estilos del proyecto --}}
     <link rel="stylesheet" href="{{ asset('css/mainStyle.css') }}">
 </head>
-
 <body class="bg-light">
 
     @php
