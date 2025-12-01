@@ -15,6 +15,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MaterialController extends Controller
 {
@@ -39,7 +40,7 @@ class MaterialController extends Controller
     }
 
     /**
-     * Formulario de creaci�n de materiales.
+     * Formulario de creación de materiales.
      */
     public function create(): View
     {
@@ -147,7 +148,7 @@ class MaterialController extends Controller
 
         if (! $material->is_active) {
             return back()->withErrors([
-                'material_id' => 'El material esto inactivo. Act??valo antes de generar nuevas asignaciones.',
+                'material_id' => 'El material está inactivo. Actívalo antes de generar nuevas asignaciones.',
             ])->withInput();
         }
 
@@ -172,5 +173,63 @@ class MaterialController extends Controller
         $material = Material::findOrFail($request->input('material_id'));
 
         return $this->stockService->removeStock($request, $material);
+    }
+
+    /**
+     * Exporta el inventario del almacén principal a CSV.
+     */
+    public function exportWarehouseCsv(): StreamedResponse
+    {
+        $this->authorizationService->ensureCanManageWarehouse();
+
+        $data = $this->viewService->indexData();
+        $materials = $data['materials'] ?? collect();
+
+        $categoryLabels = [
+            'equipment' => 'Equipo',
+            'acometida' => 'Acometida',
+            'roseta' => 'Roseta',
+            'other' => 'Otro',
+        ];
+
+        $fileName = 'inventario_almacen_' . now()->format('Ymd_His') . '.csv';
+
+        $callback = static function () use ($materials, $categoryLabels) {
+            $handle = fopen('php://output', 'w');
+
+            // BOM UTF-8 para compatibilidad con Excel
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Cabeceras
+            fputcsv($handle, [
+                'Categoría',
+                'Tipo',
+                'Modelo',
+                'Serializado',
+                'Stock almacén',
+                'Series disponibles',
+            ], ';');
+
+            foreach ($materials as $material) {
+                $warehouseInventory = $material->inventories->first();
+                $warehouseQuantity = $warehouseInventory?->quantity ?? 0;
+                $availableSerials = $material->serials ?? collect();
+
+                fputcsv($handle, [
+                    $categoryLabels[$material->category] ?? ucfirst($material->category),
+                    ucfirst($material->type),
+                    $material->model ?? '',
+                    $material->is_serialized ? 'Sí' : 'No',
+                    $warehouseQuantity,
+                    $material->is_serialized ? $availableSerials->count() : '',
+                ], ';');
+            }
+
+            fclose($handle);
+        };
+
+        return response()->streamDownload($callback, $fileName, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 }

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use App\Http\Controllers\Admin\AdminTransferController;
 use App\Http\Controllers\Admin\MaterialController;
@@ -95,6 +95,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/transfers/send', [AdminTransferController::class, 'send'])->name('transfers.send');
             // Materiales (visualización)
             Route::get('/materials', [MaterialController::class, 'index'])->name('materials');
+            Route::get('/materials/export', [MaterialController::class, 'exportWarehouseCsv'])->name('materials.export');
             // Historial de movimientos de almacén
             Route::get('/warehouse-movements', [WarehouseHistoryController::class, 'index'])->name('warehouse-movements');
             // Órdenes de trabajo (consulta)
@@ -207,3 +208,4 @@ Route::middleware('auth')->group(function () {
             ->name('transfers.history');
     });
 });
+

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
     @php
@@ -14,6 +14,13 @@
         <div>
             <h1 class="h3 mb-1">Gestión de materiales</h1>
             <p class="st-muted mb-0">Consulta el inventario y realiza ingresos, bajas y asignaciones según permisos.</p>
+        </div>
+
+        <div>
+            <a href="{{ route('admin.materials.export') }}" class="btn btn-success-st btn-sm">
+                <i class="bi bi-file-earmark-spreadsheet me-1"></i>
+                Exportar CSV
+            </a>
         </div>
     </div>
 
@@ -255,3 +262,4 @@
 })();
 </script>
 @endpush
+
