@@ -14,10 +14,12 @@
         <div>
             <h1 class="h3 mb-1">Gestión de materiales</h1>
             
+            @if ($canManageWarehouse)
             <a href="{{ route('admin.materials.export') }}" class="btn btn-success-st btn-sm">
                 <i class="bi bi-file-earmark-spreadsheet me-1"></i>
                 Exportar CSV
             </a>
+            @endif
         </div>
   
         
