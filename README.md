@@ -1,61 +1,166 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ENGLISH VERSION 
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+---
 
-## About Laravel
+# Stocktelecom
+Stocktelecom is an SSR web application for managing inventory, technical material, and work orders in telecommunications companies, especially those focused on fiber-optic installations.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Built with **Laravel 12**, **Vite**, **PHP 8.2**, **MySQL**, **Bootstrap 5**, and **TailwindCSS 4**.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🚀 Main Features
 
-## Learning Laravel
+- Complete warehouse inventory management (serialized and non-serialized)  
+- Transfers between warehouse ⇄ technicians  
+- Returns and historical movement tracking  
+- Personnel and role management  
+- Work order management  
+- Password reset via email (full workflow)  
+- Inventory export to CSV  
+- Fully separated role system:
+  - Technician  
+  - Logistics  
+  - Administrator  
+  - Super Administrator  
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 📦 Technologies Used
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Backend
+- PHP 8.2  
+- Laravel 12  
+- MySQL  
 
-## Laravel Sponsors
+### Frontend
+- Vite 7  
+- TailwindCSS 4  
+- Bootstrap 5  
+- Javascript  
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Development Tools
+- Laravel Tinker  
+- PHPUnit  
+- Concurrency Dev Script (`composer run dev`)  
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🛠 Installation
 
-## Contributing
+### 1. Clone the repository
+```bash
+git clone https://github.com/youruser/stocktelecom.git
+cd stocktelecom
+2. Install PHP dependencies
+composer install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Install Node dependencies
+npm install
 
-## Code of Conduct
+4. Configure environment
+cp .env.example .env
+php artisan key:generate
+Set MySQL connection in .env:
+DB_DATABASE=stocktelecom
+DB_USERNAME=root
+DB_PASSWORD=
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. Run migrations + seeders
+php artisan migrate --seed
+Seeders create test users with the general password: "password"
 
-## Security Vulnerabilities
+6. Start development environment
+composer run dev
+This runs:
+PHP server (php artisan serve)
+Vite (npm run dev)
+job queue (php artisan queue:listen)
+live logging
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+👤 Roles and functionalities
+1. Technician
+view my stock
+accept / reject transfers
+transfer history
+return history
+assigned work orders
+(handles one at a time)
 
-## License
+2. Logistics
+register warehouse entries and exits
+create materials
+manage serialized and non-serialized inventory
+send transfers to technicians
+view histories:
+warehouse
+returns
+transfers
+manage work orders
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+3. Administrator
+view materials
+view personnel
+view work orders
+view histories
+(cannot create materials, send transfers, or register returns)
+
+4. Super Administrator
+Includes all functions of previous roles, plus:
+create/edit/delete materials
+manage users and personnel
+access all global histories
+full control of warehouse and transfers
+
+📤 CSV Export
+The system allows exporting warehouse inventory to a .csv file compatible with Excel.
+The option is located at:
+Materials → Export CSV
+
+🔐 Password Recovery System
+The application includes Laravel’s complete native flow:
+“forgot your password?” link
+email sending through SMTP
+form to enter email
+secure link with expiration
+form to set a new password
+
+📄 License
+This project is licensed under MIT.
+You may use, modify, and distribute it freely.
+
+👤 Author
+Project created by Franklin Tenias Guevara (github/franklin2005) as a complete solution for telecommunications material management.
+
+## 📧 Email Configuration (required for password recovery)
+
+The “Forgot your password?” feature uses Laravel’s mail notification system.  
+**SMTP must be configured in `.env` for it to work.**
+
+Example using Gmail:
+
+MAIL_MAILER=smtp  
+MAIL_HOST=smtp.gmail.com  
+MAIL_PORT=587  
+MAIL_USERNAME=your_email@gmail.com  
+MAIL_PASSWORD=your_app_password  
+MAIL_ENCRYPTION=tls  
+MAIL_FROM_ADDRESS=your_email@gmail.com  
+MAIL_FROM_NAME="${APP_NAME}"  
+
+### ⚠️ Important
+- Gmail strictly requires:
+  - Two-step verification enabled  
+  - App password  
+- Without these credentials, **emails cannot be sent**, including password reset.
+
+If you do not configure email, the application will still work, but **password recovery will not**.
+
+
+
+
+
+
+
+
+
