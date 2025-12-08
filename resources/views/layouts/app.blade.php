@@ -13,8 +13,11 @@
     {{-- Bootstrap Icons --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-    {{-- Estilos del proyecto --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- estilos personalizados--}}
+    <link rel="stylesheet" href="{{ asset('css/mainStyle.css') }}">
+
+
+
 
 </head>
 <body class="bg-light">
