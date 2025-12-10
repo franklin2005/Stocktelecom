@@ -239,66 +239,6 @@
                     </div>
                 @endif
             </div>
-
-            <div class="st-card p-3 mt-4">
-                <h5 class="card-title mb-3">Devoluciones pendientes</h5>
-
-                @if ($pendingReturns->isEmpty())
-                    <p class="st-muted mb-0">No tienes solicitudes de devolución pendientes.</p>
-                @else
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Orden</th>
-                                    <th>Destino</th>
-                                    <th>Materiales</th>
-                                    <th>Fecha</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($pendingReturns as $transfer)
-                                    <tr>
-                                        <td><strong>{{ $transfer->order_number }}</strong></td>
-                                        <td>{{ $transfer->toLocation->name ?? 'Almacén' }}</td>
-                                        <td>
-                                            <ul class="mb-0 ps-3">
-                                                @foreach ($transfer->items as $item)
-                                                    <li>
-                                                        {{ ucfirst($item->material->type) }}
-                                                        @if ($item->material->model)
-                                                            - {{ $item->material->model }}
-                                                        @endif
-                                                        @if ($item->material_serial_id && $item->serial)
-                                                            (Serie: {{ $item->serial->serial_number }})
-                                                        @else
-                                                            (Cantidad: {{ $item->quantity }})
-                                                        @endif
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </td>
-                                        <td>{{ $transfer->created_at->format('d/m/Y H:i') }}</td>
-                                        <td class="text-end">
-                                            <div class="d-flex justify-content-end gap-2">
-                                                <form method="POST" action="{{ route('technician.returns.accept', $transfer) }}">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-success-st btn-sm"><i class="bi bi-check-circle me-1"></i>Aceptar</button>
-                                                </form>
-                                                <form method="POST" action="{{ route('technician.returns.reject', $transfer) }}">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-danger-st btn-sm"><i class="bi bi-x-circle me-1"></i>Rechazar</button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
-            </div>
         </div>
 
         {{-- Lateral --}}
@@ -365,68 +305,104 @@
 
     {{-- Recibidas / Historial --}}
     <div class="row g-4">
-        <div class="col-12 col-xl-8">
+        <div class="col-12">
             <div class="st-card p-3">
-                <h5 class="card-title mb-3">Transferencias recibidas (pendientes)</h5>
+                <h5 class="card-title mb-3">Transferencias pendientes</h5>
 
                 @if ($pendingTransfers->isEmpty())
                     <p class="st-muted mb-0">No tienes transferencias pendientes.</p>
                 @else
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Orden</th>
-                                    <th>Origen</th>
-                                    <th>Materiales</th>
-                                    <th>Fecha</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($pendingTransfers as $transfer)
-                                    <tr>
-                                        <td><strong>{{ $transfer->order_number }}</strong></td>
-                                        <td>{{ $transfer->fromLocation->name ?? 'Sin origen' }}</td>
-                                        <td>
-                                            <ul class="mb-0 ps-3">
-                                                @foreach ($transfer->items as $item)
-                                                    <li>
-                                                        {{ ucfirst($item->material->type) }}
-                                                        @if ($item->material->model)
-                                                            - {{ $item->material->model }}
-                                                        @endif
-                                                        @if ($item->material_serial_id && $item->serial)
-                                                            (Serie: {{ $item->serial->serial_number }})
-                                                        @else
-                                                            (Cantidad: {{ $item->quantity }})
-                                                        @endif
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </td>
-                                        <td>{{ $transfer->created_at->format('d/m/Y H:i') }}</td>
-                                        <td class="text-end">
-                                            <div class="d-flex justify-content-end gap-2">
-                                                <form method="POST" action="{{ route('technician.transfers.accept', $transfer) }}">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-success-st btn-sm"><i class="bi bi-check-circle me-1"></i>Aceptar</button>
-                                                </form>
-                                                <form method="POST" action="{{ route('technician.transfers.reject', $transfer) }}">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-danger-st btn-sm"><i class="bi bi-x-circle me-1"></i>Rechazar</button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="d-flex flex-column gap-3">
+                        @foreach ($pendingTransfers as $transfer)
+                            <div class="border rounded p-3">
+                                <div class="d-flex flex-wrap justify-content-between gap-2">
+                                    <div><strong>Orden:</strong> {{ $transfer->order_number }}</div>
+                                    <div><strong>Origen:</strong> {{ $transfer->fromLocation->name ?? 'Sin origen' }}</div>
+                                    <div><strong>Fecha:</strong> {{ $transfer->created_at->format('d/m/Y H:i') }}</div>
+                                </div>
+                                <div class="mt-2">
+                                    <strong>Materiales:</strong>
+                                    <ul class="mb-0 ps-3">
+                                        @foreach ($transfer->items as $item)
+                                            <li>
+                                                {{ ucfirst($item->material->type) }}
+                                                @if ($item->material->model)
+                                                    - {{ $item->material->model }}
+                                                @endif
+                                                @if ($item->material_serial_id && $item->serial)
+                                                    (Serie: {{ $item->serial->serial_number }})
+                                                @else
+                                                    (Cantidad: {{ $item->quantity }})
+                                                @endif
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
+                                    <form method="POST" action="{{ route('technician.transfers.accept', $transfer) }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success-st btn-sm"><i class="bi bi-check-circle me-1"></i>Aceptar</button>
+                                    </form>
+                                    <form method="POST" action="{{ route('technician.transfers.reject', $transfer) }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger-st btn-sm"><i class="bi bi-x-circle me-1"></i>Rechazar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 @endif
             </div>
         </div>
-        
+
+        <div class="col-12">
+            <div class="st-card p-3">
+                <h5 class="card-title mb-3">Devoluciones pendientes</h5>
+
+                @if ($pendingReturns->isEmpty())
+                    <p class="st-muted mb-0">No tienes solicitudes de devolución pendientes.</p>
+                @else
+                    <div class="d-flex flex-column gap-3">
+                        @foreach ($pendingReturns as $transfer)
+                            <div class="border rounded p-3">
+                                <div class="d-flex flex-wrap justify-content-between gap-2">
+                                    <div><strong>Orden:</strong> {{ $transfer->order_number }}</div>
+                                    <div><strong>Destino:</strong> {{ $transfer->toLocation->name ?? 'Almacén' }}</div>
+                                    <div><strong>Fecha:</strong> {{ $transfer->created_at->format('d/m/Y H:i') }}</div>
+                                </div>
+                                <div class="mt-2">
+                                    <strong>Materiales:</strong>
+                                    <ul class="mb-0 ps-3">
+                                        @foreach ($transfer->items as $item)
+                                            <li>
+                                                {{ ucfirst($item->material->type) }}
+                                                @if ($item->material->model)
+                                                    - {{ $item->material->model }}
+                                                @endif
+                                                @if ($item->material_serial_id && $item->serial)
+                                                    (Serie: {{ $item->serial->serial_number }})
+                                                @else
+                                                    (Cantidad: {{ $item->quantity }})
+                                                @endif
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <div class="d-flex justify-content-end gap-2 mt-3 flex-wrap">
+                                    <form method="POST" action="{{ route('technician.returns.accept', $transfer) }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success-st btn-sm"><i class="bi bi-check-circle me-1"></i>Aceptar</button>
+                                    </form>
+                                    <form method="POST" action="{{ route('technician.returns.reject', $transfer) }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger-st btn-sm"><i class="bi bi-x-circle me-1"></i>Rechazar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 @endsection
