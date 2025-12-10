@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @php
     // Mapeo de estado → etiqueta + clase visual (soft)
@@ -22,6 +22,9 @@
                 Estado: <span class="badge {{ $st['class'] }}">{{ $st['label'] }}</span>
             </p>
         </div>
+        <a href="{{ route('technician.work-orders') }}" class="btn btn-soft-st">
+            <i class="bi bi-arrow-left me-1"></i>Volver
+        </a>
     </div>
 
     <div class="row g-4 mb-4">

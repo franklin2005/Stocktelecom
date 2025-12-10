@@ -309,48 +309,31 @@
             <p class="st-muted mb-0">Todavía no tienes órdenes de trabajo registradas.</p>
         @else
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>Número</th>
-                            <th>Estado</th>
-                            <th class="text-center">Materiales</th>
-                            <th>Notas</th>
-                            <th class="text-end">Creada</th>
-                            <th class="text-end">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($workOrders as $order)
-                            @php
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Materiales</th>
+                                    <th class="text-end">Creada</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($workOrders as $order)
+                                    @php
                                 $statusLabel = [
                                     'open' => ['label' => 'Abierta', 'class' => 'badge-warning-soft text-dark'],
                                     'confirmed' => ['label' => 'Confirmada', 'class' => 'badge-success-soft'],
                                     'cancelled' => ['label' => 'Cancelada', 'class' => 'badge-danger-soft'],
                                 ][$order->status] ?? ['label' => ucfirst($order->status), 'class' => 'badge-soft'];
                             @endphp
-                            <tr>
+                            <tr style="cursor:pointer;" onclick="window.location='{{ route('technician.work-orders.show', $order) }}'">
                                 <td>{{ $order->order_number }}</td>
                                 <td>
                                     <span class="badge {{ $statusLabel['class'] }}">{{ $statusLabel['label'] }}</span>
                                 </td>
                                 <td class="text-center">{{ $order->items_count }}</td>
-                                <td>
-                                    @if ($order->notes)
-                                        <small class="st-muted">
-                                            {{ $order->notes }}<br>
-                                            Registrado por {{ $order->notes_author_name ?? 'Desconocido' }}
-                                        </small>
-                                    @else
-                                        <span class="st-muted">—</span>
-                                    @endif
-                                </td>
                                 <td class="text-end">{{ $order->created_at?->format('d/m/Y H:i') }}</td>
-                                <td class="text-end">
-                                    <a href="{{ route('technician.work-orders.show', $order) }}" class="btn btn-sm btn-soft-st">
-                                        <i class="bi bi-eye me-1"></i>Ver detalle
-                                    </a>
-                                </td>
                             </tr>
                         @endforeach
                     </tbody>
