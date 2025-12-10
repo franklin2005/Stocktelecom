@@ -1,4 +1,4 @@
-<header class="bg-dark text-white py-2">
+﻿<header class="bg-dark text-white py-2">
     <div class="container-fluid d-flex align-items-center justify-content-between">
         <a class="navbar-brand text-white fw-semibold d-flex align-items-center" href="{{ route('home') }}">
             <i class="bi bi-box-seam me-2"></i>
@@ -8,7 +8,7 @@
         <div class="d-flex align-items-center gap-3">
             @auth
                 {{-- Botón menú móvil --}}
-                <button class="btn btn-outline-light btn-sm d-lg-none"
+                <button class="btn btn-outline-light btn-sm d-lg-none ms-2"
                         type="button"
                         data-bs-toggle="offcanvas"
                         data-bs-target="#mobileSidebar"
@@ -89,3 +89,4 @@ document.getElementById('logout-form').addEventListener('submit', function (e) {
     }
 });
 </script>
+
