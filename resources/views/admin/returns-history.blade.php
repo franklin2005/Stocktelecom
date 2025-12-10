@@ -67,8 +67,9 @@
                             <th>Estado</th>
                             <th>Técnico origen</th>
                             <th>Destino</th>
-                            <th>Detalle</th>
+                            <th>Unidades</th>
                             <th>Solicitada por</th>
+                            <th class="text-end">Acción</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -90,24 +91,13 @@
 
                                 <td>{{ $return->fromLocation->name ?? '—' }}</td>
                                 <td>{{ $return->toLocation->name ?? '—' }}</td>
-                                <td>
-                                    <ul class="mb-0 ps-3">
-                                        @foreach ($return->items as $item)
-                                            <li>
-                                                {{ ucfirst($item->material->type) }}
-                                                @if ($item->material->model)
-                                                    - {{ $item->material->model }}
-                                                @endif
-                                                @if ($item->material_serial_id && $item->serial)
-                                                    (Serie: {{ $item->serial->serial_number }})
-                                                @else
-                                                    (Cantidad: {{ $item->quantity }})
-                                                @endif
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </td>
+                                <td>{{ $return->items->sum('quantity') }}</td>
                                 <td>{{ $return->initiator->name ?? 'Sistema' }}</td>
+                                <td class="text-end">
+                                    <a href="{{ route('admin.returns.history.show', $return) }}" class="btn btn-sm btn-soft-st">
+                                        <i class="bi bi-eye me-1"></i>Ver detalle
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

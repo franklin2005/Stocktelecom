@@ -66,42 +66,35 @@
                 <table class="table table-hover align-middle">
                     <thead>
                         <tr>
-                            <th>Nº de orden</th>
                             <th>Fecha</th>
                             <th>Estado</th>
                             <th>Destino</th>
-                            <th>Detalle</th>
-                            <th>Solicitada por</th>
+                            @php $isAdminView = in_array($currentUser->role, ['admin', 'super_admin', 'logistics'], true); @endphp
+                            @if ($isAdminView)
+                                <th class="text-end">Acción</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($returns as $return)
                             @php
                                 $st = $statusMap[$return->status] ?? ['label' => ucfirst($return->status), 'class' => 'badge-soft'];
+                                $detailRoute = $isAdminView
+                                    ? route('admin.technicians.returns.history.show', [$technician, $return])
+                                    : route('technician.returns.history.show', $return);
                             @endphp
-                            <tr>
-                                <td>{{ $return->order_number }}</td>
+                            <tr class="align-middle"
+                                @if (! $isAdminView) style="cursor:pointer;" onclick="window.location='{{ $detailRoute }}'" @endif>
                                 <td>{{ $return->created_at->format('d/m/Y H:i') }}</td>
                                 <td><span class="badge {{ $st['class'] }}">{{ $st['label'] }}</span></td>
-                                <td>{{ $return->toLocation->name ?? '—' }}</td>
-                                <td>
-                                    <ul class="mb-0 ps-3">
-                                        @foreach ($return->items as $item)
-                                            <li>
-                                                {{ ucfirst($item->material->type) }}
-                                                @if ($item->material->model)
-                                                    - {{ $item->material->model }}
-                                                @endif
-                                                @if ($item->material_serial_id && $item->serial)
-                                                    (Serie: {{ $item->serial->serial_number }})
-                                                @else
-                                                    (Cantidad: {{ $item->quantity }})
-                                                @endif
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </td>
-                                <td>{{ $return->initiator->name ?? 'Sistema' }}</td>
+                                <td>{{ $return->toLocation->name ?? '-' }}</td>
+                                @if ($isAdminView)
+                                    <td class="text-end">
+                                        <a href="{{ $detailRoute }}" class="btn btn-sm btn-soft-st">
+                                            <i class="bi bi-eye me-1"></i>Ver detalle
+                                        </a>
+                                    </td>
+                                @endif
                             </tr>
                         @endforeach
                     </tbody>

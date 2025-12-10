@@ -8,6 +8,7 @@ use App\Models\Transfer;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class TransferHistoryController extends Controller
 {
@@ -64,6 +65,53 @@ class TransferHistoryController extends Controller
             'transfers' => $transfers,
             'currentUser' => $currentUser,
         ]);
+    }
+
+    /**
+     * Detail of a specific transfer for a technician.
+     */
+    public function showTransferDetail(Request $request, User $technician, Transfer $transfer): View
+    {
+        $location = $this->ensureTechnicianLocation($technician);
+        $this->authorizeTechnicianAccess($request->user(), $technician);
+
+        if ($transfer->type !== 'transfer') {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        // Validar que la transferencia esté relacionada con el técnico (origen o destino o iniciador)
+        if ($transfer->initiator_user_id !== $technician->id
+            && $transfer->from_location_id !== $location->id
+            && $transfer->to_location_id !== $location->id) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
+
+        $transfer->load([
+            'items.material',
+            'items.serial',
+            'fromLocation',
+            'toLocation',
+            'initiator',
+        ]);
+
+        $totalUnits = $transfer->items->sum('quantity');
+
+        return view('technician.history-transfer-show', [
+            'transfer' => $transfer,
+            'technician' => $technician,
+            'location' => $location,
+            'totalUnits' => $totalUnits,
+        ]);
+    }
+
+    /**
+     * Detail for the authenticated technician (self).
+     */
+    public function showTransferDetailSelf(Request $request, Transfer $transfer): View
+    {
+        $technician = $request->user();
+
+        return $this->showTransferDetail($request, $technician, $transfer);
     }
 
     /**
@@ -125,6 +173,46 @@ class TransferHistoryController extends Controller
     }
 
     /**
+     * Detail of a specific return for a technician.
+     */
+    public function showReturnDetail(Request $request, User $technician, Transfer $transfer): View
+    {
+        $location = $this->ensureTechnicianLocation($technician);
+        $this->authorizeTechnicianAccess($request->user(), $technician);
+
+        if ($transfer->type !== 'return' || $transfer->from_location_id !== $location->id) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $transfer->load([
+            'items.material',
+            'items.serial',
+            'fromLocation',
+            'toLocation',
+            'initiator',
+        ]);
+
+        $totalUnits = $transfer->items->sum('quantity');
+
+        return view('technician.history-return-show', [
+            'transfer' => $transfer,
+            'technician' => $technician,
+            'location' => $location,
+            'totalUnits' => $totalUnits,
+        ]);
+    }
+
+    /**
+     * Detail of a return for the authenticated technician (self).
+     */
+    public function showReturnDetailSelf(Request $request, Transfer $transfer): View
+    {
+        $technician = $request->user();
+
+        return $this->showReturnDetail($request, $technician, $transfer);
+    }
+
+    /**
      * Ensure technician stock location exists.
      */
     protected function ensureTechnicianLocation(User $technician): StockLocation
@@ -140,5 +228,15 @@ class TransferHistoryController extends Controller
             'ref_id' => $technician->id,
             'name' => 'Stock de ' . $technician->name,
         ]);
+    }
+
+    /**
+     * Autoriza acceso a datos del técnico.
+     */
+    protected function authorizeTechnicianAccess(User $currentUser, User $technician): void
+    {
+        if ($currentUser->id !== $technician->id && ! in_array($currentUser->role, ['admin', 'super_admin', 'logistics'], true)) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
     }
 }

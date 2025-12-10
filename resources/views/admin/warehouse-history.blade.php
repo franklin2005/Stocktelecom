@@ -43,13 +43,14 @@
                         <th>Referencia</th>
                         <th>Enviado por</th>
                         <th>Registrado por</th>
+                        <th class="text-end">Acción</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($movements as $movement)
                         @php
-                            // ------- Traducciones de movement_type (tipo de movimiento) -------
-                            $movementType = $movement->movement_type; // p.ej. transfer_in, transfer_out, adjustment, deletion...
+                            $isTransfer = $movement->record_type === 'transfer';
+                            $movementType = $isTransfer ? 'transfer_out' : $movement->movement_type;
                             $movementTypeLabels = [
                                 'transfer_in'       => 'Transferencia (entrada)',
                                 'transfer_out'      => 'Transferencia (salida)',
@@ -62,7 +63,6 @@
                             ];
                             $typeLabel = $movementTypeLabels[$movementType] ?? ucfirst(str_replace('_', ' ', $movementType));
 
-                            // Clases para badge según el tipo de movimiento
                             $badgeClass = match($movementType) {
                                 'transfer', 'transfer_in', 'transfer_out' => 'badge-accent',
                                 'adjustment', 'manual_adjustment'         => 'badge-soft',
@@ -70,40 +70,50 @@
                                 default                                    => 'badge-soft',
                             };
 
-                            // ------- Traducciones de reference_type (tipo de referencia) -------
-                            $refType = $movement->reference_type; // valores reales: transfer, work_order, manual_adjustment
-                            $refTypeLabels = [
-                                'transfer'          => 'Transferencia',
-                                'work_order'        => 'Orden de trabajo',
-                                'manual_adjustment' => 'Ajuste manual',
-                            ];
-                            $refLabel = $refType ? ($refTypeLabels[$refType] ?? ucfirst(str_replace('_', ' ', $refType))) : null;
-
-                            // Quien envía (solo aplica a transferencias)
-                            $senderName = null;
-                            if ($refType === 'transfer') {
-                                $senderName = $movement->transfer?->initiator?->name;
+                            if ($isTransfer) {
+                                $refType = 'transfer';
+                                $refLabel = 'Transferencia';
+                                $senderName = $movement->initiator?->name;
+                                $performedAt = $movement->performed_at ?? $movement->transfer?->created_at;
+                                $fromLocation = $movement->fromLocation?->name ?? $movement->transfer?->fromLocation?->name;
+                                $toLocation = $movement->toLocation?->name ?? $movement->transfer?->toLocation?->name;
+                                $quantity = $movement->quantity;
+                                $materialText = 'Varios materiales';
+                                $serialText = '—';
+                                $registeredBy = $movement->performer?->name ?? 'Sistema';
+                            } else {
+                                $refType = $movement->reference_type;
+                                $refLabel = $refType ? ucfirst(str_replace('_', ' ', $refType)) : null;
+                                $senderName = $refType === 'transfer' ? $movement->transfer?->initiator?->name : null;
+                                $performedAt = $movement->performed_at ?? $movement->created_at;
+                                $fromLocation = $movement->fromLocation->name ?? '—';
+                                $toLocation = $movement->toLocation->name ?? '—';
+                                $quantity = $movement->quantity;
+                                $materialText = ucfirst($movement->material->type ?? 'N/D') . ($movement->material?->model ? ' - '.$movement->material->model : '');
+                                $serialText = $movement->serial?->serial_number ?? '—';
+                                $registeredBy = $movement->performer->name ?? 'Sistema';
                             }
                         @endphp
                         <tr>
-                            <td>{{ $movement->performed_at?->format('d/m/Y H:i') ?? $movement->created_at->format('d/m/Y H:i') }}</td>
+                            <td>{{ $performedAt?->format('d/m/Y H:i') }}</td>
                             <td>
                                 <span class="badge {{ $badgeClass }} text-uppercase">
                                     {{ $typeLabel }}
                                 </span>
                             </td>
                             <td>
-                                {{ ucfirst($movement->material->type ?? 'N/D') }}
-                                @if ($movement->material?->model)
-                                    - {{ $movement->material->model }}
-                                @endif
+                                {{ $materialText }}
                             </td>
-                            <td>{{ $movement->serial?->serial_number ?? '—' }}</td>
-                            <td>{{ $movement->fromLocation->name ?? '—' }}</td>
-                            <td>{{ $movement->toLocation->name ?? '—' }}</td>
-                            <td>{{ $movement->quantity }}</td>
+                            <td>{{ $serialText }}</td>
+                            <td>{{ $fromLocation }}</td>
+                            <td>{{ $toLocation }}</td>
+                            <td>{{ $quantity }}</td>
                             <td>
-                                @if ($refType && $movement->reference_id)
+                                @if ($isTransfer)
+                                    <span class="badge badge-soft">
+                                        Transferencia #{{ $movement->transfer_id }}
+                                    </span>
+                                @elseif ($refType && $movement->reference_id)
                                     <span class="badge badge-soft">
                                         {{ $refLabel }} #{{ $movement->reference_id }}
                                     </span>
@@ -112,11 +122,20 @@
                                 @endif
                             </td>
                             <td>{{ $senderName ?? '—' }}</td>
-                            <td>{{ $movement->performer->name ?? 'Sistema' }}</td>
+                            <td>{{ $registeredBy }}</td>
+                            <td class="text-end">
+                                @if ($isTransfer && $movement->transfer_id)
+                                    <a href="{{ route('admin.warehouse-movements.transfer.show', $movement->transfer_id) }}" class="btn btn-sm btn-soft-st">
+                                        <i class="bi bi-eye me-1"></i>Ver detalle
+                                    </a>
+                                @else
+                                    <span class="st-muted">—</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="text-center st-muted py-4">
+                            <td colspan="11" class="text-center st-muted py-4">
                                 Aún no hay movimientos registrados para el almacén.
                             </td>
                         </tr>

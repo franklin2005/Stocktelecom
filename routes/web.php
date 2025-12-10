@@ -98,6 +98,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/materials/export', [MaterialController::class, 'exportWarehouseCsv'])->name('materials.export');
             // Historial de movimientos de almacén
             Route::get('/warehouse-movements', [WarehouseHistoryController::class, 'index'])->name('warehouse-movements');
+            Route::get('/warehouse-movements/transfers/{transfer}', [WarehouseHistoryController::class, 'showTransfer'])->name('warehouse-movements.transfer.show');
             // Órdenes de trabajo (consulta)
             Route::get('/work-orders', [AdminWorkOrderController::class, 'index'])->name('work-orders.index');
             Route::get('/work-orders/{workOrder}', [AdminWorkOrderController::class, 'show'])->name('work-orders.show');
@@ -157,6 +158,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/returns/cart/clear', [ReturnsController::class, 'clearCart'])->name('returns.cart.clear');
             Route::post('/returns/send', [ReturnsController::class, 'send'])->name('returns.send');
             Route::get('/returns/history', [ReturnHistoryController::class, 'index'])->name('returns.history');
+            Route::get('/returns/history/{transfer}', [ReturnHistoryController::class, 'show'])->name('returns.history.show');
         });
 
         /*
@@ -168,6 +170,8 @@ Route::middleware('auth')->group(function () {
             Route::get('/technicians/{technician}/stock-overview', [TechnicianOverviewController::class, 'stock'])->name('technicians.stock.overview');
             Route::get('/technicians/{technician}/transfers', [TechnicianTransferHistoryController::class, 'show'])->name('technicians.transfers.history');
             Route::get('/technicians/{technician}/returns', [TechnicianTransferHistoryController::class, 'showReturns'])->name('technicians.returns.history');
+            Route::get('/technicians/{technician}/transfers/{transfer}', [TechnicianTransferHistoryController::class, 'showTransferDetail'])->name('technicians.transfers.history.show');
+            Route::get('/technicians/{technician}/returns/{transfer}', [TechnicianTransferHistoryController::class, 'showReturnDetail'])->name('technicians.returns.history.show');
         });
     });
 
@@ -194,6 +198,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/returns/history', function (Illuminate\Http\Request $request, TechnicianTransferHistoryController $controller) {
             return $controller->showReturns($request, $request->user());
         })->name('returns.history');
+        Route::get('/transfers/history/{transfer}', [TechnicianTransferHistoryController::class, 'showTransferDetailSelf'])->name('transfers.history.show');
+        Route::get('/returns/history/{transfer}', [TechnicianTransferHistoryController::class, 'showReturnDetailSelf'])->name('returns.history.show');
         // Órdenes de trabajo
         Route::get('/work-orders', [TechnicianWorkOrderController::class, 'index'])->name('work-orders');
         Route::get('/work-orders/{workOrder}', [TechnicianWorkOrderController::class, 'show'])->name('work-orders.show');
@@ -208,4 +214,3 @@ Route::middleware('auth')->group(function () {
             ->name('transfers.history');
     });
 });
-

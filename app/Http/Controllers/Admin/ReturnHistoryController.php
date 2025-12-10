@@ -54,4 +54,40 @@ class ReturnHistoryController extends Controller
             'selectedStatus' => $status,
         ]);
     }
+
+    public function show(Request $request, Transfer $transfer): View
+    {
+        $user = $request->user();
+
+        if (! in_array($user->role, ['super_admin', 'logistics'], true)) {
+            abort(403);
+        }
+
+        if ($transfer->type !== 'return') {
+            abort(404);
+        }
+
+        $transfer->load([
+            'items.material',
+            'items.serial',
+            'fromLocation',
+            'toLocation',
+            'initiator',
+        ]);
+
+        $statusLabels = [
+            'pending' => 'Pendiente',
+            'accepted' => 'Aceptada',
+            'rejected' => 'Rechazada',
+            'cancelled' => 'Cancelada',
+        ];
+
+        $totalUnits = $transfer->items->sum('quantity');
+
+        return view('admin.returns-history-show', [
+            'returnTransfer' => $transfer,
+            'statusLabels' => $statusLabels,
+            'totalUnits' => $totalUnits,
+        ]);
+    }
 }
