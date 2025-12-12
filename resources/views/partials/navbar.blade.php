@@ -8,11 +8,13 @@
         <div class="d-flex align-items-center gap-3">
             @auth
                 {{-- Botón menú móvil --}}
-                <button class="btn btn-outline-light btn-sm d-lg-none ms-2"
-                        type="button"
-                        data-bs-toggle="offcanvas"
-                        data-bs-target="#mobileSidebar"
-                        aria-controls="mobileSidebar">
+                <button
+                    class="btn btn-outline-light btn-sm d-lg-none ms-2"
+                    type="button"
+                    data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileSidebar"
+                    aria-controls="mobileSidebar"
+                >
                     <i class="bi bi-list me-1"></i>
                     Menú
                 </button>
@@ -22,13 +24,29 @@
                     Hola, {{ auth()->user()->name }}
                 </span>
 
+                {{-- Botón modo oscuro --}}
+                <button
+                    type="button"
+                    class="btn btn-outline-light btn-sm"
+                    id="themeToggle"
+                    aria-label="Cambiar tema"
+                    title="Cambiar tema"
+                >
+                    <i class="bi bi-moon-stars" id="themeToggleIcon"></i>
+                </button>
+
                 {{-- Perfil --}}
                 <a href="{{ route('profile.show') }}" class="btn btn-accent-st btn-sm">
                     <i class="bi bi-person-circle me-1"></i>
                 </a>
 
                 {{-- Logout --}}
-                <form method="POST" action="{{ route('logout') }}" class="d-inline-flex align-items-center m-0" id="logout-form">
+                <form
+                    method="POST"
+                    action="{{ route('logout') }}"
+                    class="d-inline-flex align-items-center m-0"
+                    id="logout-form"
+                >
                     @csrf
                     <button type="submit" class="btn btn-danger-st btn-sm">
                         <i class="bi bi-box-arrow-right me-1"></i>
@@ -47,14 +65,25 @@
 
 @auth
     {{-- Menú móvil (offcanvas) --}}
-    <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
+    <div
+        class="offcanvas offcanvas-start d-lg-none"
+        tabindex="-1"
+        id="mobileSidebar"
+        aria-labelledby="mobileSidebarLabel"
+    >
         <div class="offcanvas-header">
             <h5 class="offcanvas-title d-flex align-items-center" id="mobileSidebarLabel">
                 <i class="bi bi-list me-2"></i>
                 Menú
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="offcanvas"
+                aria-label="Cerrar"
+            ></button>
         </div>
+
         <div class="offcanvas-body">
             <div class="list-group list-group-flush">
                 @foreach ($menuItems as $item)
@@ -67,9 +96,11 @@
                         }
                     @endphp
 
-                    <a href="{{ route($item['route'], $item['params'] ?? []) }}"
-                       class="{{ $classes }}"
-                       @if($isActive) aria-current="true" @endif>
+                    <a
+                        href="{{ route($item['route'], $item['params'] ?? []) }}"
+                        class="{{ $classes }}"
+                        @if($isActive) aria-current="true" @endif
+                    >
                         @if (!empty($item['icon']))
                             <i class="bi bi-{{ $item['icon'] }} sidebar-icon me-2"></i>
                         @endif
@@ -82,9 +113,44 @@
 @endauth
 
 <script>
-document.getElementById('logout-form').addEventListener('submit', function (e) {
+document.getElementById('logout-form')?.addEventListener('submit', function (e) {
     if (!confirm('¿Seguro que deseas cerrar sesión?')) {
         e.preventDefault();
     }
 });
+</script>
+
+<script>
+(function () {
+    const root = document.documentElement; // <html>
+    const toggleBtn = document.getElementById('themeToggle');
+    const toggleIcon = document.getElementById('themeToggleIcon');
+
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            root.setAttribute('data-theme', 'dark');
+            if (toggleIcon) toggleIcon.className = 'bi bi-sun';
+        } else {
+            root.removeAttribute('data-theme');
+            if (toggleIcon) toggleIcon.className = 'bi bi-moon-stars';
+        }
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark =
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    applyTheme(initialTheme);
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function () {
+            const isDark = root.getAttribute('data-theme') === 'dark';
+            const nextTheme = isDark ? 'light' : 'dark';
+            localStorage.setItem('theme', nextTheme);
+            applyTheme(nextTheme);
+        });
+    }
+})();
 </script>

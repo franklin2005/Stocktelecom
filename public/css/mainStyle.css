@@ -1,21 +1,24 @@
-/* ======================================================
-   STOCKTELECOM MAIN STYLE
-   Paleta corporativa + componentes personalizados
-   ====================================================== */
-
 :root {
   /* Colores principales */
   --st-primary: #1E88E5;
   --st-primary-dark: #1565C0;
   --st-accent: #00BFA5;
+  --st-on-primary: #FFFFFF;
+  --st-on-colored: #FFFFFF;
 
   /* Tonos auxiliares */
   --st-success: #2E7D32;
   --st-success-soft: #E8F5E9;
+  --st-success-strong: #1B5E20;
   --st-warning: #F9A825;
   --st-warning-soft: #FFF8E1;
+  --st-warning-strong: #F57F17;
   --st-danger: #D32F2F;
   --st-danger-soft: #FFEBEE;
+  --st-danger-strong: #B71C1C;
+  --st-info: #0DCAF0;
+  --st-info-strong: #0BAACA;
+  --st-soft-strong: #536072;
 
   /* Textos y fondos */
   --st-text: #0F172A;
@@ -75,7 +78,7 @@ a:hover {
 .st-navbar .btn-outline-light:hover {
   background-color: var(--st-accent);
   border-color: var(--st-accent);
-  color: #fff;
+  color: var(--st-on-colored);
 }
 
 /* ------------------------------------------------------
@@ -83,8 +86,8 @@ a:hover {
 ------------------------------------------------------ */
 .st-card {
   border-radius: var(--st-radius);
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  background: var(--st-bg);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--st-text) 8%, transparent);
 }
 
 .st-section {
@@ -99,80 +102,78 @@ a:hover {
 .btn-st {
   background: var(--st-primary);
   border-color: var(--st-primary);
-  color: #fff;
+  color: var(--st-on-primary);
   transition: all 0.2s ease;
 }
 .btn-st:hover {
   background: var(--st-primary-dark);
   border-color: var(--st-primary-dark);
-  color: #fff;
+  color: var(--st-on-primary);
 }
 
 /* Verdes y amarillos personalizados */
 .btn-success-st {
   background-color: var(--st-success);
   border-color: var(--st-success);
-  color: #fff;
+  color: var(--st-on-colored);
 }
 .btn-success-st:hover {
-  background-color: #1B5E20;
-  border-color: #1B5E20;
-  color: #fff;
+  background-color: var(--st-success-strong);
+  border-color: var(--st-success-strong);
+  color: var(--st-on-colored);
 }
 
 .btn-warning-st {
   background-color: var(--st-warning);
   border-color: var(--st-warning);
-  color: #fff;
+  color: var(--st-on-colored);
 }
 .btn-warning-st:hover {
-  background-color: #F57F17;
-  border-color: #F57F17;
-  color: #fff;
+  background-color: var(--st-warning-strong);
+  border-color: var(--st-warning-strong);
+  color: var(--st-on-colored);
 }
 
-/* Botón peligro (eliminar, etc.) */
 .btn-danger-st {
   background-color: var(--st-danger);
   border-color: var(--st-danger);
-  color: #fff;
+  color: var(--st-on-colored);
 }
 .btn-danger-st:hover {
-  background-color: #B71C1C;
-  border-color: #B71C1C;
-  color: #fff;
+  background-color: var(--st-danger-strong);
+  border-color: var(--st-danger-strong);
+  color: var(--st-on-colored);
 }
 
-/* Botón suave / secundario (ver, detalles, movimientos...) */
 .btn-soft-st {
   background-color: var(--st-text-2);
   border-color: var(--st-text-2);
-  color: #fff;
+  color: var(--st-on-colored);
 }
 .btn-soft-st:hover {
-  background-color: #536072;
-  border-color: #536072;
-  color: #fff;
+  background-color: var(--st-soft-strong);
+  border-color: var(--st-soft-strong);
+  color: var(--st-on-colored);
 }
 .btn-info-st{
-    background-color: #0dcaf0;
-    border-color: #0dcaf0;
-    color: #fff;
+    background-color: var(--st-info);
+    border-color: var(--st-info);
+    color: var(--st-on-colored);
 }
 .btn-info-st:hover{
-    background-color: #0baaca;
-    border-color: #0baaca;
-    color: #fff;
+    background-color: var(--st-info-strong);
+    border-color: var(--st-info-strong);
+    color: var(--st-on-colored);
 }
 .btn-accent-st {
   background-color: var(--st-accent);
   border-color: var(--st-accent);
-  color: #fff;
+  color: var(--st-on-colored);
 }
 .btn-accent-st:hover {
-  background-color: #008E7E;
-  border-color: #008E7E;
-  color: #fff;
+  background-color: color-mix(in srgb, var(--st-accent) 85%, var(--st-text));
+  border-color: color-mix(in srgb, var(--st-accent) 85%, var(--st-text));
+  color: var(--st-on-colored);
 }
 .btn-icon {
   font-size: 1.2rem;
@@ -185,20 +186,17 @@ a.btn:focus {
     text-decoration: none !important;
 }
 
-
-
-
 /* ------------------------------------------------------
    BADGES / ETIQUETAS
 ------------------------------------------------------ */
 .badge-soft {
-  background: rgba(30, 136, 229, 0.12);
+  background: color-mix(in srgb, var(--st-primary) 12%, var(--st-bg));
   color: var(--st-primary);
   border-radius: 0.25rem;
   font-weight: 500;
 }
 .badge-accent {
-  background: rgba(0, 191, 165, 0.12);
+  background: color-mix(in srgb, var(--st-accent) 12%, var(--st-bg));
   color: var(--st-accent);
   border-radius: 0.25rem;
 }
@@ -227,19 +225,19 @@ a.btn:focus {
 .form-control:focus,
 .form-select:focus {
   border-color: var(--st-primary);
-  box-shadow: 0 0 0 0.15rem rgba(30, 136, 229, 0.25);
+  box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--st-primary) 25%, transparent);
 }
 
 /* ------------------------------------------------------
    TABLAS
 ------------------------------------------------------ */
 .table thead th {
-  background-color: var(--st-primary);
-  color: #fff;
+  background-color: var(--st-bg-soft);
+  color: var(--st-text);
   vertical-align: middle;
 }
 .table-hover tbody tr:hover {
-  background-color: rgba(30, 136, 229, 0.05);
+  background-color: color-mix(in srgb, var(--st-primary) 8%, var(--st-bg));
 }
 
 /* ------------------------------------------------------
@@ -263,20 +261,247 @@ a.btn:focus {
   border-radius: var(--st-radius);
 }
 
-/* Ajustes para tamaños en el login-selection.blade*/
-/* Altura mínima para que el contenido no colapse en anchos medios */
+/* Ajustes para tamanos en el login-selection.blade*/
+/* Altura minima para que el contenido no colapse en anchos medios */
 .role-card { min-height: 260px; }
 
-/* Evita que “Entrar” se parta o se salga del botón */
+/* Evita que "Entrar" se parta o se salga del boton */
 .role-btn { white-space: nowrap; }
 
-/*Tamañp de los iconos  */
+/*Tamano de los iconos  */
 .sidebar-icon {
-    font-size: 1.3rem; /* Ajusta aquí: 1.25 = grande pero elegante */
+    font-size: 1.3rem; 
 }
 
-
-/* Ajuste de tipografía de títulos en anchos entre tablet y laptop */
+/* Ajuste de tipografia de titulos en anchos entre tablet y laptop */
 @media (max-width: 1199.98px) {
   .role-card h5 { font-size: 1.1rem; }
+}
+
+/* ======================================================
+   MODO OSCURO
+====================================================== */
+:root[data-theme="dark"] {
+  /* Colores principales */
+  --st-primary: #90CAF9;
+  --st-primary-dark: #64B5F6;
+  --st-accent: #00E5C2;
+  --st-on-primary: #0B1220;
+  --st-on-colored: #0B1220;
+
+  /* Estados */
+  --st-success: #81C784;
+  --st-success-soft: #1B3A2B;
+  --st-success-strong: #5DAA63;
+  --st-warning: #FFD54F;
+  --st-warning-soft: #3A2E14;
+  --st-warning-strong: #F3C969;
+  --st-danger: #EF9A9A;
+  --st-danger-soft: #3A1E1E;
+  --st-danger-strong: #F28B82;
+  --st-info: #5AC8F6;
+  --st-info-strong: #38B6E8;
+  --st-soft-strong: #C5CCD7;
+
+  /* Textos y fondos */
+  --st-text: #E5E7EB;
+  --st-text-2: #9CA3AF;
+  --st-bg: #0F172A;
+  --st-bg-soft: #020617;
+  --st-border: #1E293B;
+
+  /* Navbar */
+  --st-navbar-bg: #020617;
+  --st-navbar-text: #E5E7EB;
+}
+
+/* Ajustes especificos */
+:root[data-theme="dark"] .st-card {
+  background-color: var(--st-bg);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--st-text) 35%, transparent);
+}
+
+:root[data-theme="dark"] .table-hover tbody tr:hover {
+  background-color: color-mix(in srgb, var(--st-primary) 18%, var(--st-bg));
+}
+
+/* ======================================================
+   THEME OVERRIDES PARA BOOTSTRAP / GENERALES
+====================================================== */
+
+/* Fondos globales */
+body {
+  background: var(--st-bg-soft) !important;
+  color: var(--st-text) !important;
+}
+
+/* Cualquier "card" de Bootstrap */
+.card,
+.modal-content,
+.offcanvas,
+.dropdown-menu {
+  background-color: var(--st-bg) !important;
+  color: var(--st-text) !important;
+  border-color: var(--st-border) !important;
+}
+
+/* Links dentro de dropdowns */
+.dropdown-item {
+  color: var(--st-text) !important;
+}
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: color-mix(in srgb, var(--st-primary) 12%, var(--st-bg)) !important;
+}
+
+/* Tablas */
+.table {
+  color: var(--st-text) !important;
+}
+.table > :not(caption) > * > * {
+  background-color: var(--st-bg) !important;
+  color: var(--st-text) !important;
+}
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: color-mix(in srgb, var(--st-bg) 92%, var(--st-bg-soft)) !important;
+}
+.table td,
+.table th {
+  border-color: var(--st-border) !important;
+}
+.table tbody tr {
+  background-color: transparent !important;
+}
+.table-light,
+.table-light > * {
+  background-color: var(--st-bg-soft) !important;
+  color: var(--st-text) !important;
+}
+.table thead.bg-primary th,
+.table thead.bg-light th,
+.table thead.bg-white th {
+  background-color: var(--st-bg-soft) !important;
+  color: var(--st-text) !important;
+}
+
+/* Inputs */
+.form-control,
+.form-select,
+.input-group-text,
+.form-check-input {
+  background-color: var(--st-bg) !important;
+  color: var(--st-text) !important;
+  border-color: var(--st-border) !important;
+}
+.form-control::placeholder {
+  color: var(--st-text-2) !important;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--st-primary) !important;
+  box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--st-primary) 25%, transparent) !important;
+}
+
+/* Alerts */
+.alert {
+  border-color: var(--st-border) !important;
+  background-color: var(--st-bg-soft) !important;
+  color: var(--st-text) !important;
+}
+.alert-success {
+  background-color: color-mix(in srgb, var(--st-success) 15%, var(--st-bg)) !important;
+  border-color: color-mix(in srgb, var(--st-success) 35%, var(--st-border)) !important;
+  color: var(--st-success) !important;
+}
+.alert-warning {
+  background-color: color-mix(in srgb, var(--st-warning) 15%, var(--st-bg)) !important;
+  border-color: color-mix(in srgb, var(--st-warning) 35%, var(--st-border)) !important;
+  color: var(--st-warning) !important;
+}
+.alert-danger {
+  background-color: color-mix(in srgb, var(--st-danger) 15%, var(--st-bg)) !important;
+  border-color: color-mix(in srgb, var(--st-danger) 35%, var(--st-border)) !important;
+  color: var(--st-danger) !important;
+}
+.alert-info {
+  background-color: color-mix(in srgb, var(--st-info) 15%, var(--st-bg)) !important;
+  border-color: color-mix(in srgb, var(--st-info) 35%, var(--st-border)) !important;
+  color: var(--st-info) !important;
+}
+
+/* List groups (sidebar movil) */
+.list-group-item {
+  background-color: var(--st-bg) !important;
+  color: var(--st-text) !important;
+  border-color: var(--st-border) !important;
+}
+.list-group-item.active {
+  background-color: color-mix(in srgb, var(--st-primary) 18%, var(--st-bg)) !important;
+  border-color: color-mix(in srgb, var(--st-primary) 30%, var(--st-border)) !important;
+  color: var(--st-text) !important;
+}
+
+/* Accordion */
+.accordion-item,
+.accordion-button {
+  background-color: var(--st-bg) !important;
+  color: var(--st-text) !important;
+  border-color: var(--st-border) !important;
+}
+.accordion-button:not(.collapsed) {
+  background-color: color-mix(in srgb, var(--st-primary) 12%, var(--st-bg)) !important;
+}
+
+/* Offcanvas header close button visible en dark */
+:root[data-theme="dark"] .btn-close {
+  filter: invert(1) grayscale(100%);
+}
+
+/* Bootstrap helpers */
+.bg-white { background-color: var(--st-bg) !important; color: var(--st-text) !important; }
+.bg-light { background-color: var(--st-bg-soft) !important; color: var(--st-text) !important; }
+.text-dark, .text-black, .text-body { color: var(--st-text) !important; }
+.table-light > th, .table-light > td { color: var(--st-text) !important; }
+.bg-primary { background-color: var(--st-primary) !important; color: var(--st-on-primary) !important; }
+.bg-success { background-color: var(--st-success) !important; color: var(--st-on-colored) !important; }
+.bg-warning { background-color: var(--st-warning) !important; color: var(--st-on-colored) !important; }
+.bg-danger { background-color: var(--st-danger) !important; color: var(--st-on-colored) !important; }
+.bg-info { background-color: var(--st-info) !important; color: var(--st-on-colored) !important; }
+.bg-secondary { background-color: var(--st-text-2) !important; color: var(--st-on-colored) !important; }
+.bg-body { background-color: var(--st-bg) !important; color: var(--st-text) !important; }
+.bg-body-tertiary { background-color: var(--st-bg-soft) !important; color: var(--st-text) !important; }
+.text-muted { color: var(--st-text-2) !important; }
+.badge.bg-primary, .badge.bg-success, .badge.bg-warning, .badge.bg-danger, .badge.bg-info, .badge.bg-secondary {
+  color: inherit;
+}
+
+/* Bordes */
+.border,
+.border-start,
+.border-end,
+.border-top,
+.border-bottom {
+  border-color: var(--st-border) !important;
+}
+
+/* Pagination */
+.page-link {
+  background-color: var(--st-bg) !important;
+  color: var(--st-text) !important;
+  border-color: var(--st-border) !important;
+}
+.page-link:hover {
+  background-color: var(--st-bg-soft) !important;
+  color: var(--st-primary) !important;
+}
+.page-item.active .page-link {
+  background-color: var(--st-primary) !important;
+  border-color: var(--st-primary) !important;
+  color: var(--st-on-primary) !important;
+}
+
+/* Tablas y header dentro de cards light/dark */
+.st-card .table thead th {
+  background-color: var(--st-bg-soft);
+  color: var(--st-text);
 }

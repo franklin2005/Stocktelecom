@@ -15,12 +15,37 @@
 
     {{-- estilos personalizados--}}
     <link rel="stylesheet" href="{{ asset('css/mainStyle.css') }}">
-
-
-
-
 </head>
-<body class="bg-light">
+<script>
+(function () {
+    const root = document.documentElement;
+    const toggleBtn = document.getElementById('themeToggle');
+    const icon = document.getElementById('themeIcon');
+
+    // Cargar preferencia
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    root.setAttribute('data-theme', savedTheme);
+    updateIcon(savedTheme);
+
+    if (!toggleBtn) return;
+
+    toggleBtn.addEventListener('click', function () {
+        const current = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', current);
+        localStorage.setItem('theme', current);
+        updateIcon(current);
+    });
+
+    function updateIcon(theme) {
+        if (!icon) return;
+        icon.className = theme === 'dark'
+            ? 'bi bi-sun-fill'
+            : 'bi bi-moon-fill';
+    }
+})();
+</script>
+
+<body>
 
     @php
         $navRole = auth()->user()->role ?? null;

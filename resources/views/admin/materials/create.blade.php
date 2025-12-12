@@ -421,7 +421,7 @@
                                         </button>
                                         <button
                                             type="button"
-                                            class="btn btn-warning-st"
+                                            class="btn btn-danger-st"
                                             data-bs-toggle="collapse"
                                             data-bs-target="#{{ $editFormId }}"
                                             aria-expanded="true"

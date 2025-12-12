@@ -182,7 +182,7 @@
                     <form method="POST" action="{{ route('admin.transfers.cart.clear') }}">
                         @csrf
                         <button type="submit" class="btn btn-sm btn-danger-st" {{ empty($cartItems) ? 'disabled' : '' }}>
-                            <i class="bi bi-arrow-counterclockwise me-1"></i>Vaciar lista
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Vaciar
                         </button>
                     </form>
                 </div>
