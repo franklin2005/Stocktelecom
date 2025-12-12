@@ -52,14 +52,14 @@
                             $isTransfer = $movement->record_type === 'transfer';
                             $movementType = $isTransfer ? 'transfer_out' : $movement->movement_type;
                             $movementTypeLabels = [
-                                'transfer_in'       => 'Transferencia (entrada)',
-                                'transfer_out'      => 'Transferencia (salida)',
-                                'transfer'          => 'Transferencia',
-                                'adjustment'        => 'Ajuste',
-                                'manual_adjustment' => 'Ajuste manual',
-                                'deletion'          => 'Baja',
-                                'removal'           => 'Baja',
-                                'write_off'         => 'Baja',
+                                'transfer_in'       => 'ENTRADA',
+                                'transfer_out'      => 'SALIDA',
+                                'transfer'          => 'TRANSFERENCIA',
+                                'adjustment'        => 'AJUSTE',
+                                'manual_adjustment' => 'AJUSTE MANUAL',
+                                'deletion'          => 'BAJA',
+                                'removal'           => 'BAJA',
+                                'write_off'         => 'BAJA',
                             ];
                             $typeLabel = $movementTypeLabels[$movementType] ?? ucfirst(str_replace('_', ' ', $movementType));
 

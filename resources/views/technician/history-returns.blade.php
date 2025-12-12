@@ -9,10 +9,10 @@
         : ($isSelf ? route('technician.transfers') : url()->previous());
 
     $statusMap = [
-        'accepted' => ['label' => 'Aceptada', 'class' => 'badge-success-soft'],
-        'pending' => ['label' => 'Pendiente', 'class' => 'badge-warning-soft'],
-        'rejected' => ['label' => 'Rechazada', 'class' => 'badge-danger-soft'],
-        'cancelled' => ['label' => 'Cancelada', 'class' => 'badge-danger-soft'],
+        'accepted' => ['label' => 'ACEPTADA', 'class' => 'badge-success-soft'],
+        'pending' => ['label' => 'PENDIENTE', 'class' => 'badge-warning-soft'],
+        'rejected' => ['label' => 'RECHAZADA', 'class' => 'badge-danger-soft'],
+        'cancelled' => ['label' => 'CANCELADA', 'class' => 'badge-danger-soft'],
     ];
 @endphp
 
@@ -43,13 +43,15 @@
             </div>
             <div class="col-12 col-lg-3">
                 <label class="form-label">Estado</label>
-                <select name="status" class="form-select">
-                    <option value="">Todos</option>
-                    <option value="pending" @selected(request('status') === 'pending')>Pendiente</option>
-                    <option value="accepted" @selected(request('status') === 'accepted')>Aceptada</option>
-                    <option value="rejected" @selected(request('status') === 'rejected')>Rechazada</option>
-                    <option value="cancelled" @selected(request('status') === 'cancelled')>Cancelada</option>
-                </select>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        @foreach ($statusMap as $value => $data)
+                        <option value="{{ $value }}" @selected(request('status') === $value)>
+                         {{ $data['label'] }}
+                        </option>
+                        @endforeach
+                    </select>
+
             </div>
             <div class="col-12 col-lg-3 d-grid d-lg-flex gap-2">
                 <button type="submit" class="btn btn-st"><i class="bi bi-funnel me-1"></i>Filtrar</button>

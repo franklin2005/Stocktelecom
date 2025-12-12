@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\StockMovement;
+use App\Models\UserActionLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -101,47 +102,70 @@ class PersonnelController extends Controller
         }
 
         $location = null;
-
         if (in_array($user->role, ['technician', 'logistics'], true)) {
             $location = $user->stockLocation()->first();
         }
 
-        $movementsQuery = StockMovement::query()
-            ->with([
-                'material',
-                'serial',
-                'fromLocation',
-                'toLocation',
-                'performer',
-            ])
-            ->where(function ($query) use ($user, $location) {
-                $query->where('performed_by', $user->id);
+        // Logs de acciones que este usuario realizó sobre otros usuarios (histórico de usuarios tocados)
+        $logsQuery = UserActionLog::query()
+            ->with(['actor', 'target'])
+            ->where('actor_id', $user->id);
 
-                if ($location) {
-                    $query->orWhere('from_location_id', $location->id)
-                        ->orWhere('to_location_id', $location->id);
-                }
-            });
+        // Movimientos de stock asociados al usuario (solo visibles para super_admin)
+        $stockMovementsQuery = null;
+        if ($currentRole === 'super_admin') {
+            $stockMovementsQuery = StockMovement::query()
+                ->with([
+                    'material',
+                    'serial',
+                    'fromLocation',
+                    'toLocation',
+                    'performer',
+                ])
+                ->where(function ($query) use ($user, $location) {
+                    $query->where('performed_by', $user->id);
+
+                    if ($location) {
+                        $query->orWhere('from_location_id', $location->id)
+                            ->orWhere('to_location_id', $location->id);
+                    }
+                });
+        }
 
         if ($request->filled('from')) {
             $from = now()->parse($request->query('from'))->startOfDay();
-            $movementsQuery->where('performed_at', '>=', $from);
+            $logsQuery->where('created_at', '>=', $from);
+            if ($stockMovementsQuery) {
+                $stockMovementsQuery->where('performed_at', '>=', $from);
+            }
         }
 
         if ($request->filled('to')) {
             $to = now()->parse($request->query('to'))->endOfDay();
-            $movementsQuery->where('performed_at', '<=', $to);
+            $logsQuery->where('created_at', '<=', $to);
+            if ($stockMovementsQuery) {
+                $stockMovementsQuery->where('performed_at', '<=', $to);
+            }
         }
 
-        $movements = $movementsQuery
-            ->orderByDesc('performed_at')
+        $logs = $logsQuery
             ->orderByDesc('created_at')
             ->paginate(25)
             ->withQueryString();
 
+        $stockMovements = null;
+        if ($stockMovementsQuery) {
+            $stockMovements = $stockMovementsQuery
+                ->orderByDesc('performed_at')
+                ->orderByDesc('created_at')
+                ->paginate(25, ['*'], 'stock_page')
+                ->appends($request->query());
+        }
+
         return view('admin.personnel.movements', [
             'viewedUser' => $user,
-            'movements' => $movements,
+            'logs' => $logs,
+            'stockMovements' => $stockMovements,
             'location' => $location,
             'backTab' => match ($user->role) {
                 'technician' => 'technicians',

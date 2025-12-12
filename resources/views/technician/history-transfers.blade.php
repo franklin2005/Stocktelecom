@@ -10,10 +10,10 @@
 
     // Etiquetas y clases para estado
     $statusMap = [
-        'accepted' => ['label' => 'Aceptada',  'class' => 'badge-success-soft'],
-        'pending'  => ['label' => 'Pendiente', 'class' => 'badge-warning-soft'],
-        'rejected' => ['label' => 'Rechazada', 'class' => 'badge-danger-soft'],
-        'cancelled'=> ['label' => 'Cancelada', 'class' => 'badge-danger-soft'],
+        'accepted' => ['label' => 'ACEPTADA',  'class' => 'badge-success-soft'],
+        'pending'  => ['label' => 'PENDIENTE', 'class' => 'badge-warning-soft'],
+        'rejected' => ['label' => 'RECHAZADA', 'class' => 'badge-danger-soft'],
+        'cancelled'=> ['label' => 'CANCELADA', 'class' => 'badge-danger-soft'],
     ];
 @endphp
 

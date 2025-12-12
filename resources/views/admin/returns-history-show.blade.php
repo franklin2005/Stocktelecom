@@ -18,10 +18,10 @@
         $statusAliases = ['canceled' => 'cancelled'];
         $statusKey = $statusAliases[$statusKey] ?? $statusKey;
         $statusLabels = [
-            'pending' => 'Pendiente',
-            'accepted' => 'Aceptada',
-            'rejected' => 'Rechazada',
-            'cancelled' => 'Cancelada',
+            'pending' => 'PENDIENTE',
+            'accepted' => 'ACEPTADA',
+            'rejected' => 'RECHAZADA',
+            'cancelled' => 'CANCELADA',
         ];
         $statusClasses = [
             'pending' => 'badge-warning-soft',

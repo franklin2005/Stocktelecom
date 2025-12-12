@@ -3,10 +3,10 @@
 @php
     $statusOptions = [
         ''          => 'Todos',
-        'pending'   => 'Pendiente',
-        'accepted'  => 'Aceptada',
-        'rejected'  => 'Rechazada',
-        'cancelled' => 'Cancelada',
+        'pending'   => 'PENDIENTE',
+        'accepted'  => 'ACEPTADA',
+        'rejected'  => 'RECHAZADA',
+        'cancelled' => 'CANCELADA',
     ];
 
     $statusClasses = [
@@ -16,10 +16,6 @@
         'cancelled' => 'badge-danger-soft',
     ];
 
-    // Alias por si la BD trae "canceled"
-    $statusAliases = [
-        'canceled' => 'cancelled',
-    ];
 @endphp
 
 @section('content')

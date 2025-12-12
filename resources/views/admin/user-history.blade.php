@@ -50,9 +50,9 @@
                         @foreach ($logs as $log)
                             @php
                                 $actionLabels = [
-                                    'created' => 'Creación',
-                                    'updated' => 'Actualización',
-                                    'deleted' => 'Eliminación',
+                                    'created' => 'CREADO',
+                                    'updated' => 'ACTUALIZADO',
+                                    'deleted' => 'ELIMINADO',
                                 ];
 
                                 $badgeClasses = [
