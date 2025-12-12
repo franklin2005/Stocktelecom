@@ -54,8 +54,7 @@
                         @foreach ($serializedGroups as $materialId => $serialGroup)
                             @php
                                 $material = $serialGroup->first()->material;
-                                $aggregate = $serializedAggregates->firstWhere('material_id', $materialId);
-                                $quantity = $aggregate?->quantity ?? $serialGroup->count();
+                                $quantity = $serialGroup->count();
                                 $accordionId = 'material-'.$materialId;
                             @endphp
                             <div class="accordion-item">

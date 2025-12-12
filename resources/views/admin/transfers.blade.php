@@ -109,7 +109,6 @@
                 @else
                     @php
                         $serialsByMaterial = $availableSerials->groupBy('material_id');
-                        $serializedLookup = $serializedInventory;
                     @endphp
                     <div class="input-group input-group-sm mb-3">
                         <span class="input-group-text">Nº serie</span>
@@ -125,7 +124,7 @@
                                     $material = $serialGroup->first()->material;
                                     $inCartCount = $serialGroup->whereIn('id', $serialsInCart)->count();
                                     $availableCount = $serialGroup->count() - $inCartCount;
-                                    $inventoryCount = $serializedLookup[$materialId]->quantity ?? $serialGroup->count();
+                                    $inventoryCount = $availableCount;
                                     $accordionId = 'serial-material-' . $materialId;
                                 @endphp
                                 <div class="accordion-item">

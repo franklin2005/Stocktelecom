@@ -63,7 +63,7 @@
                         @foreach ($serializedGroups as $materialId => $serialGroup)
                             @php
                                 $material = $serialGroup->first()->material;
-                                $quantity = $serializedInventory[$materialId]->quantity ?? $serialGroup->count();
+                                $quantity = $serialGroup->count();
                                 $accordionId = 'material-' . $materialId;
                             @endphp
 

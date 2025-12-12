@@ -41,16 +41,12 @@ class MenuController extends Controller
         $nonSerializedInventory = $inventory
             ->filter(fn ($item) => $item->material && ! $item->material->is_serialized && (int) $item->quantity > 0)
             ->values();
-        $serializedAggregates = $inventory
-            ->filter(fn ($item) => $item->material && $item->material->is_serialized && (int) $item->quantity > 0)
-            ->values();
         $serializedGroups = $serials->groupBy('material_id');
 
         return view('technician.stock', [
             'location' => $location,
             'nonSerializedInventory' => $nonSerializedInventory,
             'serializedGroups' => $serializedGroups,
-            'serializedAggregates' => $serializedAggregates,
         ]);
     }
 

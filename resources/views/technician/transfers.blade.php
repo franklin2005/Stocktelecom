@@ -123,7 +123,7 @@
                                 @php
                                     $material = $serialGroup->first()->material;
                                     $inCartCount = collect($serialGroup)->whereIn('id', $serialsInCart)->count();
-                                    $inventoryCount = $serializedLookup[$materialId]->quantity ?? $serialGroup->count();
+                                    $inventoryCount = $serialGroup->count() - $inCartCount;
                                     $accordionId = 'serial-material-' . $materialId;
                                 @endphp
                                 <div class="accordion-item">
@@ -222,7 +222,7 @@
                                         <td class="text-end">
                                             <form method="POST" action="{{ route('technician.transfers.cart.remove', $item['key']) }}">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-warning-st">
+                                                <button type="submit" class="btn btn-sm btn-danger-st">
                                                     <i class="bi bi-x-circle me-1"></i>Quitar
                                                 </button>
                                             </form>

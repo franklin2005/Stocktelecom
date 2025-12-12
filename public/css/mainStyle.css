@@ -393,6 +393,10 @@ body {
   color: var(--st-text) !important;
   border-color: var(--st-border) !important;
 }
+.form-check-input:checked {
+  background-color: var(--st-primary) !important;
+  border-color: var(--st-primary) !important;
+}
 .form-control::placeholder {
   color: var(--st-text-2) !important;
 }
