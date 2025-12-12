@@ -26,7 +26,7 @@ class MaterialSerial extends Model
     ];
 
     /**
-     * buscar por seriales disponibles.
+     * Buscar por seriales disponibles.
      */
     public function scopeAvailable(Builder $query): Builder
     {
@@ -34,7 +34,7 @@ class MaterialSerial extends Model
     }
 
     /**
-     * buscar por seriales asignados.
+     * Buscar por seriales asignados.
      */
     public function scopeAssigned(Builder $query): Builder
     {
@@ -42,7 +42,15 @@ class MaterialSerial extends Model
     }
 
     /**
-     * relacion con material
+     * Buscar seriales en transito.
+     */
+    public function scopeInTransit(Builder $query): Builder
+    {
+        return $query->where('status', 'in_transit');
+    }
+
+    /**
+     * Relacion con material.
      */
     public function material(): BelongsTo
     {
@@ -50,7 +58,7 @@ class MaterialSerial extends Model
     }
 
     /**
-     * ubicación actual de la unidad.
+     * Ubicacion actual de la unidad.
      */
     public function location(): BelongsTo
     {

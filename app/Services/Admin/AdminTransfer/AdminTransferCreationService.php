@@ -84,7 +84,7 @@ class AdminTransferCreationService
                 }
 
                 $serial->update([
-                    'status' => 'assigned',
+                    'status' => 'in_transit',
                     'current_location_id' => null,
                     'reserved_by_user_id' => null,
                     'reserved_at' => null,

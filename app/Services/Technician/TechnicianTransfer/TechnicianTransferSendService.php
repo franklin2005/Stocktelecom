@@ -117,7 +117,7 @@ class TechnicianTransferSendService
                 }
 
                 $serial->update([
-                    'status' => 'assigned',
+                    'status' => 'in_transit',
                     'current_location_id' => null,
                 ]);
 

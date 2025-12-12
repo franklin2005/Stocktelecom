@@ -18,10 +18,18 @@ class InventoryService
             throw new RuntimeException('La cantidad debe ser positiva.');
         }
 
-        $inventory = Inventory::firstOrNew([
-            'location_id' => $location->id,
-            'material_id' => $material->id,
-        ]);
+        $inventory = Inventory::where('location_id', $location->id)
+            ->where('material_id', $material->id)
+            ->lockForUpdate()
+            ->first();
+
+        if (! $inventory) {
+            $inventory = new Inventory([
+                'location_id' => $location->id,
+                'material_id' => $material->id,
+                'quantity' => 0,
+            ]);
+        }
 
         $inventory->quantity = ($inventory->quantity ?? 0) + $quantity;
         $inventory->save();

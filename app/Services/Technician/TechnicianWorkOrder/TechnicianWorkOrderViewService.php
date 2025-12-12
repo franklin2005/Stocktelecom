@@ -56,7 +56,9 @@ class TechnicianWorkOrderViewService
             ->with('material')
             ->where('location_id', $location->id)
             ->orderBy('material_id')
-            ->get();
+            ->get()
+            ->filter(fn ($item) => ($item->quantity ?? 0) > 0)
+            ->values();
 
         $nonSerializedInventory = $inventory
             ->filter(fn ($item) => $item->material && ! $item->material->is_serialized)

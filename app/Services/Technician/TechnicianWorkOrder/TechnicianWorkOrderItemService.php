@@ -94,7 +94,7 @@ class TechnicianWorkOrderItemService
             throw new RuntimeException('Algunos numeros de serie ya no estan disponibles en tu stock.');
         }
 
-        DB::transaction(function () use ($serials, $workOrder) {
+        DB::transaction(function () use ($serials, $workOrder, $location) {
             foreach ($serials as $serial) {
                 $lockedSerial = MaterialSerial::query()
                     ->whereKey($serial->id)
@@ -103,12 +103,19 @@ class TechnicianWorkOrderItemService
 
                 $lockedSerial->loadMissing('material');
 
+                $material = $lockedSerial->material;
+
                 WorkOrderItem::create([
                     'work_order_id' => $workOrder->id,
-                    'material_id' => $lockedSerial->material_id,
+                    'material_id' => $material?->id ?? $lockedSerial->material_id,
                     'material_serial_id' => $lockedSerial->id,
                     'quantity' => null,
                 ]);
+
+                if ($material) {
+                    // Retiramos del stock del tecnico para que el conteo refleje el uso en la orden abierta.
+                    $this->inventoryService->decrease($location, $material, 1);
+                }
             }
         });
     }

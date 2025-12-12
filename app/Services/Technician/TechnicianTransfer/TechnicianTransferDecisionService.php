@@ -4,7 +4,6 @@ namespace App\Services\Technician\TechnicianTransfer;
 
 use App\Models\MaterialSerial;
 use App\Models\Transfer;
-use App\Models\TransferItem;
 use App\Models\User;
 use App\Services\InventoryService;
 use App\Services\StockMovementLogger;
@@ -25,6 +24,12 @@ class TechnicianTransferDecisionService
         $userId = $technician->id;
 
         DB::transaction(function () use ($transfer, $location, $userId) {
+            $transfer = Transfer::whereKey($transfer->id)->lockForUpdate()->firstOrFail();
+
+            if ($transfer->status !== 'pending') {
+                throw new RuntimeException('La transferencia ya fue procesada.');
+            }
+
             $transfer->loadMissing(['items.material', 'items.serial', 'fromLocation']);
 
             foreach ($transfer->items as $item) {
@@ -34,12 +39,21 @@ class TechnicianTransferDecisionService
                         ->lockForUpdate()
                         ->firstOrFail();
 
+                    if ($serial->status !== 'in_transit' && ! ($serial->status === 'assigned' && $serial->current_location_id === null)) {
+                        throw new RuntimeException('El serial no esta en transito.');
+                    }
+
+                    // Idempotencia: si ya esta en destino, no duplicar inventario.
+                    $shouldIncrease = $serial->current_location_id !== $location->id;
+
                     $serial->update([
                         'status' => 'assigned',
                         'current_location_id' => $location->id,
                     ]);
 
-                    $this->inventoryService->increase($location, $item->material, 1);
+                    if ($shouldIncrease) {
+                        $this->inventoryService->increase($location, $item->material, 1);
+                    }
 
                     $this->movementLogger->log(
                         'transfer_in',
@@ -52,7 +66,11 @@ class TechnicianTransferDecisionService
                         $transfer->id,
                         $userId
                     );
-                } elseif ($item->quantity) {
+
+                    continue;
+                }
+
+                if ($item->quantity) {
                     $this->inventoryService->increase($location, $item->material, (int) $item->quantity);
 
                     $this->movementLogger->log(
@@ -81,7 +99,13 @@ class TechnicianTransferDecisionService
         $location = $technician->stockLocation()->firstOrFail();
         $userId = $technician->id;
 
-        DB::transaction(function () use ($transfer, $userId) {
+        DB::transaction(function () use ($transfer, $userId, $location) {
+            $transfer = Transfer::whereKey($transfer->id)->lockForUpdate()->firstOrFail();
+
+            if ($transfer->status !== 'pending') {
+                throw new RuntimeException('La transferencia ya fue procesada.');
+            }
+
             $transfer->loadMissing(['items.material', 'items.serial', 'fromLocation']);
 
             $fromLocation = $transfer->fromLocation;
@@ -96,6 +120,10 @@ class TechnicianTransferDecisionService
                         ->whereKey($item->material_serial_id)
                         ->lockForUpdate()
                         ->firstOrFail();
+
+                    if ($serial->status !== 'in_transit' && ! ($serial->status === 'assigned' && $serial->current_location_id === null)) {
+                        throw new RuntimeException('El serial no esta en transito.');
+                    }
 
                     $serial->update([
                         'status' => 'available',
@@ -115,7 +143,11 @@ class TechnicianTransferDecisionService
                         $transfer->id,
                         $userId
                     );
-                } elseif ($item->quantity) {
+
+                    continue;
+                }
+
+                if ($item->quantity) {
                     $this->inventoryService->increase($fromLocation, $item->material, (int) $item->quantity);
 
                     $this->movementLogger->log(

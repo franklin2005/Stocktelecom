@@ -114,7 +114,7 @@
                                         @php
                                             $material = $serialGroup->first()->material;
                                             $accordionId = 'serial-material-' . $materialId;
-                                            $inventoryCount = $serializedInventory[$materialId]->quantity ?? $serialGroup->count();
+                                            $inventoryCount = $serialGroup->count();
                                         @endphp
                                         <div class="accordion-item">
                                             <h2 class="accordion-header" id="heading-{{ $accordionId }}">
@@ -199,7 +199,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
-                                                            class="btn btn-sm btn-warning-st"
+                                                            class="btn btn-sm btn-danger-st"
                                                             onclick="return confirm('¿Eliminar este material de la orden?');">
                                                         <i class="bi bi-x-circle me-1"></i>Quitar
                                                     </button>
@@ -240,7 +240,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
-                                                            class="btn btn-sm btn-warning-st"
+                                                            class="btn btn-sm btn-danger-st"
                                                             onclick="return confirm('¿Eliminar este material de la orden?');">
                                                         <i class="bi bi-x-circle me-1"></i>Quitar
                                                     </button>
@@ -322,9 +322,9 @@
                                 @foreach ($workOrders as $order)
                                     @php
                                 $statusLabel = [
-                                    'open' => ['label' => 'Abierta', 'class' => 'badge-warning-soft text-dark'],
-                                    'confirmed' => ['label' => 'Confirmada', 'class' => 'badge-success-soft'],
-                                    'cancelled' => ['label' => 'Cancelada', 'class' => 'badge-danger-soft'],
+                                    'open' => ['label' => 'ABIERTA', 'class' => 'badge-warning-soft text-dark'],
+                                    'confirmed' => ['label' => 'CONFIRMADA', 'class' => 'badge-success-soft'],
+                                    'cancelled' => ['label' => 'CANCELADA', 'class' => 'badge-danger-soft'],
                                 ][$order->status] ?? ['label' => ucfirst($order->status), 'class' => 'badge-soft'];
                             @endphp
                             <tr style="cursor:pointer;" onclick="window.location='{{ route('technician.work-orders.show', $order) }}'">

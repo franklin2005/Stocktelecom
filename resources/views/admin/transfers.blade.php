@@ -167,8 +167,8 @@
                         </div>
 
                         <div class="d-flex justify-content-end mt-3">
-                            <button type="submit" class="btn btn-sm btn-st">
-                                <i class="bi bi-plus-circle me-1"></i>Añadir seleccionados
+                            <button type="submit" class="btn btn-sm btn-success-st">
+                                <i class="bi bi-plus-circle me-1"></i>Añadir
                             </button>
                         </div>
                     </form>
@@ -196,7 +196,7 @@
                                 <tr>
                                     <th>Detalle</th>
                                     <th class="text-end">Unidades</th>
-                                    <th class="text-end">Acción</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -217,7 +217,7 @@
                                         <td class="text-end">
                                             <form method="POST" action="{{ route('admin.transfers.cart.remove', $item['key']) }}">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-warning-st">
+                                                <button type="submit" class="btn btn-sm btn-danger-st">
                                                     <i class="bi bi-x-circle me-1"></i>Quitar
                                                 </button>
                                             </form>
@@ -284,7 +284,7 @@
                         class="btn btn-st w-100"
                         {{ empty($cartItems) || $technicians->isEmpty() ? 'disabled' : '' }}
                     >
-                        <i class="bi bi-check-circle me-1"></i>Enviar transferencia
+                        <i class="bi bi-check-circle me-1"></i>Enviar
                     </button>
                 </form>
             </div>

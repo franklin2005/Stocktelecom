@@ -27,20 +27,26 @@ class Material extends Model
     /**
      * buscar por categorias y si está activo.
      */
-    public function scopeEquipment(Builder $query): Builder
-    {
-        return $query->where('category', 'equipment');
-    }
+public function scopeEquipo(Builder $query): Builder
+{
+    return $query->where('category', 'equipo');
+}
 
-    public function scopeAcometidas(Builder $query): Builder
-    {
-        return $query->where('category', 'acometida');
-    }
+public function scopeAcometidas(Builder $query): Builder
+{
+    return $query->where('category', 'acometida');
+}
 
-    public function scopeRosetas(Builder $query): Builder
-    {
-        return $query->where('category', 'roseta');
-    }
+public function scopeRosetas(Builder $query): Builder
+{
+    return $query->where('category', 'roseta');
+}
+
+public function scopeOtros(Builder $query): Builder
+{
+    return $query->where('category', 'otro');
+}
+
 
     public function scopeActive(Builder $query): Builder
     {
