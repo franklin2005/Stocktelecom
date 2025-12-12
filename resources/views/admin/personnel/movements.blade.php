@@ -19,7 +19,7 @@
     ];
     $actionClasses = [
         'created' => 'badge-success-soft',
-        'updated' => 'badge-primary-soft',
+        'updated' => 'badge-soft',
         'deleted' => 'badge-danger-soft',
         'reset_password' => 'badge-warning-soft',
     ];
