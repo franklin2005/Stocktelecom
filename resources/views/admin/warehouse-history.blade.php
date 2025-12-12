@@ -43,7 +43,7 @@
                         <th>Referencia</th>
                         <th>Enviado por</th>
                         <th>Registrado por</th>
-                        <th class="text-end">Acción</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -126,10 +126,10 @@
                             <td class="text-end">
                                 @if ($isTransfer && $movement->transfer_id)
                                     <a href="{{ route('admin.warehouse-movements.transfer.show', $movement->transfer_id) }}" class="btn btn-sm btn-soft-st">
-                                        <i class="bi bi-eye me-1"></i>Ver detalle
+                                        <i class="bi bi-eye me-1"></i>Detalle
                                     </a>
                                 @else
-                                    <span class="st-muted">—</span>
+                                    <span class="st-muted"></span>
                                 @endif
                             </td>
                         </tr>

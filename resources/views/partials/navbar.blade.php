@@ -25,7 +25,6 @@
                 {{-- Perfil --}}
                 <a href="{{ route('profile.show') }}" class="btn btn-accent-st btn-sm">
                     <i class="bi bi-person-circle me-1"></i>
-                    Perfil
                 </a>
 
                 {{-- Logout --}}
@@ -33,7 +32,7 @@
                     @csrf
                     <button type="submit" class="btn btn-danger-st btn-sm">
                         <i class="bi bi-box-arrow-right me-1"></i>
-                        Cerrar sesión
+                        Salir
                     </button>
                 </form>
             @else
@@ -89,4 +88,3 @@ document.getElementById('logout-form').addEventListener('submit', function (e) {
     }
 });
 </script>
-

@@ -17,7 +17,7 @@
                             <th>Correo</th>
                             <th>Código técnico</th>
                             <th>Ubicación</th>
-                            <th class="text-end">Acciones</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,7 +36,7 @@
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end gap-2">
                                         <a href="{{ route('admin.technicians.stock.overview', $technician) }}" class="btn btn-sm btn-accent-st">
-                                            <i class="bi bi-box-seam me-1"></i>Ver stock
+                                            <i class="bi bi-box-seam me-1"></i>Stock
                                         </a>
                                         <a href="{{ route('admin.technicians.transfers.history', $technician) }}" class="btn btn-sm btn-soft-st">
                                             <i class="bi bi-arrow-repeat me-1"></i>Transferencias

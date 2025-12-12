@@ -2,9 +2,26 @@
     $role = $role ?? (auth()->user()->role ?? null);
     $menuItems = $menuItems ?? [];
 
-    // Ordenar menú alfabéticamente
-    usort($menuItems, function ($a, $b) {
-        return strcmp(mb_strtolower($a['label']), mb_strtolower($b['label']));
+    // Separar históricos y resto, y ordenar alfabéticamente cada grupo
+    $historyItems = array_filter($menuItems, function ($item) {
+        $label = $item['label'] ?? '';
+        return stripos($label, 'Hist') === 0;
+    });
+    $nonHistoryItems = array_filter($menuItems, function ($item) use ($historyItems) {
+        return ! in_array($item, $historyItems, true);
+    });
+
+    $sortFn = function (&$items) {
+        usort($items, function ($a, $b) {
+            return strcmp(mb_strtolower($a['label']), mb_strtolower($b['label']));
+        });
+    };
+    $sortFn($historyItems);
+    $sortFn($nonHistoryItems);
+
+    $historyActive = collect($historyItems)->contains(function ($item) {
+        $pattern = $item['pattern'] ?? $item['route'] ?? null;
+        return $pattern ? request()->routeIs($pattern) : false;
     });
 
     // Traducción de roles
@@ -64,7 +81,7 @@
         <h6 class="px-3 text-uppercase st-muted small mb-3">Menú principal</h6>
 
         <div class="list-group list-group-flush flex-grow-1">
-            @forelse ($menuItems as $item)
+            @forelse ($nonHistoryItems as $item)
                 @php
                     $pattern = $item['pattern'] ?? $item['route'];
                     $isActive = request()->routeIs($pattern);
@@ -83,7 +100,6 @@
                             : ' text-body';
                     }
 
-                    // Si el item tiene 'icon' definido, lo usamos; si no, lo deducimos por label
                     $icon = $item['icon'] ?? guessMenuIcon($item);
                 @endphp
 
@@ -91,12 +107,43 @@
                     @if (!empty($icon))
                         <i class="bi bi-{{ $icon }} sidebar-icon me-2"></i>
                     @endif
-
                     {{ $item['label'] }}
                 </a>
             @empty
                 <span class="list-group-item text-muted">Sin opciones disponibles</span>
             @endforelse
+
+            @if (!empty($historyItems))
+                @php $collapseId = 'sidebarHistoricos'; @endphp
+                <div class="list-group-item border-0 rounded-0 py-0 px-0">
+                    <button class="w-100 text-start btn btn-link px-3 py-2 text-decoration-none {{ $historyActive ? 'fw-semibold text-primary' : 'text-body' }}"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#{{ $collapseId }}"
+                            aria-expanded="{{ $historyActive ? 'true' : 'false' }}"
+                            aria-controls="{{ $collapseId }}">
+                        <i class="bi bi-clock-history sidebar-icon me-2"></i>Históricos
+                        <i class="bi bi-chevron-down float-end small"></i>
+                    </button>
+                    <div class="collapse {{ $historyActive ? 'show' : '' }}" id="{{ $collapseId }}">
+                        <div class="list-group list-group-flush">
+                            @foreach ($historyItems as $item)
+                                @php
+                                    $pattern = $item['pattern'] ?? $item['route'];
+                                    $isActive = request()->routeIs($pattern);
+                                    $icon = $item['icon'] ?? guessMenuIcon($item);
+                                @endphp
+                                <a href="{{ route($item['route'], $item['params'] ?? []) }}" class="list-group-item list-group-item-action border-0 px-4 py-1 {{ $isActive ? 'text-primary fw-semibold' : 'text-body' }}">
+                                    @if (!empty($icon))
+                                        <i class="bi bi-{{ $icon }} sidebar-icon me-2"></i>
+                                    @endif
+                                    {{ $item['label'] }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <div class="mt-auto px-3 pt-3 border-top">

@@ -44,14 +44,14 @@
                         @csrf
                         <button type="submit" class="btn btn-success-st"
                                 onclick="return confirm('¿Confirmar esta orden? No se podrá modificar después.');">
-                            <i class="bi bi-check-circle me-1"></i>Confirmar orden
+                            <i class="bi bi-check-circle me-1"></i>Confirmar
                         </button>
                     </form>
                     <form method="POST" action="{{ route('technician.work-orders.cancel', $openOrder) }}">
                         @csrf
                         <button type="submit" class="btn btn-danger-st"
                                 onclick="return confirm('¿Cancelar esta orden?');">
-                            <i class="bi bi-x-circle me-1"></i>Cancelar orden
+                            <i class="bi bi-x-circle me-1"></i>Cancelar
                         </button>
                     </form>
                 </div>
@@ -153,7 +153,7 @@
                                 </div>
                                 <div class="d-flex justify-content-end mt-3">
                                     <button type="submit" class="btn btn-success-st">
-                                        <i class="bi bi-plus-circle me-1"></i>Añadir seleccionados
+                                        <i class="bi bi-plus-circle me-1"></i>Añadir
                                     </button>
                                 </div>
                             </form>
@@ -315,7 +315,7 @@
                                     <th>Número</th>
                                     <th>Estado</th>
                                     <th class="text-center">Materiales</th>
-                                    <th class="text-end">Creada</th>
+                                    <th class="text-center">Creada</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -333,7 +333,7 @@
                                     <span class="badge {{ $statusLabel['class'] }}">{{ $statusLabel['label'] }}</span>
                                 </td>
                                 <td class="text-center">{{ $order->items_count }}</td>
-                                <td class="text-end">{{ $order->created_at?->format('d/m/Y H:i') }}</td>
+                                <td class="text-center">{{ $order->created_at?->format('d/m/Y H:i') }}</td>
                             </tr>
                         @endforeach
                     </tbody>

@@ -12,17 +12,15 @@
 
     <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-            <h1 class="h3 mb-1">Gestión de materiales</h1>
-            
+            <h1 class="h3 mb-1"><i class="bi bi-box-seam me-2"></i>Gestión de almacén</h1>
+
             @if ($canManageWarehouse)
-            <a href="{{ route('admin.materials.export') }}" class="btn btn-success-st btn-sm">
-                <i class="bi bi-file-earmark-spreadsheet me-1"></i>
-                Exportar CSV
-            </a>
+                <a href="{{ route('admin.materials.export') }}" class="btn btn-success-st btn-sm">
+                    <i class="bi bi-file-earmark-spreadsheet me-1"></i>
+                    Exportar CSV
+                </a>
             @endif
         </div>
-  
-        
     </div>
 
     @if (session('status'))
@@ -44,10 +42,11 @@
     @endif
 
     <div class="row g-4">
-        <div class="col-12 col-lg-8">
+        <div class="col-lg-8">
             <div class="card st-card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="card-title mb-3">Inventario en almacén</h5>
+
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead>
@@ -91,140 +90,173 @@
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             </div>
         </div>
 
-        <div class="col-12 col-lg-4">
+        <div class="col-lg-4">
             @if ($canManageWarehouse)
-                {{-- Ingresar stock (no serializado) --}}
-                <div class="card st-card shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Ingresar stock (no serializado)</h5>
-                        <form method="POST" action="{{ route('admin.materials.add-stock') }}">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="material_id_quantity" class="form-label">Material</label>
-                                <select id="material_id_quantity" name="material_id" class="form-select" required>
-                                    <option value="">Selecciona un material</option>
-                                    @foreach ($materials->where('is_serialized', false)->where('is_active', true) as $material)
-                                        <option value="{{ $material->id }}" {{ old('material_id') == $material->id ? 'selected' : '' }}>
-                                            {{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="quantity" class="form-label">Cantidad a ingresar</label>
-                                <input type="number" min="1" class="form-control" id="quantity" name="quantity" value="{{ old('quantity') }}">
-                            </div>
-                            <button type="submit" class="btn btn-st w-100"><i class="bi bi-check-circle me-1"></i>Registrar ingreso</button>
-                        </form>
-                    </div>
+
+                {{-- BOTONES --}}
+                <div class="d-flex gap-2 mb-3">
+                    <button
+                        class="btn btn-st w-50"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#warehouse-ingresar"
+                        aria-expanded="false"
+                        aria-controls="warehouse-ingresar"
+                    >
+                        <i class="bi bi-plus-circle me-1"></i>Ingresar
+                    </button>
+
+                    <button
+                        class="btn btn-danger-st w-50"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#warehouse-eliminar"
+                        aria-expanded="false"
+                        aria-controls="warehouse-eliminar"
+                    >
+                        <i class="bi bi-trash me-1"></i>Eliminar
+                    </button>
                 </div>
 
-                {{-- Ingresar stock (serializado) --}}
-                <div class="card st-card shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Ingresar stock (serializado)</h5>
-                        <form method="POST" action="{{ route('admin.materials.add-stock') }}">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="material_id_serial" class="form-label">Material</label>
-                                <select id="material_id_serial" name="material_id" class="form-select" required>
-                                    <option value="">Selecciona un material</option>
-                                    @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
-                                        <option value="{{ $material->id }}" {{ old('material_id') == $material->id ? 'selected' : '' }}>
-                                            {{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="serial_numbers" class="form-label">Números de serie</label>
-                                <textarea class="form-control" id="serial_numbers" name="serial_numbers" rows="4" placeholder="Uno por línea">{{ old('serial_numbers') }}</textarea>
-                                <small class="st-muted">Introduce un número de serie por línea.</small>
-                            </div>
-                            <button type="submit" class="btn btn-st w-100"><i class="bi bi-check-circle me-1"></i>Registrar series</button>
-                        </form>
-                    </div>
-                </div>
-
-                {{-- Eliminar stock (no serializado) --}}
-                <div class="card st-card shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Eliminar stock (no serializado)</h5>
-                        <form method="POST" action="{{ route('admin.materials.remove-stock') }}">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="remove_material_id_quantity" class="form-label">Material</label>
-                                <select id="remove_material_id_quantity" name="material_id" class="form-select" required>
-                                    <option value="">Selecciona un material</option>
-                                    @foreach ($materials->where('is_serialized', false)->where('is_active', true) as $material)
-                                        @php $quantity = $material->inventories->first()?->quantity ?? 0; @endphp
-                                        @if ($quantity > 0)
-                                            <option value="{{ $material->id }}">
-                                                {{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }} (Stock: {{ $quantity }})
+                {{-- INGRESAR (COLLAPSE) --}}
+                <div id="warehouse-ingresar" class="collapse">
+                    {{-- Ingresar stock (no serializado) --}}
+                    <div class="card st-card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Ingresar stock no serializado</h5>
+                            <form method="POST" action="{{ route('admin.materials.add-stock') }}">
+                                @csrf
+                                <div class="mb-3">
+                                    <label for="material_id_quantity" class="form-label">Material</label>
+                                    <select id="material_id_quantity" name="material_id" class="form-select" required>
+                                        <option value="">Selecciona un material</option>
+                                        @foreach ($materials->where('is_serialized', false)->where('is_active', true) as $material)
+                                            <option value="{{ $material->id }}" {{ old('material_id') == $material->id ? 'selected' : '' }}>
+                                                {{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }}
                                             </option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="remove_quantity" class="form-label">Cantidad a retirar</label>
-                                <input type="number" min="1" class="form-control" id="remove_quantity" name="quantity">
-                            </div>
-                            <button type="submit" class="btn btn-danger-st w-100"><i class="bi bi-trash me-1"></i>Eliminar del almacén</button>
-                        </form>
-                    </div>
-                </div>
-
-                {{-- Eliminar stock (serializado) --}}
-                <div class="card st-card shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Eliminar stock (serializado)</h5>
-                        <form method="POST" action="{{ route('admin.materials.remove-stock') }}">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="remove_material_id_serial" class="form-label">Material</label>
-                                <select id="remove_material_id_serial" name="material_id" class="form-select" required>
-                                    <option value="">Selecciona un material</option>
-                                    @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
-                                        @if (($material->serials ?? collect())->isNotEmpty())
-                                            <option value="{{ $material->id }}">
-                                                {{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }} (Series disponibles: {{ $material->serials->count() }})
-                                            </option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="remove_serial_ids" class="form-label">Series a retirar</label>
-                                <div class="input-group input-group-sm mb-2">
-                                    <span class="input-group-text">Nº serie</span>
-                                    <input type="text" class="form-control" id="serialSearchMaterials" placeholder="Buscar serie…" autocomplete="off">
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <select id="remove_serial_ids" name="serial_ids[]" class="form-select" multiple size="6" required>
-                                    @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
-                                        @if (($material->serials ?? collect())->isNotEmpty())
-                                            <optgroup label="{{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }}">
-                                                @foreach ($material->serials as $serial)
-                                                    <option value="{{ $serial->id }}">
-                                                        {{ $serial->serial_number }}
-                                                    </option>
-                                                @endforeach
-                                            </optgroup>
-                                        @endif
-                                    @endforeach
-                                </select>
-                                <small class="st-muted">Selecciona cada número de serie que deseas dar de baja.</small>
-                            </div>
-                            <button type="submit" class="btn btn-danger-st w-100"><i class="bi bi-trash me-1"></i>Eliminar series</button>
-                        </form>
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">Cantidad a ingresar</label>
+                                    <input type="number" min="1" class="form-control" id="quantity" name="quantity" value="{{ old('quantity') }}">
+                                </div>
+                                <button type="submit" class="btn btn-st w-100"><i class="bi bi-check-circle me-1"></i>Registrar ingreso</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Ingresar stock (serializado) --}}
+                    <div class="card st-card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Ingresar stock serializado</h5>
+                            <form method="POST" action="{{ route('admin.materials.add-stock') }}">
+                                @csrf
+                                <div class="mb-3">
+                                    <label for="material_id_serial" class="form-label">Material</label>
+                                    <select id="material_id_serial" name="material_id" class="form-select" required>
+                                        <option value="">Selecciona un material</option>
+                                        @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
+                                            <option value="{{ $material->id }}" {{ old('material_id') == $material->id ? 'selected' : '' }}>
+                                                {{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="serial_numbers" class="form-label">Números de serie</label>
+                                    <textarea class="form-control" id="serial_numbers" name="serial_numbers" rows="4" placeholder="Uno por línea">{{ old('serial_numbers') }}</textarea>
+                                    <small class="st-muted">Introduce un número de serie por línea.</small>
+                                </div>
+                                <button type="submit" class="btn btn-st w-100"><i class="bi bi-check-circle me-1"></i>Registrar series</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- ELIMINAR (COLLAPSE) --}}
+                <div id="warehouse-eliminar" class="collapse">
+                    {{-- Eliminar stock (no serializado) --}}
+                    <div class="card st-card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Eliminar stock no serializado</h5>
+                            <form method="POST" action="{{ route('admin.materials.remove-stock') }}">
+                                @csrf
+                                <div class="mb-3">
+                                    <label for="remove_material_id_quantity" class="form-label">Material</label>
+                                    <select id="remove_material_id_quantity" name="material_id" class="form-select" required>
+                                        <option value="">Selecciona un material</option>
+                                        @foreach ($materials->where('is_serialized', false)->where('is_active', true) as $material)
+                                            @php $quantity = $material->inventories->first()?->quantity ?? 0; @endphp
+                                            @if ($quantity > 0)
+                                                <option value="{{ $material->id }}">
+                                                    {{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }} (Stock: {{ $quantity }})
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="remove_quantity" class="form-label">Cantidad a retirar</label>
+                                    <input type="number" min="1" class="form-control" id="remove_quantity" name="quantity">
+                                </div>
+                                <button type="submit" class="btn btn-danger-st w-100"><i class="bi bi-trash me-1"></i>Eliminar del almacén</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Eliminar stock (serializado) --}}
+                    <div class="card st-card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Eliminar stock serializado</h5>
+                            <form method="POST" action="{{ route('admin.materials.remove-stock') }}">
+                                @csrf
+                                <div class="mb-3">
+                                    <label for="remove_material_id_serial" class="form-label">Material</label>
+                                    <select id="remove_material_id_serial" name="material_id" class="form-select" required>
+                                        <option value="">Selecciona un material</option>
+                                        @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
+                                            @if (($material->serials ?? collect())->isNotEmpty())
+                                                <option value="{{ $material->id }}">
+                                                    {{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }} (Series disponibles: {{ $material->serials->count() }})
+                                                </option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="remove_serial_ids" class="form-label">Series a retirar</label>
+                                    <div class="input-group input-group-sm mb-2">
+                                        <span class="input-group-text">Nº serie</span>
+                                        <input type="text" class="form-control" id="serialSearchMaterials" placeholder="Buscar serie…" autocomplete="off">
+                                    </div>
+
+                                    <select id="remove_serial_ids" name="serial_ids[]" class="form-select" multiple size="6" required>
+                                        @foreach ($materials->where('is_serialized', true)->where('is_active', true) as $material)
+                                            @if (($material->serials ?? collect())->isNotEmpty())
+                                                <optgroup label="{{ ucfirst($material->type) }}{{ $material->model ? ' - '.$material->model : '' }}">
+                                                    @foreach ($material->serials as $serial)
+                                                        <option value="{{ $serial->id }}">
+                                                            {{ $serial->serial_number }}
+                                                        </option>
+                                                    @endforeach
+                                                </optgroup>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                    <small class="st-muted">Selecciona cada número de serie que deseas dar de baja.</small>
+                                </div>
+                                <button type="submit" class="btn btn-danger-st w-100"><i class="bi bi-trash me-1"></i>Eliminar series</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             @endif
-            
         </div>
     </div>
 @endsection
@@ -239,7 +271,7 @@
   function filterOptions(term) {
     const groups = Array.from(select.querySelectorAll('optgroup'));
     const options = Array.from(select.querySelectorAll('option'));
-    const t = term.trim().toLowerCase();
+    const t = (term || '').trim().toLowerCase();
 
     if (!t) {
       options.forEach(o => o.classList.remove('d-none'));
@@ -262,5 +294,27 @@
   input.addEventListener('input', () => filterOptions(input.value));
 })();
 </script>
-@endpush
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const ingresar = document.getElementById('warehouse-ingresar');
+  const eliminar = document.getElementById('warehouse-eliminar');
+
+  // Al abrir Ingresar, cierra Eliminar
+  document.querySelectorAll('[data-bs-target="#warehouse-ingresar"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!ingresar || !eliminar) return;
+      eliminar.classList.remove('show');
+    });
+  });
+
+  // Al abrir Eliminar, cierra Ingresar
+  document.querySelectorAll('[data-bs-target="#warehouse-eliminar"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!ingresar || !eliminar) return;
+      ingresar.classList.remove('show');
+    });
+  });
+});
+</script>
+@endpush

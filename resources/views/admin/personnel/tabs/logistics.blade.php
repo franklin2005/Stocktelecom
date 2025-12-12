@@ -1,11 +1,11 @@
-﻿@php
+@php
     $canManageLogistics = $permissions['canManageLogistics'] ?? false;
     $canViewMovements = $permissions['canViewMovements'] ?? false;
     $isSuperAdmin = (auth()->user()->role ?? null) === 'super_admin';
 @endphp
 
 <div class="row g-4">
-    <div class="col-12 col-xl-7">
+    <div class="col-lg-9">
         <div class="card st-card shadow-sm h-100">
             <div class="card-body">
                 <h5 class="card-title mb-3">Personal de logística</h5>
@@ -19,7 +19,7 @@
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Correo electrónico</th>
-                                    <th class="text-end">Acciones</th>
+                                    <th class="justify-content"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -40,10 +40,10 @@
                                         </td>
                                         <td>{{ $logistic->email }}</td>
                                         <td class="text-end">
-                                            <div class="d-flex justify-content-end gap-2">
+                                            <div class="d-flex justify-content gap-2">
                                                 @if ($canViewMovements)
                                                     <a href="{{ route('admin.personnel.movements', $logistic) }}" class="btn btn-sm btn-soft-st">
-                                                        <i class="bi bi-eye me-1"></i>Ver movimientos
+                                                        <i class="bi bi-eye me-1"></i>Movimientos
                                                     </a>
                                                 @endif
                                                 @if ($canManageLogistics)
@@ -80,7 +80,7 @@
         </div>
     </div>
 
-    <div class="col-12 col-xl-5">
+    <div class="col-lg-3">
         @if ($canManageLogistics)
             <div class="card st-card shadow-sm mb-4">
                 <div class="card-body">
@@ -123,7 +123,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Editar usuario de logística</h5>
-                            <a href="{{ route('admin.personnel', ['tab' => 'logistics']) }}" class="btn btn-sm btn-warning-st"><i class="bi bi-x-circle me-1"></i>Cancelar</a>
+                            <a href="{{ route('admin.personnel', ['tab' => 'logistics']) }}" class="btn btn-sm btn-danger-st"><i class="bi bi-x-circle me-1"></i>Cancelar</a>
                         </div>
                         <form method="POST" action="{{ route('admin.staff.update', ['staff' => $editingLogistics->id, 'tab' => 'logistics']) }}">
                             @csrf

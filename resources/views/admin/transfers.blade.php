@@ -34,7 +34,7 @@
     @endif
 
     <div class="row g-4 mb-4">
-        <div class="col-12 col-xxl-8">
+        <div class="col-lg-9">
             {{-- No serializados --}}
             <div class="st-card p-3 mb-4">
                 <h2 class="h5 mb-1">Materiales no serializados</h2>
@@ -51,7 +51,7 @@
                                     <th class="text-end">Stock</th>
                                     <th class="text-end">Reservado</th>
                                     <th class="text-end">Disponible</th>
-                                    <th class="text-end">Acción</th>
+                                    <th class="text-end"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -237,7 +237,7 @@
         </div>
 
         {{-- Lateral: selección de técnico y resumen --}}
-        <div class="col-12 col-xxl-4">
+        <div class="col-lg-3">
             <div class="st-card p-3 mb-4">
                 <h2 class="h5 mb-3">Seleccionar técnico</h2>
 

@@ -50,7 +50,7 @@
                                     <th class="text-end">En stock</th>
                                     <th class="text-end">Reservado</th>
                                     <th class="text-end">Disponible</th>
-                                    <th class="text-end">Acciones</th>
+                                    <th class="text-end"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -173,7 +173,7 @@
 
                         <div class="d-flex justify-content-end mt-3">
                             <button type="submit" class="btn btn-sm btn-success-st">
-                                <i class="bi bi-plus-circle me-1"></i>Añadir seleccionados
+                                <i class="bi bi-plus-circle me-1"></i>Añadir
                             </button>
                         </div>
                     </form>
@@ -187,7 +187,7 @@
                     <form method="POST" action="{{ route('technician.transfers.cart.clear') }}">
                         @csrf
                         <button type="submit" class="btn btn-sm btn-danger-st" {{ empty($cartItems) ? 'disabled' : '' }}>
-                            <i class="bi bi-arrow-counterclockwise me-1"></i>Vaciar lista
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Vaciar
                         </button>
                     </form>
                 </div>
@@ -201,7 +201,7 @@
                                 <tr>
                                     <th>Detalle</th>
                                     <th class="text-end">Unidades</th>
-                                    <th class="text-end">Acciones</th>
+                                    <th class="text-end"></th>
                                 </tr>
                             </thead>
                             <tbody>

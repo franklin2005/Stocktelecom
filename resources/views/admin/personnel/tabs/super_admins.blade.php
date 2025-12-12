@@ -1,10 +1,10 @@
-﻿@php
+@php
     $canManageSuperAdmins = $permissions['canManageSuperAdmins'] ?? false;
     $canViewMovements = $permissions['canViewMovements'] ?? false;
 @endphp
 
 <div class="row g-4">
-    <div class="col-12 col-xl-7">
+    <div class="col-lg-9">
         <div class="card st-card shadow-sm h-100">
             <div class="card-body">
                 <h5 class="card-title mb-3">Superadministradores</h5>
@@ -18,7 +18,7 @@
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Correo electrónico</th>
-                                    <th class="text-end">Acciones</th>
+                                    <th class="justify-content"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -27,10 +27,10 @@
                                         <td>{{ $superAdmin->name }}</td>
                                         <td>{{ $superAdmin->email }}</td>
                                         <td class="text-end">
-                                            <div class="d-flex justify-content-end gap-2">
+                                            <div class="d-flex justify-content gap-2">
                                                 @if ($canViewMovements && $canManageSuperAdmins)
                                                     <a href="{{ route('admin.personnel.movements', $superAdmin) }}" class="btn btn-sm btn-soft-st">
-                                                        <i class="bi bi-eye me-1"></i>Ver movimientos
+                                                        <i class="bi bi-eye me-1"></i>Movimientos
                                                     </a>
                                                 @endif
                                                 @if ($canManageSuperAdmins)
@@ -59,7 +59,7 @@
         </div>
     </div>
 
-    <div class="col-12 col-xl-5">
+    <div class="col-lg-3">
         @if ($canManageSuperAdmins)
             <div class="card st-card shadow-sm mb-4">
                 <div class="card-body">
@@ -102,7 +102,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Editar superadministrador</h5>
-                            <a href="{{ route('admin.personnel', ['tab' => 'super_admins']) }}" class="btn btn-sm btn-warning-st"><i class="bi bi-x-circle me-1"></i>Cancelar</a>
+                            <a href="{{ route('admin.personnel', ['tab' => 'super_admins']) }}" class="btn btn-sm btn-danger-st"><i class="bi bi-x-circle me-1"></i>Cancelar</a>
                         </div>
                         <form method="POST" action="{{ route('admin.staff.update', ['staff' => $editingSuperAdmin->id, 'tab' => 'super_admins']) }}">
                             @csrf

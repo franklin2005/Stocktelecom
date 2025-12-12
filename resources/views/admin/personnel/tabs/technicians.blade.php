@@ -1,10 +1,10 @@
-﻿@php
+@php
     $canManageTechnicians = $permissions['canManageTechnicians'] ?? false;
     $canViewMovements = $permissions['canViewMovements'] ?? false;
 @endphp
 
 <div class="row g-4">
-    <div class="col-12 col-xl-7">
+    <div class="col-lg-9">
         <div class="card st-card shadow-sm h-100">
             <div class="card-body">
                 <h5 class="card-title mb-3">Técnicos registrados</h5>
@@ -19,7 +19,7 @@
                                     <th>Nombre</th>
                                     <th>Correo electrónico</th>
                                     <th>Código técnico</th>
-                                    <th class="text-end">Acciones</th>
+                                    <th class="justify-content"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -47,22 +47,11 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <div class="d-flex justify-content-end gap-2">
-                                                <a href="{{ route('admin.technicians.stock.overview', $technician) }}" class="btn btn-sm btn-accent-st" title="Ver stock del técnico">
-                                                    <i class="bi bi-box-seam me-1"></i>Stock
-                                                </a>
-                                                <a href="{{ route('admin.technicians.transfers.history', $technician) }}" class="btn btn-sm btn-soft-st" title="Histórico de transferencias">
-                                                    <i class="bi bi-arrow-repeat me-1"></i>Transferencias
-                                                </a>
-                                                <a href="{{ route('admin.technicians.returns.history', $technician) }}" class="btn btn-sm btn-info-st" title="Histórico de devoluciones">
-                                                    <i class="bi bi-arrow-left-right me-1"></i>Devoluciones
-                                                </a>
-
+                                            <div class="d-flex justify-content gap-2">
                                                 @if ($canManageTechnicians)
                                                     <a href="{{ route('admin.personnel', ['tab' => 'technicians', 'edit_technician' => $technician->id]) }}" class="btn btn-sm btn-st" title="Editar técnico">
                                                         <i class="bi bi-pencil-square me-1"></i>Editar
                                                     </a>
-
                                                     <form method="POST"
                                                           class="d-inline"
                                                           action="{{ route('admin.technicians.destroy', ['technician' => $technician->id, 'tab' => 'technicians']) }}"
@@ -92,7 +81,7 @@
         </div>
     </div>
 
-    <div class="col-12 col-xl-5">
+    <div class="col-lg-3">
         @if ($canManageTechnicians)
             <div class="card st-card shadow-sm mb-4">
                 <div class="card-body">
@@ -180,7 +169,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Editar técnico</h5>
-                            <a href="{{ route('admin.personnel', ['tab' => 'technicians']) }}" class="btn btn-sm btn-warning-st"><i class="bi bi-x-circle me-1"></i>Cancelar</a>
+                            <a href="{{ route('admin.personnel', ['tab' => 'technicians']) }}" class="btn btn-sm btn-danger-st"><i class="bi bi-x-circle me-1"></i>Cancelar</a>
                         </div>
 
                         <form method="POST" action="{{ route('admin.technicians.update', ['technician' => $editingTechnician->id, 'tab' => 'technicians']) }}">

@@ -65,7 +65,7 @@
                             <th>Destino</th>
                             <th>Unidades</th>
                             <th>Solicitada por</th>
-                            <th class="text-end">Acción</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -91,7 +91,7 @@
                                 <td>{{ $return->initiator->name ?? 'Sistema' }}</td>
                                 <td class="text-end">
                                     <a href="{{ route('admin.returns.history.show', $return) }}" class="btn btn-sm btn-soft-st">
-                                        <i class="bi bi-eye me-1"></i>Ver detalle
+                                        <i class="bi bi-eye me-1"></i>Detalle
                                     </a>
                                 </td>
                             </tr>

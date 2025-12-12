@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @php
     // Mapeo de estado → etiqueta + clase visual (soft)

@@ -72,9 +72,9 @@
                                 @php
                                     // Map a tus badges suaves
                                     $statusMap = [
-                                        'open'      => ['label' => 'Abierta',   'class' => 'badge-warning-soft'],
-                                        'confirmed' => ['label' => 'Confirmada','class' => 'badge-success-soft'],
-                                        'cancelled' => ['label' => 'Cancelada', 'class' => 'badge-danger-soft'],
+                                        'open'      => ['label' => 'ABIERTA',   'class' => 'badge-warning-soft'],
+                                        'confirmed' => ['label' => 'CONFIRMADA','class' => 'badge-success-soft'],
+                                        'cancelled' => ['label' => 'CANCELADA', 'class' => 'badge-danger-soft'],
                                     ];
                                     $statusLabel = $statusMap[$order->status] ?? ['label' => ucfirst($order->status), 'class' => 'badge-soft'];
                                 @endphp
@@ -89,7 +89,7 @@
                                     <td class="text-end">{{ $order->updated_at?->format('d/m/Y H:i') }}</td>
                                     <td class="text-end">
                                         <a href="{{ route('admin.work-orders.show', $order) }}" class="btn btn-sm btn-soft-st">
-                                            <i class="bi bi-eye me-1"></i>Ver detalle
+                                            <i class="bi bi-eye me-1"></i>Detalle
                                         </a>
                                     </td>
                                 </tr>
