@@ -16,29 +16,29 @@ class StaffDeleter
         protected StaffHelper $helper,
     ) {
     }
-
+    // eliminar usuario de personal administrativo
     public function delete(User $staff, User $actor): void
-    {
+    {   // verificar que el usuario es de personal administrativo
         if (! $this->roleValidator->isStaffRole($staff->role)) {
             abort(404);
         }
-
+        // validar permisos para eliminar usuario
         $this->roleValidator->assertCanDeleteUser($actor, $staff);
         $this->ensureNotSelfDelete($actor, $staff);
         $this->roleValidator->ensureAdminWillRemainOnDelete($staff);
         $this->roleValidator->ensureSuperAdminWillRemainOnDelete($staff);
 
         $location = null;
-
+        // si es personal de logistica, asegurar que no tenga stock asignado
         if ($staff->role === 'logistics') {
             $location = $staff->stockLocation()->first();
             $this->stockManager->ensureLogisticsHasNoStock($location);
         }
-
+        // obtener datos para el log
         $staffName  = $staff->name;
         $staffEmail = $staff->email;
         $roleLabel  = $this->helper->roleLabel($staff->role);
-
+        // eliminar usuario en transaccion
         DB::transaction(function () use ($staff, $actor, $staffName, $staffEmail, $roleLabel, $location) {
             $this->actionLogger->logUserAction(
                 actorId: $actor->id,
@@ -46,12 +46,12 @@ class StaffDeleter
                 action: 'deleted',
                 details: 'Eliminacion de usuario ' . $roleLabel . ': ' . $staffName . ' (' . $staffEmail . ')'
             );
-
+            // si es personal de logistica, eliminar inventario y ubicacion de stock
             if ($staff->role === 'logistics' && $location) {
                 Inventory::query()
                     ->where('location_id', $location->id)
                     ->delete();
-
+                // eliminar ubicacion de stock
                 $location->delete();
             }
 

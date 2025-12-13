@@ -37,7 +37,7 @@ class StaffService
     {
         $this->deleter->delete($staff, $actor);
     }
-
+    // obtener etiqueta del rol
     public function roleLabel(string $role): string
     {
         return $this->helper->roleLabel($role);

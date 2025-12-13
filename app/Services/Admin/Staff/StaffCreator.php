@@ -15,13 +15,13 @@ class StaffCreator
         protected StaffHelper $helper,
     ) {
     }
-
+    // crear nuevo usuario de personal administrativo
     public function create(array $data, User $actor): User
-    {
+    {   // validar permisos para asignar el rol
         $this->roleValidator->assertCanAssignRole($actor, $data['role']);
-
+        // obtener etiqueta del rol
         $roleLabel = $this->helper->roleLabel($data['role']);
-
+        // crear usuario
         return DB::transaction(function () use ($data, $actor, $roleLabel) {
             $staffUser = User::create([
                 'name'      => $data['name'],
@@ -30,18 +30,18 @@ class StaffCreator
                 'role'      => $data['role'],
                 'tech_code' => null,
             ]);
-
+            // sincronizar ubicacion de stock si es personal de logistica
             if ($data['role'] === 'logistics') {
                 $this->stockManager->syncLogisticsLocation($staffUser, $data['name']);
             }
-
+            // registrar accion de creacion
             $this->actionLogger->logUserAction(
                 actorId: $actor->id,
                 targetId: $staffUser->id,
                 action: 'created',
                 details: 'Creacion de usuario ' . $roleLabel . ': ' . $staffUser->name . ' (' . $staffUser->email . ')'
             );
-
+            
             return $staffUser;
         });
     }

@@ -13,16 +13,16 @@ use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 class AdminReturnsTransferService
-{
+{   // generar un numero unico para la devolucion
     public function generateTransferNumber(): string
     {
-        do {
+        do {// generar numero con prefijo, fecha y numero aleatorio
             $number = 'TRF-' . now()->format('YmdHis') . '-' . str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
         } while (Transfer::where('order_number', $number)->exists());
 
         return $number;
     }
-
+    // crear transferencia de devolucion desde tecnico a almacen
     public function createReturnTransfer(
         User $user,
         StockLocation $technicianLocation,
@@ -45,40 +45,40 @@ class AdminReturnsTransferService
                 'status' => 'pending',
                 'notes' => null,
             ]);
-
+            // procesar cada item para la devolucion
             foreach ($items as $item) {
                 $material = $materials->get($item['material_id']);
-
+                // validar existencia del material
                 if (! $material) {
-                    throw new RuntimeException('No se encontr?? informaci??n del material seleccionado.');
+                    throw new RuntimeException('No se encontró información del material seleccionado.');
                 }
-
+                // procesar segun tipo de item
                 if ($item['type'] === 'quantity') {
                     $inventoryItem = $inventory->firstWhere('material_id', $material->id);
                     $reservedKey = 'quantity-' . $material->id;
                     $alreadyReserved = $pendingReservations['quantities'][$reservedKey] ?? 0;
                     $available = max(($inventoryItem->quantity ?? 0) - $alreadyReserved, 0);
-
+                    // validar disponibilidad
                     if ($item['quantity'] > $available) {
                         throw new RuntimeException('El material ' . ucfirst($material->type) . ' ya no cuenta con la disponibilidad solicitada.');
                     }
-
+                    // crear item de transferencia
                     TransferItem::create([
                         'transfer_id' => $transfer->id,
                         'material_id' => $material->id,
                         'quantity' => $item['quantity'],
                     ]);
-                } else {
+                } else {    // tipo serializadp
                     $serial = MaterialSerial::query()
                         ->whereKey($item['serial_id'])
                         ->where('current_location_id', $technicianLocation->id)
                         ->where('status', 'assigned')
                         ->first();
-
+                    // validar disponibilidad del serial
                     if (! $serial) {
                         throw new RuntimeException('Alguno de los n??meros de serie ya no est?? disponible.');
                     }
-
+                    // crear item de transferencia
                     TransferItem::create([
                         'transfer_id' => $transfer->id,
                         'material_id' => $material->id,
