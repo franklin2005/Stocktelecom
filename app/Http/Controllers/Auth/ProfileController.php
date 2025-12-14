@@ -10,21 +10,20 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
-{
+{   // mostrar perfil del usuario
     public function show(): View
     {
         $user = auth()->user();
-
         return view('profile.show', [
             'user' => $user,
         ]);
     }
-
+    // mostrar formulario de edicion de perfil
     public function passwordEdit(): View
     {
         return view('profile.password');
     }
-
+    // actualizar la contrasena del usuario
     public function passwordUpdate(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -38,7 +37,7 @@ class ProfileController extends Controller
             'password.min' => 'La contraseña debe tener al menos :min caracteres.',
             'password.min.string' => 'La contraseña debe tener al menos :min caracteres.',
         ]);
-
+        // actualizar la contrasena
         $request->user()->update([
             'password' => Hash::make($validated['password']),
         ]);

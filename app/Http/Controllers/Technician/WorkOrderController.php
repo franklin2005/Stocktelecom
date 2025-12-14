@@ -32,14 +32,11 @@ class WorkOrderController extends Controller
         private readonly TechnicianWorkOrderStatusService $statusService,
     ) {
     }
-
-    /**
-     * Muestra el detalle de una orden para consulta.
-     */
+    //mostrar detalle de orden de trabajo
     public function show(Request $request, WorkOrder $workOrder): View
     {
         $technician = $request->user();
-
+        
         if ($workOrder->technician_id !== $technician->id) {
             abort(403);
         }
@@ -137,7 +134,7 @@ class WorkOrderController extends Controller
             ]);
         }
 
-        return back()->with('status', 'Se agregaron ' . count($validated['serial_ids']) . ' numeros de serie a la orden.');
+        return back()->with('status', 'Se agregaron ' . count($validated['serial_ids']) . ' números de serie a la orden.');
     }
 
     /**
@@ -156,7 +153,7 @@ class WorkOrderController extends Controller
             ]);
         }
 
-        return back()->with('status', 'El material se elimino de la orden y se regreso al stock.');
+        return back()->with('status', 'El material se eliminó de la orden y se regresó al stock.');
     }
 
    /**

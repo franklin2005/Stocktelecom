@@ -13,9 +13,7 @@ use Illuminate\View\View;
 
 class ResetPasswordController extends Controller
 {
-    /**
-     * Muestra el formulario para definir la nueva contraseña.
-     */
+    //formulario de restablecimiento de contraseña
     public function showResetForm(Request $request, string $token): View
     {
         return view('auth.password-reset', [
@@ -24,9 +22,7 @@ class ResetPasswordController extends Controller
         ]);
     }
 
-    /**
-     * Actualiza la contraseña del usuario.
-     */
+    //procesar el restablecimiento de contraseña
     public function reset(Request $request): RedirectResponse
     {
         $data = $request->validate(
@@ -45,28 +41,28 @@ class ResetPasswordController extends Controller
                 'password_confirmation.required' => 'Debes confirmar la contraseña.',
             ]
         );
-
+        // intentar restablecer la contraseña
         $status = Password::reset(
             [
                 'email' => $data['email'],
                 'password' => $data['password'],
                 'password_confirmation' => $data['password_confirmation'],
                 'token' => $data['token'],
-            ],
+            ],// callback para actualizar la contraseña
             function ($user) use ($data) {
                 $user->forceFill([
                     'password' => Hash::make($data['password']),
                     'remember_token' => Str::random(60),
                 ])->save();
-
+                    // disparar el evento de restablecimiento de contraseña
                 event(new PasswordReset($user));
             }
         );
-
+        // verificar el resultado del intento
         if ($status === Password::PASSWORD_RESET) {
             return redirect()->route('login')->with('status', 'Tu contraseña ha sido restablecida correctamente. Ya puedes iniciar sesión.');
         }
-
+        // si fallo, retornar con error
         return back()->withErrors([
             'email' => 'No hemos podido restablecer la contraseña con los datos proporcionados.',
         ]);

@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Auth;
 
 /*
  * RUTA RAÍZ
- * Si hay sesión iniciada redirige al dashboard según rol.
+ * Si hay sesión iniciada redirige una vista según rol.
  * Si no hay sesión, muestra la vista de bienvenida.
  */
 Route::get('/', function () {

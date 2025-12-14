@@ -9,13 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class LogoutController extends Controller
 {
-    /**
-     * Log the user out of the application.
-     */
+    // Procesar el logout del usuario
     public function destroy(Request $request): RedirectResponse
     {
         Auth::logout();
-
+        // invalidar la sesion y regenerar el token CSRF
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

@@ -13,28 +13,22 @@ use Illuminate\View\View;
 
 class LoginController extends Controller
 {
-    /**
-     * Role group mapping.
-     */
+   //roles permitidos y sus claves
     private array $roleGroups = [
         'technician' => ['technician'],
         'logistics' => ['logistics'],
         'admin' => ['admin', 'super_admin'],
     ];
 
-    /**
-     * Display the role selection screen.
-     */
+    //mostrar seleccion de rol para login
     public function showRoleSelection(): View
     {
         return view('auth.login-selection');
     }
 
-    /**
-     * Display the login form for the chosen role.
-     */
+   // mostrar formulario de login segun rol
     public function showRoleLogin(string $role): View
-    {
+    {   // verificar si la clave de rol es valida
         if (! array_key_exists($role, $this->roleGroups)) {
             abort(404);
         }
@@ -44,16 +38,13 @@ class LoginController extends Controller
             'logistics' => 'Logística',
             'admin' => 'Administrador',
         ];
-
+        // retornar vista de login con datos del rol
         return view('auth.login-role', [
             'roleKey' => $role,
             'title' => $titles[$role] ?? 'Iniciar sesión',
         ]);
     }
-
-    /**
-     * Handle an authentication attempt.
-     */
+// procesar el login
     public function login(Request $request): RedirectResponse
     {
         $credentials = $request->validate(
@@ -70,20 +61,20 @@ class LoginController extends Controller
                 'password.min' => 'La contraseña debe tener al menos :min caracteres.',
             ]
         );
-
+        // extraer la clave de rol y eliminarla de las credenciales
         $roleKey = $credentials['role_key'];
         unset($credentials['role_key']);
-
+        // verificar si se ha marcado "recordarme"
         $remember = $request->boolean('remember');
-
+        // intentar autenticar al usuario
         if (! Auth::attempt($credentials, $remember)) {
             throw ValidationException::withMessages([
                 'email' => 'Las credenciales no coinciden con nuestros registros.',
             ]);
         }
-
+        // regenerar la sesion para evitar fijacion de sesion
         $request->session()->regenerate();
-
+        // obtener el usuario autenticado
         $user = Auth::user();
 
         // Comprobamos rol permitido
@@ -91,13 +82,13 @@ class LoginController extends Controller
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-
+            // lanzar error de validacion
             throw ValidationException::withMessages([
                 'email' => 'No tienes permisos para acceder a esta área.',
             ]);
         }
 
-        // 👇 IMPORTANTE: si NO ha marcado "recordarme", limpiamos cualquier remember anterior
+        //  limpiamos cualquier remember anterior si no se marco "recordarme"
         if (! $remember) {
             // limpamos el token de "remember" en BD
             $user->setRememberToken(null);
@@ -106,13 +97,11 @@ class LoginController extends Controller
             // y borramos la cookie de "remember" del navegador
             Cookie::queue(Cookie::forget(Auth::getRecallerName()));
         }
-
+        // redirigir al usuario a la ruta correspondiente segun rol
         return redirect()->intended($this->redirectPath());
     }
 
-    /**
-     * Get the post-login redirect path.
-     */
+  // determinar la ruta de redireccion segun rol
     protected function redirectPath(): string
     {
         $user = Auth::user();
@@ -120,7 +109,7 @@ class LoginController extends Controller
         if (! $user) {
             return route('login');
         }
-
+        // redirigir segun rol
         return match ($user->role) {
             'technician' => route('technician.stock'),
             'logistics' => route('admin.materials'),
